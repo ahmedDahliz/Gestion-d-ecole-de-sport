@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Afficher joueur</title>
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="../assets/fontawesome/css/all.css" type="text/css"/>
+    <script>
+      window.jQuery = window.$ = require('jquery');
+    </script>
+  </head>
+  <body>
+    <div class="loader" role="status">
+      <!-- <div class="loader"></div> -->
+      <img src="../assets/image/pageLoaderOld2.gif" class="alling-middel mx-auto" alt="">
+    </div>
+      <div class="secWindow">
+        <div class="w-100 text-center">
+          <h2 class="m-2"><i class="fas fa-eye"></i> Afficher joueur</h2>
+        </div>
+        <div>
+          <div class="float-left mr-2 mb-2" style="width: 11%">
+              <fieldset class="">
+                <legend>Informations</legend>
+                <img src="..\assets\image\avatars\default.png" id="avatar" alt="joueur" class="img-thumbnail d-block">
+                <button name="file" class="upload mt-1" id="edit_avatar" ><i class="fas fa-file-image"></i> Parcourir</button>
+              </fieldset>
+            </div>
+            <div class="float-right w-50">
+              <fieldset>
+                  <legend class="text-center">Certificat medicale</legend>
+                  <img src="..\assets\image\certificats\cert.jpg" id="cert" height="550" width="550" class="" alt="certificat">
+                  <button name="file" class="upload align-middle mt-2" id="edit_cert" ><i class="fas fa-file-image"></i> Parcourir</button>
+              </fieldset>
+            </div>
+            <div class="pt-5">
+              <table class="w-auto">
+                <tr>
+                  <td colspan="2">Nom : </td>
+                  <td colspan="2"><input type="text" id="edit_lname" class="change form-control form-control-sm d-inline"></td>
+                </tr>
+                <tr>
+                  <td colspan="2">Prenom : </td>
+                  <td colspan="2"><input type="text" id="edit_fname" class="change form-control form-control-sm d-inline"></td>
+                </tr>
+                <tr>
+                  <td colspan="2">Date naissance : &nbsp;</td>
+                  <td colspan="2"><input type="date" id="edit_birthday" class="change form-control form-control-sm d-inline"></td>
+                </tr>
+                <tr>
+                  <td class="m-1">Categorie : </td>
+                  <td class="m-1"><select id="edit_categorie" class="change form-control form-control-sm d-inline"></select></td>
+                  <td class="m-1">Groupe : </td>
+                  <td class="m-1"><select id="edit_group"  class="change form-control form-control-sm d-inline"></select></td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="w-25 clearfix">
+              <div>
+                  <table class="table table-sm">
+                    <tr>
+                      <td>Télephone 1</td>
+                      <td><input type="text" id="edit_phone1" class="change form-control form-control-sm"></td>
+                    </tr>
+                    <tr>
+                      <td>Télephone 2</td>
+                      <td><input type="text" id="edit_phone2" class="change form-control form-control-sm"></td>
+                    </tr>
+                    <tr>
+                      <td>Télephone 3</td>
+                      <td><input type="text" id="edit_phone3" class="change form-control form-control-sm"></td>
+                    </tr>
+                    <tr>
+                      <td>Prix</td>
+                      <td><input type="text" id="edit_price" class="change form-control form-control-sm"></td>
+                    </tr>
+                    <tr>
+                      <td>Adresse</td>
+                      <td><textarea name="name" id="edit_adress" cols="10" class="change form-control form-control-sm"></textarea></td>
+                    </tr>
+                  </table>
+                    <button class="btn btn-edit" id="update_player"><i class="fas fa-edit"></i> Enregistrer</button>
+                    <span id="msg_update_player" class="font-weight-bold"></span>
+              </div>
+          </div>
+
+        </div>
+      </div>
+  </body>
+  <script src="../renderer.js"></script>
+  <script type="text/javascript">
+    let _idPlayer;
+    ipc.on('idPlayer', function(event, args){
+      _idPlayer = args;
+    })
+    console.log(document.currentScript);
+  </script>
+  <script src="../config/scripts/db_players.js"></script>
+
+</html>

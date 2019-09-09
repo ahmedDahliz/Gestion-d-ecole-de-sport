@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Ajouter Categorie/Groupes</title>
+    <link rel="stylesheet" type="text/css" href="../node_modules/gijgo/css/gijgo.min.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="../assets/fontawesome/css/all.css" type="text/css"/>
+    <script>
+      window.jQuery = window.$ = require('jquery');
+    </script>
+  </head>
+  <body>
+    <div class="loader" role="status">
+      <!-- <div class="loader"></div> -->
+      <img src="../assets/image/pageLoaderOld2.gif" class="alling-middel mx-auto" alt="">
+    </div>
+      <div class="secWindow">
+        <div class="w-100 text-center mb-5">
+          <h2 class="m-2"><i class="fas fa-grip-horizontal"></i><i class="fas fa-plus align-top" style="font-size: 18px"></i> Ajouter Categorie/Groupes</h2>
+        </div>
+        <div class="container-fluid">
+          <div class="form-group row" id="form_add_group">
+            <!--Jour-->
+            <div class="col-12 p-1 m-1 border border-secondary" style="border-color: #a54646">
+              <h4 class="pl-2">Jours</h4>
+              <table class="table">
+                <tr>
+                  <td>Jour 1 :</td>
+                  <td>
+                    <select name="J1" id="Jour1" class="form-control form-control-sm">
+                      <option value="Lundi">Lundi</option>
+                      <option value="Mardi">Mardi</option>
+                      <option value="Mercredi">Mercredi</option>
+                      <option value="Jeudi">Jeudi</option>
+                      <option value="Vendredi">Vendredi</option>
+                      <option value="Samedi">Samedi</option>
+                      <option value="Dimanche">Dimanche</option>
+                    </select>
+                </td>
+                  <td>Jour 2 :</td>
+                  <td><select name="J2" id="Jour2" class="form-control form-control-sm">
+                    <option value="Lundi">Lundi</option>
+                    <option value="Mardi">Mardi</option>
+                    <option value="Mercredi">Mercredi</option>
+                    <option value="Jeudi">Jeudi</option>
+                    <option value="Vendredi">Vendredi</option>
+                    <option value="Samedi">Samedi</option>
+                    <option value="Dimanche">Dimanche</option>
+                  </select></td>
+                </tr>
+              </table>
+              <button type="button" id="addJours" class="btn btn-add" name="ajouterGroupe"><i class="fas fa-plus"></i>Ajouter</button>
+              <span class="m-1 font-weight-bold" id="DayMessage"></span>
+            </div>
+            <!--Categorie-->
+            <div class="col-12 p-1 m-1 border border-secondary" style="border-color: #a54646">
+              <h4 class="pl-2">Categorie</h4>
+              <table class="table">
+                <tr>
+                  <td>Categorie</td>
+                  <td><select id="cat" class="form-control form-control-sm">
+                    <option value="null">Nouveau categorie</option>
+                    </select></td>
+                  <td colspan="2">Nom catégorie</td>
+                  <td colspan="2"><input type="text" id="nomCategorie" class="form-control form-control-sm"></td>
+                </tr>
+                <tr>
+                  <td>Jours</td>
+                  <td>
+                    <select name="" id="jours_cat" class="form-control form-control-sm">
+                    </select>
+                  </td>
+                  <td>Horaire</td>
+                  <td>
+                  <input id="heure" width="80" name="H1" readonly/>
+                  </td>
+                </tr>
+              </table>
+              <button type="button" id="addCategory" class="btn btn-add" name="ajouterGroupe"><i class="fas fa-plus"></i> Ajouter</button>
+              <span class="m-1 font-weight-bold" id="categoryMessage"></span>
+            </div>
+            <!-- <div class="col-5  p-1 m-1 border border-secondary">
+              <h4 class="pl-2">Horaire</h4>
+              <table class="table">
+                <tr>
+                  <td>Heur 1 :</td>
+                  <td><input id="heure" width="80" name="H1" /></td>
+                   <td>Heur 2</td>
+                  <td><input id="H2" width="80" name="H2"/></td>
+                  <td>Jours :</td>
+                  <td><select name="jourHoraire" id="jours_horaire" class="form-control form-control-sm">
+                    <option value="Lundi">Lundi</option>
+                    <option value="Mardi">Mardi</option>
+                    <option value="Mercredi">Mercredi</option>
+                    <option value="Jeudi">Jeudi</option>
+                    <option value="Vendredi">Vendredi</option>
+                    <option value="Samedi">Samedi</option>
+                    <option value="Dimanche">Dimanche</option>
+                  </select></td>
+                </tr>
+              </table>
+              <button type="button" id="addHoraire" class="btn btn-add" name="ajouterGroupe"><i class="fas fa-plus"></i> Ajouter</button>
+
+            </div> -->
+            <!--Groupe-->
+            <div class="col-12 p-1 m-1 border border-secondary" style="border-color: #a54646">
+              <h4>Groupes</h4>
+              <table class="table">
+                <tr>
+                  <td>Nom groupe</td>
+                  <td><input type="text" id="nomGroupe" class="form-control form-control-sm"></td>
+                  <td>Categorie</td>
+                  <td><select id="cat_group" class="form-control form-control-sm">
+
+                    </select></td>
+                </tr>
+              </table>
+              <button type="button" id="addGroup" class="btn btn-add" name="ajouterGroupe"><i class="fas fa-plus"></i> Ajouter</button>
+              <span class="m-1 font-weight-bold" id="GroupMessage"></span>
+            </div>
+
+            <!-- <div class="col-12">
+              <button type="button" id="addGroup" class="btn btn-add" name="ajouterGroupe"><i class="fas fa-plus"></i> Ajouter</button>
+              <button class="btn btn-edit" name="modifierGroupe" disabled><i class="fas fa-edit"></i> Modifier</button>
+              <button class="btn btn-delete" name="modifierGroupe" disabled><i class="fas fa-times"></i> supprimer</button>
+              <span id="groupeMessage" class="text-danger font-weight-bold p-3"></span>
+            </div>
+          </div> -->
+        </div>
+        <!-- <table id="new_groups" class="display table table-hover">
+          <thead class="">
+            <tr>
+              <th><i class="fas fa-cog"></i></th>
+              <th>Groupe</th>
+              <th>Jour 1</th>
+              <th>Heur 1</th>
+              <th>Jour 2</th>
+              <th>Heur 2</th>
+            </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table> -->
+      </div>
+      <script src="../node_modules/gijgo/js/gijgo.js"></script>
+      <script src="../config/scripts/db_groupes.js"></script>
+      <script type="text/javascript">
+      $(document).ready(function () {
+        $('#heure').timepicker();
+        $('#H2').timepicker();
+        $('input:radio[name="addGroup"]').change(function () {
+           if(this.checked){
+             $(".btn-edit").removeAttr("disabled")
+             $(".btn-delete").removeAttr("disabled")
+           }
+        });
+      });
+      </script>
+  </body>
+</html>

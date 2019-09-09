@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Gestion d'école sportive</title>
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="../assets/fontawesome/css/all.css" type="text/css"/>
+    <script>
+      window.jQuery = window.$ = require('jquery');
+    </script>
+  </head>
+  <body>
+    <div class="loader" role="status">
+      <!-- <div class="loader"></div> -->
+      <img src="../assets/image/pageLoaderOld2.gif" class="alling-middel mx-auto" alt="">
+    </div>
+    <div id="mainMenu">
+      <button id="J" class="btn btn-danger"><i class="fas fa-users"></i> Joueurs</button>
+      <button id="G" class="btn btn-danger"><i class="fas fa-grip-horizontal"></i> Categorie/Groupes</button>
+      <button id="E" class="btn btn-danger"><i class="fas fa-chalkboard-teacher"></i> Entreneurs</button>
+      <button id="P" class="btn btn-danger"><i class="fas fa-file-invoice-dollar"></i> Payment</button>
+      <button id="U" class="btn btn-danger"><i class="fas fa-user-cog"></i> Utilisateur</button>
+      <button id="D" class="btn btn-danger"><i class="fas fa-power-off"></i> Deconnexion</button>
+    </div>
+    <div id="main">
+      <div class="w-100 text-center">
+        <h2 class="m-2"><i class="fas fa-user-cog"></i> Utilisateur</h2>
+      </div>
+      <div class="m-3 mx-auto w-50">
+        <form>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Nom d'utilisateur : </label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Utilisateur">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Nouveau mot de passe : </label>
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Nouveau mot de passe">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Confirmer mot de passe : </label>
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Confirmer mot de passe ">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Mot de passe actuel : </label>
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Mot de passe actuel">
+          </div>
+          <button type="submit" class="btn btn-edit"><i class="fas fa-edit"></i> Modifier</button>
+        </form>
+      </div>
+    </div>
+    <!-- You can also require other files to run in this process -->
+    <script src="../renderer.js"></script>
+    <script src="../node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+  </body>
+</html>

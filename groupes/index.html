@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Gestion d'école sportive</title>
+    <link rel="stylesheet" type="text/css" href="../node_modules/gijgo/css/gijgo.min.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="../assets/fontawesome/css/all.css" type="text/css"/>
+
+    <script>
+      window.jQuery = window.$ = require('jquery');
+    </script>
+  </head>
+  <body>
+    <div class="loader" role="status">
+      <!-- <div class="loader"></div> -->
+      <img src="../assets/image/pageLoaderOld2.gif" class="alling-middel mx-auto" alt="">
+    </div>
+    <div id="mainMenu">
+      <button id="J" class="btn btn-danger"><i class="fas fa-users"></i> Joueurs</button>
+      <button id="G" class="btn btn-danger"><i class="fas fa-grip-horizontal"></i> Categorie/Groupes</button>
+      <button id="E" class="btn btn-danger"><i class="fas fa-chalkboard-teacher"></i> Entreneurs</button>
+      <button id="P" class="btn btn-danger"><i class="fas fa-file-invoice-dollar"></i> Payment</button>
+      <button id="U" class="btn btn-danger"><i class="fas fa-user-cog"></i> Utilisateur</button>
+      <button id="D" class="btn btn-danger"><i class="fas fa-power-off"></i> Deconnexion</button>
+    </div>
+    <div id="main">
+      <div class="w-100 text-center">
+        <h2 class="m-2"><i class="fas fa-grip-horizontal"></i> List des groupes</h2>
+      </div>
+      <div class="m-3">
+        <table id="group_list" class="display table table-hover table-bordered">
+          <thead class="thead-dark text-center">
+            <tr>
+              <!-- <th><i class="fas fa-cog"></i></th> -->
+              <th>Jours</th>
+              <th>Categories</th>
+              <th>Horaire</th>
+              <!-- <th>Groupes</th> -->
+            </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table>
+      </div>
+      <div class="m-2">
+        <button type="button" id="ajouterGroupe" class="btn btn-add"><i class="fas fa-plus"></i> Ajouter</button>
+        <button type="button" id="ModiferGroupe" class="btn btn-edit"><i class="fas fa-edit"></i> Gérer</button>
+        <!-- <button type="button" id="supprimerGroupe" class="btn btn-delete" disabled><i class="fas fa-times"></i> Supprimer</button> -->
+      </div>
+      <fieldset class="edit-groupe m-2">
+        <br>
+        <legend>Modifier Jours/Categories</legend>
+        <table class="table table-bordered border-dark">
+          <tr>
+            <td>Jours</td>
+            <td><select name="EditJours" id="Edit_Jours" class="form-control form-control-sm m-1">
+            </select>
+            <button class="btn btn-delete m-1" id="deleteDay"><i class="fas fa-times"></i> Supprimer les jours</button>
+            <button class="btn btn-edit m-1" id="editDay"><i class="fas fa-edit"></i> Modifer les jours</button>
+          </td>
+            <td style="width: 150px;">Categories</td>
+            <td style="width: 200px;">
+              <select name="Edit_Cat" id="Edit_Cat" size="3" class="form-control form-control-sm m-1 float-left" style="width:60px">
+              </select>
+              <button class="btn btn-edit m-1 float-right" id="deleteCatFromDay" title="supprimer du jours" disabled>X</button>
+          </td>
+            <td>Heure</td>
+            <td><input id="Edit_Heure" class="m-1" width="80" readonly/>
+              <button class="btn btn-edit m-1" id="EditTime">Modifier</button> <br>
+              <span class="text-warning font-weight-bold" id="msgTime"></span>
+            </td>
+          </tr>
+        </table>
+        <hr>
+        <br>
+        <legend>Modifier Groupes</legend>
+        <table class="table table-bordered border-dark">
+          <tr>
+            <td>Categorie</td>
+            <td style="width: 250px;"><select name="EditCategorie" id="Edit_categorie" class="form-control form-control-sm m-1">
+            </select>
+            <button class="btn btn-delete m-1" id="deleteCat"><i class="fas fa-times"></i> Supprimer la categorie</button>
+            <button class="btn btn-edit m-1" id="editCat"><i class="fas fa-edit"></i> Modifer categorie</button>
+          </td>
+            <td>Groupe</td>
+            <td>
+              <select name="EditGroup" class="form-control form-control-sm m-1" id="Edit_group" size="3" style="width:60px">
+              </select>
+              <br>
+              <button class="btn btn-delete m-1" id="deleteGroup" disabled><X></X>suprimer le groupe</button>
+          </td>
+          </tr>
+        </table>
+      </fieldset>
+    </div>
+    <!-- Edit modal for days -->
+    <div id="myModalDays" class="modal">
+
+      <!-- The Close Button -->
+      <span id="closeDays" class="close">&times;</span>
+
+      <!-- Modal Content (The Image) -->
+      <div  class="modal-content w-75 h-75 text-center p-5">
+        <table class="table">
+          <tr>
+            <td>Jours : </td>
+            <td><input type="text" id="old_days" class="form-control form-control-sm m-1" readonly></td>
+          </tr>
+          <tr>
+            <td>jour 1 : </td>
+            <td><select id="new_day1" class="form-control form-control-sm m-1">
+              <option value="Lundi">Lundi</option>
+              <option value="Mardi">Mardi</option>
+              <option value="Mercredi">Mercredi</option>
+              <option value="Jeudi">Jeudi</option>
+              <option value="Vendredi">Vendredi</option>
+              <option value="Samedi">Samedi</option>
+              <option value="Dimanche">Dimanche</option>
+            </select>
+          </td>
+          </tr>
+          <tr>
+            <td>jour 2 : </td>
+            <td>
+              <select id="new_day2" class="form-control form-control-sm m-1">
+                <option value="Lundi">Lundi</option>
+                <option value="Mardi">Mardi</option>
+                <option value="Mercredi">Mercredi</option>
+                <option value="Jeudi">Jeudi</option>
+                <option value="Vendredi">Vendredi</option>
+                <option value="Samedi">Samedi</option>
+                <option value="Dimanche">Dimanche</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><button class="btn btn-add" id="submit_edit_day">Valider</button><br>
+            </td>
+            <td><input type="hidden" id="idDays"><span class="text-warning font-weight-bold" id="msg_edit_day"></span></td>
+          </tr>
+        </table>
+      </div>
+
+
+      <!-- Modal Caption (Image Text) -->
+      <div id="caption">Modifer Jours</div>
+    </div>
+    <!-- Edit modal for category -->
+    <div id="myModalCat" class="modal">
+
+      <!-- The Close Button -->
+      <span class="close" id="closeCat">&times;</span>
+
+      <!-- Modal Content (The Image) -->
+      <div  class="modal-content w-75 h-50 text-center p-5">
+        <table class="table">
+          <tr>
+            <td>Nom : </td>
+            <td><input type="text" id="old_categorie_name" class="form-control form-control-sm m-1" readonly></td>
+          </tr>
+          <tr>
+            <td>Nouveau nom : </td>
+            <td><input type="text" id="new_categorie_name" class="form-control form-control-sm m-1"></td>
+          </tr>
+          <tr>
+            <td><button class="btn btn-add" id="submit_edit_category">Valider</button></span>
+            </td>
+            <td><input type="hidden" id="idCat"><span class="text-warning font-weight-bold" id="msg_edit_cat"></td>
+          </tr>
+        </table>
+      </div>
+
+
+      <!-- Modal Caption (Image Text) -->
+      <div id="caption">Modifer Categorie</div>
+    </div>
+    <!-- You can also require other files to run in this process -->
+
+    <script src="../node_modules/gijgo/js/gijgo.js"></script>
+    <script src="../config/scripts/db_groupes.js"></script>
+    <script src="../renderer.js"></script>
+    <script src="../node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript">
+
+    // Get the modal
+    var modalDays = document.getElementById("myModalDays");
+    var modalCat = document.getElementById("myModalCat");
+
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    var buttonEditDay = document.getElementById("editDay");
+    var buttonEditCat = document.getElementById("editCat");
+    buttonEditDay.onclick = function(){
+      modalDays.style.display = "block";
+      $('input#old_days').val($('select#Edit_Jours option:selected').text());
+      $('input#idDays').val($('select#Edit_Jours').val());
+    }
+    buttonEditCat.onclick = function(){
+      modalCat.style.display = "block";
+      $('input#old_categorie_name').val($('select#Edit_categorie option:selected').text());
+      $('input#idCat').val($('select#Edit_categorie').val());
+    }
+
+    // Get the <span> element that closes the modal
+    var spanDays = document.getElementById("closeDays");
+    var spanCat = document.getElementById("closeCat");
+
+    // When the user clicks on <span> (x), close the modal
+    spanDays.onclick = function() {
+      modalDays.style.display = "none";
+    }
+    spanCat.onclick = function() {
+      modalCat.style.display = "none";
+    }
+     $(document).ready(function () {
+       $('#Edit_Heure').timepicker();
+       $('.edit-groupe').hide()
+       $('#group_list tbody').on('change', 'input:radio[name="group"]', function() {
+            $('.edit-groupe').hide()
+            $('input[name=EditName]').val($(this).closest('tr').find('td').eq(1).text())
+            $('select[name=EditJ1]').val($(this).closest('tr').find('td').eq(2).text())
+            $('input[id=EditH1]').val($(this).closest('tr').find('td').eq(3).text())
+            $('select[name=EditJ2]').val($(this).closest('tr').find('td').eq(4).text())
+            $('input[id=EditH2]').val($(this).closest('tr').find('td').eq(5).text())
+            $(".btn-edit").removeAttr("disabled")
+            $(".btn-delete").removeAttr("disabled")
+
+       });
+     });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Ajouter Entreneur</title>
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="../assets/fontawesome/css/all.css" type="text/css"/>
+    <script>
+      window.jQuery = window.$ = require('jquery');
+    </script>
+    <style type="text/css">
+
+    </style>
+  </head>
+  <body>
+    <div class="loader" role="status">
+      <!-- <div class="loader"></div> -->
+      <img src="../assets/image/pageLoaderOld2.gif" class="alling-middel mx-auto" alt="">
+    </div>
+      <div class="secWindow">
+        <div class="w-100 text-center mb-5">
+          <h2><i class="fas fa-chalkboard-teacher"></i><i class="fas fa-plus align-top" style="font-size: 18px"></i> Ajouter entreneurs</h2>
+        </div>
+        <div>
+          <!-- <form action="#" class="form-group"> -->
+            <div class="">
+              <table class="table">
+                <tr>
+                  <td>Nom</td>
+                  <td><input type="text" class="form-control form-control-sm" id="nomE"></td>
+                  <td>Prenom</td>
+                  <td><input type="text" class="form-control form-control-sm" id="prenomE"></td>
+                  <td>Télephone</td>
+                  <td><input type="text" class="form-control form-control-sm" id="teleE"></td>
+                  <!-- <td>Categorie</td>
+                  <td>
+                    <select id="catE" class="form-control form-control-sm">
+                    </select>
+                  </td>
+                  <td>Groupe</td>
+                  <td>
+                    <select id="groupeE" class="form-control form-control-sm" multiple>
+                    </select>
+                  </td> -->
+                </tr>
+
+              </table>
+            </div>
+            <div class=" w-100" style="clear: both">
+              <button class="btn btn-add" id="ajouterEntre"><i class="fas fa-plus"></i> Ajouter</button>
+              <button class="btn btn-edit" id="editAddedCoach"><i class="fas fa-edit"></i> Modifer</button>
+              <span class="text-warning font-weight-bold m-1" id="msg_add_coach"></span>
+              <!-- <button class="btn btn-edit" name="modifierJoueur" disabled><i class="fas fa-edit"></i> Modifier</button>
+              <button class="btn btn-delete" name="modifierJoueur" disabled><i class="fas fa-times"></i> supprimer</button> -->
+            </div>
+          <!-- </form> -->
+        </div>
+        <table class="table" id="newCoach">
+          <thead>
+            <tr>
+              <th style="width: 130px;"></th>
+              <th>Nom</th>
+              <th>Prenom</th>
+              <th>Télephone</th>
+              <!-- <th>Groupe</th> -->
+            </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table>
+      </div>
+      <script src="../config/scripts/db_coach.js"></script>
+      <script type="text/javascript">
+
+      $('button#editAddedCoach').hide();
+      $(document).ready(function () {
+
+
+      });
+      </script>
+  </body>
+</html>
