@@ -34,7 +34,10 @@ $('#showPlayer').on('click', function () {
     afficherJoueur.show();
     afficherJoueur.webContents.send('idPlayer', $('input:radio[name=player]:checked').val())
   })
-  // 
+  afficherJoueur.on('closed', function(){
+    ipc.send('refresh-group')
+  })
+  //
   // afficherJoueur.on('close', function(e){
   //   if (true) {
   //     e.preventDefault();
@@ -56,6 +59,9 @@ $('#ajouter').on('click', function () {
   ajouterJoueur.loadFile('joueurs/ajouter.html')
   ajouterJoueur.once("ready-to-show", function(){
     ajouterJoueur.show();
+  })
+  ajouterJoueur.on('closed', function(){
+    ipc.send('refresh-group')
   })
 });
 

@@ -97,7 +97,9 @@
            }
         });
         $(".btn-edit").on('click', function(){
-          $('.edit-entreneur').show()
+          if ($('.edit-entreneur').is(":hidden")) $('.edit-entreneur').show();
+          else $('.edit-entreneur').hide()
+
             $("html, body").animate({ scrollTop: $(document).height()-$(window).height() });
         });
       });

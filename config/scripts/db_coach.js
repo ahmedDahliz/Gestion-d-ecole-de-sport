@@ -157,22 +157,23 @@ function updateAddedCoach(){
         PrenomE:$('input#prenomE').val(),
         TelephoneE:$('input#teleE').val(),
       }).then(updatedCoach=>{
-        updatedCoach.setGroupes($('select#groupeE').val()).then(updatedGroup=>{
-          $('table#newCoach tbody').append('<tr><td class="text-center">'+
-              '<button name="editCoach" class="btn btn-edit align-middle editCoach"><i class="fas fa-edit"></i></button> '+
-              '<button name="deleteCoach" class="btn btn-delete align-middle"><i class="fas fa-times"></i></button>'+
-              '<input id="idCoach" type="hidden" value="'+updatedCoach.id+'">'+
-              '<input id="idGroupes" type="hidden" value="'+$('select#groupeE').val()+'">'+
-            '</td>'+
-            '<td>'+updatedCoach.NomE+'</td>'+
-            '<td>'+updatedCoach.PrenomE+'</td>'+
-            '<td>'+updatedCoach.TelephoneE+'</td></tr>')
-            // '<td>'+$('select#groupeE option:selected').toArray().map(item => item.text).join()+'</td>
-            $('input#nomE').val('');
-            $('input#prenomE').val('');
-            $('input#teleE').val('');
-            // $('select#groupeE').val([]);
-        })
+        // updatedCoach.setGroupes($('select#groupeE').val()).then(updatedGroup=>{
+        //
+        //     // '<td>'+$('select#groupeE option:selected').toArray().map(item => item.text).join()+'</td>
+        //     // $('select#groupeE').val([]);
+        // })
+        $('table#newCoach tbody').append('<tr><td class="text-center">'+
+            '<button name="editCoach" class="btn btn-edit align-middle editCoach"><i class="fas fa-edit"></i></button> '+
+            '<button name="deleteCoach" class="btn btn-delete align-middle deleteCoach"><i class="fas fa-times"></i></button>'+
+            '<input id="idCoach" type="hidden" value="'+updatedCoach.id+'">'+
+            '<input id="idGroupes" type="hidden" value="'+$('select#groupeE').val()+'">'+
+          '</td>'+
+          '<td>'+updatedCoach.NomE+'</td>'+
+          '<td>'+updatedCoach.PrenomE+'</td>'+
+          '<td>'+updatedCoach.TelephoneE+'</td></tr>');
+          $('input#nomE').val('');
+          $('input#prenomE').val('');
+          $('input#teleE').val('');
       })
     });
     $('button#ajouterEntre').show();
