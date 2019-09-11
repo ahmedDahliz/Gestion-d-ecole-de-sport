@@ -5,20 +5,18 @@
 const remote = require('electron').remote
 const ipc = require('electron').ipcRenderer
 let BrowserWindow = remote.BrowserWindow
-
+let isSaved = true;
 //datatable configuration
 require( 'datatables.net-bs4' )()
 let datatable;
 
 $(window).on('load', function() {
-  $(".loader img").hide("fast");
+  $(".loader img").hide();
   $(".loader").addClass('complete');
   // $(".loader").css('z-index', 0)
   setTimeout(()=>{$(".loader").css('z-index', -1);}, 300)
 });
 $(document).ready( function () {
-
-
 } );
 
 //functonality of player buttons
@@ -33,10 +31,17 @@ $('#showPlayer').on('click', function () {
   })
   afficherJoueur.loadFile('joueurs/afficher.html')
   afficherJoueur.once("ready-to-show", function(){
-    afficherJoueur.webContents.send('idPlayer', $('input:radio[name=player]:checked').val())
-    console.log($('input:radio[name=player]:checked').val());
     afficherJoueur.show();
+    afficherJoueur.webContents.send('idPlayer', $('input:radio[name=player]:checked').val())
   })
+  // 
+  // afficherJoueur.on('close', function(e){
+  //   if (true) {
+  //     e.preventDefault();
+  //     console.log("not closing show player ...");
+  //   }
+  //   console.log("closing show player ...", isSaved);
+  // })
 });
 
 $('#ajouter').on('click', function () {

@@ -10,7 +10,6 @@ var defaultCert = 'C:\\Users\\Ahmed\\Desktop\\Desktop_stuffs\\workspace\\terrain
 var avatarPath = defaultAvatar;
 var certPath = defaultCert;
 var avatarFile, certFile;
-var isSaved = false;
 /**
  * Hide an element
  * @param selector @type tag element
@@ -477,8 +476,13 @@ function cancelAddPlayer(){
  * @return void
 */
 function showPlayer(){
-  $('.change').on('change', function(){
-    console.log('hiha', event);
+  $('select.change').on('change', function(){
+    isSaved = false;
+    $('button#update_player').removeAttr('disabled');
+  })
+  $('input, textarea').on('input', function(){
+    $('button#update_player').removeAttr('disabled');
+    isSaved = false;
   })
   joueurs.findOne({
     where: {id: _idPlayer},
@@ -496,7 +500,9 @@ function showPlayer(){
       })
       $('select#edit_categorie').val(player.groupe.categorie.id).change()
       setTimeout(()=>{$('select#edit_group').val(player.groupe.id);}, 300)
+      $('button#update_player').prop('disabled', true);
     })
+
     $('input#edit_lname').val(player.Nom);
     $('input#edit_fname').val(player.Prenom);
     $('input#edit_birthday').val(player.DateNaissance);
@@ -539,6 +545,8 @@ function updatePlayer(){
             setTimeout(()=>{
               console.log('upload complete');
               $('img#avatar').attr('src',avatarPath)
+              isSaved = false;
+              $('button#update_player').removeAttr('disabled');
             }, 1000)
 
           }
@@ -557,6 +565,8 @@ function updatePlayer(){
             setTimeout(()=>{
               console.log('upload complete');
               $('img#cert').attr('src',certPath)
+              isSaved = false;
+              $('button#update_player').removeAttr('disabled');
             }, 1000)
 
           }
@@ -583,6 +593,9 @@ function updatePlayer(){
           photo: avatarPath,
           certificat: certPath,
           groupeId: $('select#edit_group').val()
+        }).then(()=>{
+            isSaved = false;
+            $('button#update_player').prop('disabled', true);
         })
       })
     }
