@@ -32,23 +32,27 @@ let joueurs = sequelize.define('joueurs', {
   Tele1: { type: Sequelize.STRING, allowNull: false },
   Tele2: { type: Sequelize.STRING, allowNull: true },
   Tele3: { type: Sequelize.STRING, allowNull: true },
-  DateNaissance: { type: Sequelize.STRING, allowNull: false },
+  DateNaissance: { type: Sequelize.DATE, allowNull: false },
   Adresse: { type: Sequelize.TEXT, allowNull: true },
   Prix: { type: Sequelize.DECIMAL, allowNull: false },
+  PrixAnnuel: { type: Sequelize.DECIMAL, allowNull: false, defaultValue: 0 },
   photo: { type: Sequelize.STRING, allowNull: false },
   certificat: { type: Sequelize.STRING, allowNull: true },
 })
-// coach page
 
-// let entreneur_groupe = sequelize.define('entreneur_groupe', {
-//   id: {primaryKey: true, type: Sequelize.INTEGER}
-// })
+
+let paiement = sequelize.define('paiement', {
+  DatePaiement: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+  PaiementPour: {type: Sequelize.STRING, allowNull: false },
+  Montant: {type: Sequelize.DECIMAL, allowNull: false }
+})
 exports.jours = jours;
 exports.categorie = categorie;
 exports.groupes = groupes;
 exports.horaire = horaire;
 exports.entreneur = entreneurs;
 exports.joueurs = joueurs;
+exports.paiement = paiement;
 // exports.entreneur_groupe = entreneur_groupe;
 //relationShips
 jours.hasMany(categorie)
@@ -63,7 +67,9 @@ groupes.belongsTo(entreneurs, {onDelete:'CASCADE'})
 entreneurs.belongsToMany(groupes, {through: 'entreneur_groupe',onDelete:'CASCADE'});
 joueurs.belongsTo(groupes)
 groupes.hasMany(joueurs)
-// sequelize.sync({force: true})
+joueurs.hasMany(paiement)
+paiement.belongsTo(joueurs)
+sequelize.sync()
 // exports.seq = sequelize.authenticate()
 // .then(() => {
 //   console.log('Connection has been established successfully.');

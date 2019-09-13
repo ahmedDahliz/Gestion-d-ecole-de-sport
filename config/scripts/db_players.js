@@ -180,7 +180,7 @@ function uploeadImage(file, name, type){
  * add player
  *@return void
 */
-function addPalyer(){
+function addPlayer(){
   $('button#addAvatar').on('click', function(){
     if ($('input#fname').val() != '' && $('input#lname').val() != '') {
       var SaveDialog = require('electron').remote.dialog
@@ -218,6 +218,7 @@ function addPalyer(){
   })
   $('button#ajouterJoueur').on('click', function(){
       if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#price'), $('input#birthday'), $('textarea#adress'), $('span#msg_add_player'))){
+        console.log($('input#birthday').val());
         var joueurIns =  joueurs.build({
           Nom: $('input#lname').val(),
           Prenom: $('input#fname').val(),
@@ -238,7 +239,7 @@ function addPalyer(){
                   '<input type="radio" name="joueur" value="'+player.id+'" class="table-radio align-middle"></td>'+
                   '<td>'+player.Nom+'</td>'+
                   '<td>'+player.Prenom+'</td>'+
-                  '<td>'+player.DateNaissance+'</td>'+
+                  '<td>'+getLocalDate(player.DateNaissance)+'</td>'+
                   '<td>'+player.Tele1+'</td>'+
                   '<td>'+player.Tele2+'</td>'+
                   '<td>'+player.Tele3+'</td>'+
@@ -254,6 +255,9 @@ function addPalyer(){
       }
   })
 
+}
+function getLocalDate(date){
+  return new Date(date).toLocaleDateString();
 }
 /**
  * Delete an new added player
@@ -307,7 +311,7 @@ function editAddedPlayer(){
       $('input#phone1').val(player.Tele1);
       $('input#phone2').val(player.Tele2);
       $('input#phone3').val(player.Tele3);
-      $('input#birthday').val(player.DateNaissance);
+      $('input#birthday').val(getShortDate(player.DateNaissance));
       $('textarea#adress').val(player.Adresse);
       $('input#price').val(player.Prix);
       $('select#categorie').val(player.groupe.categorie.id).change();
@@ -328,6 +332,17 @@ function editAddedPlayer(){
       // })
     });
   })
+}
+function getShortDate(date){
+  var date =  new Date(date);
+  y = date.getFullYear()
+  m = date.getMonth()+1
+  d = date.getDate()
+  if (m < 10)
+      m = '0' + m;
+  if (d < 10)
+      d = '0' + d;
+  return y+'-'+m+'-'+d
 }
 /**
  * update added player
@@ -358,7 +373,7 @@ function updateAddedPlayer(){
                 '<input type="radio" name="joueur" value="'+updatedPlayer.id+'" class="table-radio align-middle"></td>'+
                 '<td>'+updatedPlayer.Nom+'</td>'+
                 '<td>'+updatedPlayer.Prenom+'</td>'+
-                '<td>'+updatedPlayer.DateNaissance+'</td>'+
+                '<td>'+getLocalDate(updatedPlayer.DateNaissance)+'</td>'+
                 '<td>'+updatedPlayer.Tele1+'</td>'+
                 '<td>'+updatedPlayer.Tele2+'</td>'+
                 '<td>'+updatedPlayer.Tele3+'</td>'+
@@ -604,7 +619,7 @@ function updatePlayer(){
 $(document).ready(function(){
   $('button#updatePlayer').hide();
   initAddPlayer();
-  addPalyer();
+  addPlayer();
   deleteAddedPlayer();
   editAddedPlayer();
   updateAddedPlayer();

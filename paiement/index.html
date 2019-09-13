@@ -20,13 +20,13 @@
       <button id="J" class="btn btn-danger"><i class="fas fa-users"></i> Joueurs</button>
       <button id="G" class="btn btn-danger"><i class="fas fa-grip-horizontal"></i> Categorie/Groupes</button>
       <button id="E" class="btn btn-danger"><i class="fas fa-chalkboard-teacher"></i> Entreneurs</button>
-      <button id="P" class="btn btn-danger"><i class="fas fa-file-invoice-dollar"></i> Payment</button>
+      <button id="P" class="btn btn-danger" style="background: #b54747; color: black"><i class="fas fa-file-invoice-dollar"></i> Payment</button>
       <button id="U" class="btn btn-danger"><i class="fas fa-user-cog"></i> Utilisateur</button>
       <button id="D" class="btn btn-danger"><i class="fas fa-power-off"></i> Deconnexion</button>
     </div>
     <div id="main">
       <div class="w-100 text-center">
-        <h2 class="m-2"><i class="fas fa-users"></i> Gestion des paiement</h2>
+        <h2 class="m-2"><i class="fas fa-file-invoice-dollar"></i> Gestion des paiement</h2>
       </div>
       <h5 class="m-3">Paiement pour le mois : <span id="monthName"></span></h5>
       <div class="m-3">
@@ -53,12 +53,85 @@
         <button type="button" id="deletePlayer" class="btn btn-delete" disabled><i class="fas fa-user-times"></i> Supprimer</button>
       </div>
     </div>
+    <!-- Edit modal for days -->
+    <div id="myModalPayment" class="modal">
+
+      <!-- The Close Button -->
+      <span id="closePayment" class="close">&times;</span>
+
+      <!-- Modal Content -->
+      <div  class="modal-content w-75 h-75 text-center p-5">
+        <h6>Date de paiement : <span id="date_now"></span></h6>
+        <table class="table">
+          <tr>
+            <td>Nom et prenom : </td>
+            <td><input type="text" id="fname_lname" class="form-control form-control-sm m-1" readonly/></td>
+          </tr>
+          <tr>
+            <td>Categorie/Groupe : </td>
+            <td><input type="text" id="cat_grp" class="form-control form-control-sm m-1" readonly></td>
+          </tr>
+          <tr>
+            <td>Paiement pour : </td>
+            <td><select name="" id="payment_for" class="form-control form-control-sm m-1">
+              <option value="0">janvier</option>
+              <option value="1">février</option>
+              <option value="2">mars</option>
+              <option value="3">avril</option>
+              <option value="4">mai</option>
+              <option value="5">juin</option>
+              <option value="6">juillet</option>
+              <option value="7">août</option>
+              <option value="8">septembre</option>
+              <option value="9">octobre</option>
+              <option value="10">nobembre</option>
+              <option value="11">décembre</option>
+            </select></td>
+          </tr>
+          <tr>
+            <td>Montant : </td>
+            <td class="input-box"><input type="text" id="price" class="form-control form-control-sm m-1" value="50"><span style="top: 19px;" class="unit">DH</span></td>
+
+          </tr>
+          <tr>
+            <td><input type="hidden" id="idPlayerPayment"> <button class="btn btn-add" id="submit_payment"><i class="fas fa-check"></i> Valider</button><br>
+            </td>
+            <td><input type="hidden" id="idDays"><span class="text-warning font-weight-bold" id="msg_edit_day"></span></td>
+          </tr>
+        </table>
+      </div>
+
+
+      <!-- Modal Caption (Image Text) -->
+      <div id="caption">Valider paiement</div>
+    </div>
     <!-- You can also require other files to run in this process -->
     <script src="../renderer.js"></script>
     <script src="../config/scripts/db_paiement.js"></script>
     <script src="../node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script>
+    // Get the modal
+    var modalPayment = document.getElementById("myModalPayment");
 
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    $('table#table_paiement').on('click', 'button.payment', function(event){
+        modalPayment.style.display = "block";
+        let date = new Date();
+        $('span#date_now').html(date.toLocaleString('fr-FR',  { year: 'numeric', month: 'long', day: 'numeric' }));
+        $('input#fname_lname').val($(this).closest('tr').find('td').eq(2).text()+' '+$(this).closest('tr').find('td').eq(1).text());
+        $('select#payment_for').val(date.getMonth());
+        $('input#cat_grp').val($(this).closest('tr').find('td').eq(3).text());
+        $('input#idPlayerPayment').val($(this).closest('tr').find('td').find('input[type=hidden]#idPlayer').val());
+    })
+
+
+    // Get the <span> element that closes the modal
+    var spanPayment = document.getElementById("closePayment");
+
+    // When the user clicks on <span> (x), close the modal
+    spanPayment.onclick = function() {
+      modalPayment.style.display = "none";
+    }
       $(document).ready(function () {
 
         $('table#table_player').on('change', 'input:radio[name="player"]', function () {
