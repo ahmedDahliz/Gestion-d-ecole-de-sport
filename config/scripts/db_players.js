@@ -50,7 +50,7 @@ function clearInputs(){
  *
  * @return boolean
 */
-function validatePlayerData(lname, fname, phone1, phone2, phone3 , price, birthday, adresse, message){
+function validatePlayerData(lname, fname, phone1, phone2, phone3 , price, annualPrice, birthday, adresse, message){
   if (!lname.val()) {
     message.html('le nom est obliatoire !')
     message.removeClass('text-success text-danger').addClass('text-warning')
@@ -89,6 +89,18 @@ function validatePlayerData(lname, fname, phone1, phone2, phone3 , price, birthd
     hideElement(message);
     return false;
   }
+  if (!annualPrice.val()) {
+    message.html('le prix annuel est obliatoire !')
+    message.removeClass('text-success text-danger').addClass('text-warning')
+    hideElement(message);
+    return false;
+  }
+  if (!validePrice.test(annualPrice.val())) {
+    message.html('le prix annuel n\'est pas valide !')
+    message.removeClass('text-success text-danger').addClass('text-warning')
+    hideElement(message);
+    return false;
+  }
   if (!birthday.val()) {
     message.html('la date de naissance est obliatoire !')
     message.removeClass('text-success text-danger').addClass('text-warning')
@@ -118,6 +130,14 @@ function validatePlayerData(lname, fname, phone1, phone2, phone3 , price, birthd
     }
   }
   return true;
+}
+/**
+ * get the dd/MM/yyyy date firmat
+ * @param date @type date
+ * @return String
+*/
+function getLocalDate(date){
+  return new Date(date).toLocaleDateString();
 }
 /**
  * init the add player Window
@@ -217,8 +237,7 @@ function addPlayer(){
     }
   })
   $('button#ajouterJoueur').on('click', function(){
-      if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#price'), $('input#birthday'), $('textarea#adress'), $('span#msg_add_player'))){
-        console.log($('input#birthday').val());
+      if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#price'), $('input#annual_price'), $('input#birthday'), $('textarea#adress'), $('span#msg_add_player'))){
         var joueurIns =  joueurs.build({
           Nom: $('input#lname').val(),
           Prenom: $('input#fname').val(),
@@ -228,6 +247,7 @@ function addPlayer(){
           DateNaissance: $('input#birthday').val(),
           Adresse:  $('textarea#adress').val(),
           Prix: $('input#price').val(),
+          PrixAnnuel: $('input#annual_price').val(),
           photo: avatarPath,
           certificat: certPath
         })
@@ -256,9 +276,7 @@ function addPlayer(){
   })
 
 }
-function getLocalDate(date){
-  return new Date(date).toLocaleDateString();
-}
+
 /**
  * Delete an new added player
  * @return void
@@ -333,6 +351,11 @@ function editAddedPlayer(){
     });
   })
 }
+/**
+ * get the yyyy-MM-dd date firmat
+ * @param date @type date
+ * @return String
+*/
 function getShortDate(date){
   var date =  new Date(date);
   y = date.getFullYear()
@@ -350,48 +373,50 @@ function getShortDate(date){
 */
 function updateAddedPlayer(){
   $('button#updatePlayer').on('click', function(){
-    joueurs.findOne({
-      where: {id: idPlayer}
-    }).then(playerToUpdate=>{
-      playerToUpdate.update({
-        Nom: $('input#lname').val(),
-        Prenom: $('input#fname').val(),
-        Tele1: $('input#phone1').val(),
-        Tele2: $('input#phone2').val(),
-        Tele3: $('input#phone3').val(),
-        DateNaissance: $('input#birthday').val(),
-        Adresse:  $('textarea#adress').val(),
-        Prix: $('input#price').val(),
-        photo: avatarPath,
-        certificat: certPath,
-        groupeId: $('select#group').val()
-      }).then(updatedPlayer=>{
-        updatedPlayer.setGroupe($('select#groupe').val()).then((playerGroup)=>{
-          playerGroup.getGroupe().then(grp=>{
-            grp.getCategorie().then(cat=>{
-              $('table#table_new_palyer tbody').append('<tr><td class="text-center">'+
-                '<input type="radio" name="joueur" value="'+updatedPlayer.id+'" class="table-radio align-middle"></td>'+
-                '<td>'+updatedPlayer.Nom+'</td>'+
-                '<td>'+updatedPlayer.Prenom+'</td>'+
-                '<td>'+getLocalDate(updatedPlayer.DateNaissance)+'</td>'+
-                '<td>'+updatedPlayer.Tele1+'</td>'+
-                '<td>'+updatedPlayer.Tele2+'</td>'+
-                '<td>'+updatedPlayer.Tele3+'</td>'+
-                '<td>'+updatedPlayer.Adresse+'</td>'+
-                '<td>'+updatedPlayer.Prix+' DH</td>'+
-                '<td>'+cat.NomCategorie+'</td>'+
-                '<td>'+grp.NomGroupe+'</td></tr>');
-                clearInputs();
-                $('button#ajouterJoueur').show();
-                $('button#modifierJoueur').show();
-                $('button#supprimerJoueur').show();
-                $('button#updatePlayer').hide();
+    if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#price'), $('input#annual_price'), $('input#birthday'), $('textarea#adress'), $('span#msg_add_player'))){
+      joueurs.findOne({
+        where: {id: idPlayer}
+      }).then(playerToUpdate=>{
+        playerToUpdate.update({
+          Nom: $('input#lname').val(),
+          Prenom: $('input#fname').val(),
+          Tele1: $('input#phone1').val(),
+          Tele2: $('input#phone2').val(),
+          Tele3: $('input#phone3').val(),
+          DateNaissance: $('input#birthday').val(),
+          Adresse:  $('textarea#adress').val(),
+          Prix: $('input#price').val(),
+          photo: avatarPath,
+          certificat: certPath,
+          groupeId: $('select#group').val()
+        }).then(updatedPlayer=>{
+          updatedPlayer.setGroupe($('select#groupe').val()).then((playerGroup)=>{
+            playerGroup.getGroupe().then(grp=>{
+              grp.getCategorie().then(cat=>{
+                $('table#table_new_palyer tbody').append('<tr><td class="text-center">'+
+                  '<input type="radio" name="joueur" value="'+updatedPlayer.id+'" class="table-radio align-middle"></td>'+
+                  '<td>'+updatedPlayer.Nom+'</td>'+
+                  '<td>'+updatedPlayer.Prenom+'</td>'+
+                  '<td>'+getLocalDate(updatedPlayer.DateNaissance)+'</td>'+
+                  '<td>'+updatedPlayer.Tele1+'</td>'+
+                  '<td>'+updatedPlayer.Tele2+'</td>'+
+                  '<td>'+updatedPlayer.Tele3+'</td>'+
+                  '<td>'+updatedPlayer.Adresse+'</td>'+
+                  '<td>'+updatedPlayer.Prix+' DH</td>'+
+                  '<td>'+cat.NomCategorie+'</td>'+
+                  '<td>'+grp.NomGroupe+'</td></tr>');
+                  clearInputs();
+                  $('button#ajouterJoueur').show();
+                  $('button#modifierJoueur').show();
+                  $('button#supprimerJoueur').show();
+                  $('button#updatePlayer').hide();
+              })
             })
           })
         })
-      })
 
-    })
+      })
+    }
   })
 
 }
@@ -520,11 +545,12 @@ function showPlayer(){
 
     $('input#edit_lname').val(player.Nom);
     $('input#edit_fname').val(player.Prenom);
-    $('input#edit_birthday').val(player.DateNaissance);
+    $('input#edit_birthday').val(getShortDate(player.DateNaissance));
     $('input#edit_phone1').val(player.Tele1);
     $('input#edit_phone2').val(player.Tele2);
     $('input#edit_phone3').val(player.Tele3);
     $('input#edit_price').val(player.Prix);
+    $('input#edit_anuual_price').val(player.PrixAnnuel);
     $('textarea#edit_adress').val(player.Adresse);
     $('img#avatar').attr('src', player.photo);
     $('img#cert').attr('src', player.certificat);
@@ -592,7 +618,7 @@ function updatePlayer(){
     }
   })
   $('button#update_player').on('click', function(){
-    if(validatePlayerData($('input#edit_lname'), $('input#edit_fname'), $('input#edit_phone1'), $('input#edit_phone2'), $('input#edit_phone3') , $('input#edit_price'), $('input#edit_birthday'), $('textarea#edit_adress'), $('span#msg_update_player'))){
+    if(validatePlayerData($('input#edit_lname'), $('input#edit_fname'), $('input#edit_phone1'), $('input#edit_phone2'), $('input#edit_phone3') , $('input#edit_price'), $('input#edit_anuual_price'), $('input#edit_birthday'), $('textarea#edit_adress'), $('span#msg_update_player'))){
       joueurs.findOne({
         where: {id: _idPlayer}
       }).then(playerToUpdate => {
@@ -605,6 +631,7 @@ function updatePlayer(){
           DateNaissance: $('input#edit_birthday').val(),
           Adresse:  $('textarea#edit_adress').val(),
           Prix: $('input#edit_price').val(),
+          PrixAnnuel: $('input#edit_anuual_price').val(),
           photo: avatarPath,
           certificat: certPath,
           groupeId: $('select#edit_group').val()

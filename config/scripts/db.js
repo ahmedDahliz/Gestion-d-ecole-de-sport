@@ -69,7 +69,7 @@ joueurs.belongsTo(groupes)
 groupes.hasMany(joueurs)
 joueurs.hasMany(paiement)
 paiement.belongsTo(joueurs)
-sequelize.sync()
+// sequelize.sync({force: true})
 // exports.seq = sequelize.authenticate()
 // .then(() => {
 //   console.log('Connection has been established successfully.');
