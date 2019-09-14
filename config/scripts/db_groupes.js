@@ -1,7 +1,7 @@
 //ORM for groups Model
 const Sequelize = require('sequelize');
 var tables = require('../config/scripts/db.js');
-
+var modalShowCat = document.getElementById("myModalShowCat");
 var jours  = tables.jours;
 var categorie  = tables.categorie;
 var groupes  = tables.groupes;
@@ -20,12 +20,12 @@ function hideElement(selector){
 }
 
 /**
+  * init add groupe form and index form
   @return void
 */
 function initAddForm(){
     // Fill the tabke of groupes
     var groupData = []
-    // tables.sequelize.query("select j.Jour1||' - '||j.Jour2 as 'Jours', c.NomCategorie, h.horaire from jours j, categories c, horaires h where j.id = h.jourId and c.id = h.categorieId order by j.Jour1 ", { type: tables.sequelize.QueryTypes.SELECT}).then(res=>{
     jours.findAll({
       include: [{
         model: horaire,
@@ -34,12 +34,9 @@ function initAddForm(){
       }]
     }).then(res => {
       $.each(res, function(index, jour){
-        $.each(jour.horaires, function(index, values){
-          groupData.push(["<input value='"+jour.id+"' type='hidden' name='idJours'> "+ jour.Jour1+'-'+jour.Jour2, values.categorie.NomCategorie, values.horaire/*, values.categorie.Groupes.map(function(item) { return item["NomGroupe"]; })*/]);
-        })
+          groupData.push(["<input value='"+jour.id+"' type='hidden' name='idJours'> "+ jour.Jour1+'-'+jour.Jour2,
+          '<button type="button" name="showCat" class="btn btn-show">Afficher les categories</button>'/*, values.categorie.Groupes.map(function(item) { return item["NomGroupe"]; })*/]);
       })
-
-      // console.log(res[1].jours);
     $('#group_list').DataTable({
       data: groupData,
       pageLength : 7,
@@ -193,8 +190,8 @@ function addCategory(){
     hideElement($('span#categoryMessage'));
   })
 }
-function addGroups(){
 
+function addGroups(){
     $('button#addGroup').on('click', function(){
         if ($('input#nomGroupe').val()) {
           // check if group exist in a category
@@ -420,7 +417,6 @@ function fillDataTableGroupe(){
 
   // });
 }
-
 function deletesDaysCategorie(){
   var ConfirmationDialog = require('electron').remote.dialog
   var image = require('electron').remote.nativeImage
@@ -526,7 +522,6 @@ function deletesCategoriegroups(){
   })
 
 }
-
 function updateTime(){
   $('button#EditTime').on('click', function(){
     // let trToUpdate = $('#group_list tbody').find('td').find('input:radio[name="group"]:checked').closest('tr');
@@ -549,7 +544,33 @@ function updateTime(){
     }else $('span#msgTime').html("l'horaire ne doit pas être vide !")
   })
 }
+/**
+ * show categorie and time in modal
+ * @return void
+*/
+function showCategorie(){
+  $('table#group_list').on('click', 'button[name=showCat]', function(){
 
+    jours.findOne({
+      where: {id: $(this).closest('tr').find('input[name=idJours]').val()},
+      include: [{
+        model: horaire,
+        require: true,
+        include: [{model: categorie, include: groupes}]
+      }]
+    }).then(jour => {
+      $('table#table_show_cat tbody tr').remove()
+        $('h4#titleDayes').html(jour.Jour1+'-'+jour.Jour2)
+        $.each(jour.horaires, function(index, horaire){
+          $('table#table_show_cat tbody').append('<tr>'+
+          '<td>'+horaire.categorie.NomCategorie+'</td>'+
+          '<td>'+horaire.horaire+'</td>'+
+          '</tr>')
+        })
+  })
+  modalShowCat.style.display = "block";
+})
+}
 $(document).ready( function () {
   initAddForm();
   addDays();
@@ -559,4 +580,5 @@ $(document).ready( function () {
   updateTime();
   deletesDaysCategorie();
   deletesCategoriegroups();
+  showCategorie()
 });

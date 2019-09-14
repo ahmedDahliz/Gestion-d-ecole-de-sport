@@ -31,16 +31,16 @@
         <h2 class="m-2"><i class="fas fa-grip-horizontal"></i> List des groupes</h2>
       </div>
       <div class="m-3">
+
         <table id="group_list" class="display table table-hover table-bordered">
           <thead class="thead-dark text-center">
             <tr>
               <!-- <th><i class="fas fa-cog"></i></th> -->
               <th>Jours</th>
               <th>Categories</th>
-              <th>Horaire</th>
               <!-- <th>Groupes</th> -->
             </tr>
-          </thead>
+          </thea
           <tbody>
 
           </tbody>
@@ -178,6 +178,25 @@
       <!-- Modal Caption (Image Text) -->
       <div id="caption">Modifer Categorie</div>
     </div>
+    <!-- show modal for categories -->
+    <div id="myModalShowCat" class="modal">
+      <!-- The Close Button -->
+      <span class="close" id="closeShowCat">&times;</span>
+
+      <!-- Modal Content (The Image) -->
+      <div  class="modal-content w-75 h-75 text-center p-5">
+        <h4 id="titleDayes"></h4>
+        <table id="table_show_cat" class="table">
+          <thead>
+            <th>Categorie</th>
+            <th>Horaire</th>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <!-- Modal Caption (Image Text) -->
+      <div id="caption">Afficher Categorie</div>
+    </div>
     <!-- You can also require other files to run in this process -->
 
     <script src="../node_modules/gijgo/js/gijgo.js"></script>
@@ -207,6 +226,7 @@
     // Get the <span> element that closes the modal
     var spanDays = document.getElementById("closeDays");
     var spanCat = document.getElementById("closeCat");
+    var spanShowCat = document.getElementById("closeShowCat");
 
     // When the user clicks on <span> (x), close the modal
     spanDays.onclick = function() {
@@ -214,6 +234,9 @@
     }
     spanCat.onclick = function() {
       modalCat.style.display = "none";
+    }
+    spanShowCat.onclick = function() {
+      modalShowCat.style.display = "none";
     }
      $(document).ready(function () {
        $('#Edit_Heure').timepicker();
