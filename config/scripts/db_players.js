@@ -32,7 +32,7 @@ function clearInputs(){
   $('input#phone3').val('');
   $('input#birthday').val('');
   $('textarea#adress').val('');
-  $('input#price').val('');
+  $('input#annual_price').val('');
   $('img#cert').attr('src',defaultCert);
   $('img#avatar').attr('src',defaultAvatar);
 }
@@ -50,7 +50,7 @@ function clearInputs(){
  *
  * @return boolean
 */
-function validatePlayerData(lname, fname, phone1, phone2, phone3 , price, annualPrice, birthday, adresse, message){
+function validatePlayerData(lname, fname, phone1, phone2, phone3 , annualPrice, birthday, message){
   if (!lname.val()) {
     message.html('le nom est obliatoire !')
     message.removeClass('text-success text-danger').addClass('text-warning')
@@ -76,19 +76,7 @@ function validatePlayerData(lname, fname, phone1, phone2, phone3 , price, annual
     hideElement(message);
     return false;
   }
-  if (!price.val()) {
-    message.html('le prix est obliatoire !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
-    hideElement(message);
-    return false;
-  }
   let validePrice= /^[0-9]{2,3}$/
-  if (!validePrice.test(price.val())) {
-    message.html('le prix n\'est pas valide !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
-    hideElement(message);
-    return false;
-  }
   if (!annualPrice.val()) {
     message.html('le prix annuel est obliatoire !')
     message.removeClass('text-success text-danger').addClass('text-warning')
@@ -103,12 +91,6 @@ function validatePlayerData(lname, fname, phone1, phone2, phone3 , price, annual
   }
   if (!birthday.val()) {
     message.html('la date de naissance est obliatoire !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
-    hideElement(message);
-    return false;
-  }
-  if (!adresse.val()) {
-    message.html('l\'adresse est obliatoire !')
     message.removeClass('text-success text-danger').addClass('text-warning')
     hideElement(message);
     return false;
@@ -138,6 +120,22 @@ function validatePlayerData(lname, fname, phone1, phone2, phone3 , price, annual
 */
 function getLocalDate(date){
   return new Date(date).toLocaleDateString();
+}
+/**
+ * get the yyyy-MM-dd date firmat
+ * @param date @type date
+ * @return String
+*/
+function getShortDate(date){
+  var date =  new Date(date);
+  y = date.getFullYear()
+  m = date.getMonth()+1
+  d = date.getDate()
+  if (m < 10)
+      m = '0' + m;
+  if (d < 10)
+      d = '0' + d;
+  return y+'-'+m+'-'+d
 }
 /**
  * init the add player Window
@@ -237,7 +235,7 @@ function addPlayer(){
     }
   })
   $('button#ajouterJoueur').on('click', function(){
-      if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#price'), $('input#annual_price'), $('input#birthday'), $('textarea#adress'), $('span#msg_add_player'))){
+      if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#annual_price'), $('input#birthday'), $('span#msg_add_player'))){
         var joueurIns =  joueurs.build({
           Nom: $('input#lname').val(),
           Prenom: $('input#fname').val(),
@@ -246,7 +244,7 @@ function addPlayer(){
           Tele3: $('input#phone3').val(),
           DateNaissance: $('input#birthday').val(),
           Adresse:  $('textarea#adress').val(),
-          Prix: $('input#price').val(),
+          // Prix: $('input#price').val(),
           PrixAnnuel: $('input#annual_price').val(),
           photo: avatarPath,
           certificat: certPath
@@ -264,7 +262,7 @@ function addPlayer(){
                   '<td>'+player.Tele2+'</td>'+
                   '<td>'+player.Tele3+'</td>'+
                   '<td>'+player.Adresse+'</td>'+
-                  '<td>'+player.Prix+' DH</td>'+
+                  '<td>'+player.PrixAnnuel+' DH</td>'+
                   '<td>'+cat.NomCategorie+'</td>'+
                   '<td>'+grp.NomGroupe+'</td></tr>');
                   clearInputs();
@@ -274,9 +272,7 @@ function addPlayer(){
         })
       }
   })
-
 }
-
 /**
  * Delete an new added player
  * @return void
@@ -331,7 +327,7 @@ function editAddedPlayer(){
       $('input#phone3').val(player.Tele3);
       $('input#birthday').val(getShortDate(player.DateNaissance));
       $('textarea#adress').val(player.Adresse);
-      $('input#price').val(player.Prix);
+      $('input#annual_price').val(player.PrixAnnuel);
       $('select#categorie').val(player.groupe.categorie.id).change();
       $('img#avatar').attr('src',player.photo);
       $('img#cert').attr('src',player.certificat);
@@ -352,28 +348,12 @@ function editAddedPlayer(){
   })
 }
 /**
- * get the yyyy-MM-dd date firmat
- * @param date @type date
- * @return String
-*/
-function getShortDate(date){
-  var date =  new Date(date);
-  y = date.getFullYear()
-  m = date.getMonth()+1
-  d = date.getDate()
-  if (m < 10)
-      m = '0' + m;
-  if (d < 10)
-      d = '0' + d;
-  return y+'-'+m+'-'+d
-}
-/**
  * update added player
  * @return void
 */
 function updateAddedPlayer(){
   $('button#updatePlayer').on('click', function(){
-    if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#price'), $('input#annual_price'), $('input#birthday'), $('textarea#adress'), $('span#msg_add_player'))){
+    if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#annual_price'), $('input#birthday'), $('span#msg_add_player'))){
       joueurs.findOne({
         where: {id: idPlayer}
       }).then(playerToUpdate=>{
@@ -385,7 +365,7 @@ function updateAddedPlayer(){
           Tele3: $('input#phone3').val(),
           DateNaissance: $('input#birthday').val(),
           Adresse:  $('textarea#adress').val(),
-          Prix: $('input#price').val(),
+          PrixAnnuel: $('input#annual_price').val(),
           photo: avatarPath,
           certificat: certPath,
           groupeId: $('select#group').val()
@@ -430,7 +410,7 @@ function fillTablePlayer(){
     include: [{model: groupes, include: [{model: categories}]}]
   }).then(players=>{
     $.each(players, (index, player)=>{
-      playerData.push(['<input type="radio" name="player" value="'+player.id+'" class="table-radio align-middle">', player.Nom, player.Prenom, player.Tele1, player.DateNaissance, player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe])
+      playerData.push(['<input type="radio" name="player" value="'+player.id+'" class="table-radio align-middle">', player.id,player.Nom, player.Prenom, player.Tele1, getLocalDate(player.DateNaissance), player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe])
     })
     $('#table_player').DataTable({
       // columnDefs: [
@@ -618,7 +598,7 @@ function updatePlayer(){
     }
   })
   $('button#update_player').on('click', function(){
-    if(validatePlayerData($('input#edit_lname'), $('input#edit_fname'), $('input#edit_phone1'), $('input#edit_phone2'), $('input#edit_phone3') , $('input#edit_price'), $('input#edit_anuual_price'), $('input#edit_birthday'), $('textarea#edit_adress'), $('span#msg_update_player'))){
+    if(validatePlayerData($('input#edit_lname'), $('input#edit_fname'), $('input#edit_phone1'), $('input#edit_phone2'), $('input#edit_phone3') , $('input#edit_anuual_price'), $('input#edit_birthday'), $('span#msg_update_player'))){
       joueurs.findOne({
         where: {id: _idPlayer}
       }).then(playerToUpdate => {
@@ -630,7 +610,7 @@ function updatePlayer(){
           Tele3: $('input#edit_phone3').val(),
           DateNaissance: $('input#edit_birthday').val(),
           Adresse:  $('textarea#edit_adress').val(),
-          Prix: $('input#edit_price').val(),
+          // Prix: $('input#edit_price').val(),
           PrixAnnuel: $('input#edit_anuual_price').val(),
           photo: avatarPath,
           certificat: certPath,

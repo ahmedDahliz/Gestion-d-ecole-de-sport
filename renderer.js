@@ -49,7 +49,7 @@ $('#showPlayer').on('click', function () {
 
 $('#ajouter').on('click', function () {
   ajouterJoueur = new BrowserWindow({
-    width: 1250,
+    width: 1350,
     height: 780,
     show: false,
     webPreferences: {

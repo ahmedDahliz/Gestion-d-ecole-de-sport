@@ -47,11 +47,11 @@
           </tbody>
         </table>
       </div>
-      <div class="m-2">
+      <!-- <div class="m-2">
         <button type="button" id="showPlayer" class="btn btn-show" disabled><i class="fas fa-eye"></i> Afficher</button>
         <button type="button" id="ajouter" class="btn btn-add"><i class="fas fa-plus"></i> Ajouter</button>
         <button type="button" id="deletePlayer" class="btn btn-delete" disabled><i class="fas fa-user-times"></i> Supprimer</button>
-      </div>
+      </div> -->
     </div>
     <!-- Edit modal for days -->
     <div id="myModalPayment" class="modal">
@@ -60,7 +60,7 @@
       <span id="closePayment" class="close">&times;</span>
 
       <!-- Modal Content -->
-      <div  class="modal-content w-75 h-75 text-center p-5">
+      <div  class="modal-content w-75 text-center p-3">
         <h6>Date de paiement : <span id="date_now"></span></h6>
         <table class="table">
           <tr>
@@ -73,20 +73,32 @@
           </tr>
           <tr>
             <td>Paiement pour : </td>
-            <td><select name="" id="payment_for" class="form-control form-control-sm m-1">
-              <option value="0">janvier</option>
-              <option value="1">février</option>
-              <option value="2">mars</option>
-              <option value="3">avril</option>
-              <option value="4">mai</option>
-              <option value="5">juin</option>
-              <option value="6">juillet</option>
-              <option value="7">août</option>
-              <option value="8">septembre</option>
-              <option value="9">octobre</option>
-              <option value="10">nobembre</option>
-              <option value="11">décembre</option>
-            </select></td>
+            <td style="max-width">
+              <div style="text-align: left; max-height: 100px; overflow-y: scroll;">
+                <table id="table_paiement_for">
+                  <tr>
+                    <td><input type="checkbox" name="payment_for" value="0" /> janvier </td>
+                    <td><input type="checkbox" name="payment_for" value="1" /> février </td>
+                    <td><input type="checkbox" name="payment_for" value="2" /> mars </td></td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" name="payment_for" value="3" /> avril </td>
+                    <td><input type="checkbox" name="payment_for" value="4" /> mai </td>
+                    <td><input type="checkbox" name="payment_for" value="5" /> juin </td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" name="payment_for" value="6" /> juillet </td>
+                    <td><input type="checkbox" name="payment_for" value="7" /> août </td>
+                    <td><input type="checkbox" name="payment_for" value="8" /> septembre </td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" name="payment_for" value="9" /> octobre </td>
+                    <td><input type="checkbox" name="payment_for" value="10" /> nobembre</td>
+                    <td><input type="checkbox" name="payment_for" value="11" /> décembre</td>
+                  </tr>
+                </table>
+              </div>
+            </td>
           </tr>
           <tr>
             <td>Montant : </td>
@@ -113,18 +125,6 @@
     // Get the modal
     var modalPayment = document.getElementById("myModalPayment");
 
-    // Get the image and insert it inside the modal - use its "alt" text as a caption
-    $('table#table_paiement').on('click', 'button.payment', function(event){
-        modalPayment.style.display = "block";
-        let date = new Date();
-        $('span#date_now').html(date.toLocaleString('fr-FR',  { year: 'numeric', month: 'long', day: 'numeric' }));
-        $('input#fname_lname').val($(this).closest('tr').find('td').eq(2).text()+' '+$(this).closest('tr').find('td').eq(1).text());
-        $('select#payment_for').val(date.getMonth());
-        $('input#cat_grp').val($(this).closest('tr').find('td').eq(3).text());
-        $('input#idPlayerPayment').val($(this).closest('tr').find('td').find('input[type=hidden]#idPlayer').val());
-    })
-
-
     // Get the <span> element that closes the modal
     var spanPayment = document.getElementById("closePayment");
 
@@ -133,13 +133,25 @@
       modalPayment.style.display = "none";
     }
       $(document).ready(function () {
-
-        $('table#table_player').on('change', 'input:radio[name="player"]', function () {
-           if(this.checked){
-             $("button#showPlayer").removeAttr("disabled")
-             $("button#deletePlayer").removeAttr("disabled")
-           }
+        $('table#table_paiement').on('click', 'button.payment', function(event){
+            modalPayment.style.display = "block";
+            let date = new Date();
+            $('span#date_now').html(date.toLocaleString('fr-FR',  { year: 'numeric', month: 'long', day: 'numeric' }));
+            $('input#fname_lname').val($(this).closest('tr').find('td').eq(2).text()+' '+$(this).closest('tr').find('td').eq(1).text());
+            $('select#payment_for').val(date.getMonth());
+            $('input#cat_grp').val($(this).closest('tr').find('td').eq(3).text());
+            $('input#idPlayerPayment').val($(this).closest('tr').find('td').find('input[type=hidden]#idPlayer').val());
         });
+        $('table#table_paiement_for td').on('click', function(event){
+          if ($(this).find('input[type=checkbox]').prop('checked') == false) {
+            $(this).find('input[type=checkbox]').prop('checked', true)
+            $(this).addClass('checkedCell');
+          }else{
+            $(this).find('input[type=checkbox]').prop('checked', false)
+            $(this).removeClass('checkedCell');
+          }
+        })
+
 
       });
     </script>

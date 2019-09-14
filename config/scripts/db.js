@@ -34,7 +34,7 @@ let joueurs = sequelize.define('joueurs', {
   Tele3: { type: Sequelize.STRING, allowNull: true },
   DateNaissance: { type: Sequelize.DATE, allowNull: false },
   Adresse: { type: Sequelize.TEXT, allowNull: true },
-  Prix: { type: Sequelize.DECIMAL, allowNull: false },
+  // Prix: { type: Sequelize.DECIMAL, allowNull: false },
   PrixAnnuel: { type: Sequelize.DECIMAL, allowNull: false, defaultValue: 0 },
   photo: { type: Sequelize.STRING, allowNull: false },
   certificat: { type: Sequelize.STRING, allowNull: true },

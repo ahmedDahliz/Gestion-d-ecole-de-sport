@@ -297,3 +297,10 @@ cursor: pointer;
   background-color: #7abf7a;
   font-weight: bold
 }
+.checkedCell {
+  background: green;
+  padding: 0
+}
+#table_paiement_for td {
+  cursor: pointer;
+}
