@@ -22,6 +22,7 @@ function fillPaymentTable(){
     let classe = ''
     let disablePaye = ''
     let disableCancel = 'disabled'
+    let hiddenIdPayment = ''
     $.each(players, (index, player)=>{
         $.each(player.paiements, (index, paiement)=>{
           if (paiement.PaiementPour === currentMonth+' '+currentYear) {
@@ -31,9 +32,11 @@ function fillPaymentTable(){
             classe = 'payed'
             disablePaye = 'disabled'
             disableCancel = ''
+            hiddenIdPayment = '<input type="hidden" name="idPayment" value="'+paiement.id+'"/>'
+            return false;
           }
         })
-       paymentData.push(['<input type="hidden" id="idPlayer" value="'+player.id+'" class="'+classe+'"/><button '+disablePaye+' name="payment" class="btn btn-success align-middle payment" title="Valider paiement"><i class="fas fa-check"></i></button> <button name="show_payment" class="btn btn-show align-middle show_payment" title="Afficher les paiements"><i class="fas fa-eye"></i></button> <button title="Annuler paiement" '+disableCancel+' name="cancel_payment" class="btn btn-danger align-middle cancel_payment"><i class="fas fa-times"></i></button>',
+       paymentData.push([hiddenIdPayment+'<input type="hidden" id="idPlayer" value="'+player.id+'" class="'+classe+'"/><button '+disablePaye+' name="payment" class="btn btn-success align-middle payment" title="Valider paiement"><i class="fas fa-check"></i></button> <button name="show_payment" class="btn btn-show align-middle show_payment" title="Afficher les paiements"><i class="fas fa-eye"></i></button> <button title="Annuler paiement" '+disableCancel+' name="cancel_payment" class="btn btn-danger align-middle cancel_payment"><i class="fas fa-times"></i></button>',
        player.Nom, player.Prenom, player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe, datePaiement, paiementPour, montant])
        datePaiement = '';
        paiementPour = '';
@@ -41,6 +44,7 @@ function fillPaymentTable(){
        classe = ''
        disablePaye = ''
        disableCancel = 'disabled'
+       hiddenIdPayment = ''
     })
 
     $('#table_paiement').DataTable({
@@ -102,8 +106,39 @@ function fillPaymentTable(){
       })
   })
 }
+/**
+ * delete a payments
+ * @return void
+*/
+function deletePayment(){
+  var ConfirmationDialog = require('electron').remote.dialog
+  var image = require('electron').remote.nativeImage
+  let iconQuestion = image.createFromPath('assets/image/icons/iconQuestion.png')
+    $('table#table_paiement').on('click', 'button.cancel_payment', function(event){
+        ConfirmationDialog.showMessageBox({
+          type: 'question',
+          buttons: ['Oui', 'Non'],
+          title: 'Confirmation de suppression !',
+          message: 'Vous voulez vraiment annuler cette paiement ?',
+          noLink: true,
+          icon: iconQuestion,
+          cancelId:-1
+        }, response =>{
+            if (!response) {
+              paiement.destroy({
+                where: {
+                  id: $(this).closest('td').find('input[type=hidden][name=idPayment]').val()
+                }
+              }).then(()=>{
+                ipc.send('refresh-group')
+              });
+            }
+      })
+    })
+}
 $(document).ready(function(){
   $('span#monthName').html(currentMonth);
   fillPaymentTable()
   addPayment()
+  deletePayment()
 })

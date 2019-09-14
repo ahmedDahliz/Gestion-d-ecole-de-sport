@@ -258,6 +258,9 @@ function fillCoachTable(){
  *@return void
 */
 function deleteCoache(){
+  var ConfirmationDialog = require('electron').remote.dialog
+  var image = require('electron').remote.nativeImage
+  let iconQuestion = image.createFromPath('assets/image/icons/iconQuestion.png')
   $('button#supprimerEntreneur').on('click', function(){
     ConfirmationDialog.showMessageBox({
       type: 'question',
@@ -279,9 +282,7 @@ function deleteCoache(){
         }
     })
   })
-  var ConfirmationDialog = require('electron').remote.dialog
-  var image = require('electron').remote.nativeImage
-  let iconQuestion = image.createFromPath('assets/image/icons/iconQuestion.png')
+
 
 }
 /**
