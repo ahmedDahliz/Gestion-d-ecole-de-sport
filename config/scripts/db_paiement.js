@@ -1,6 +1,7 @@
 var tables = require('../config/scripts/db.js');
 let currentMonth = new Date().toLocaleString('fr', {month: 'long'})
 let currentYear = new Date().getFullYear()
+let months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 joueurs = tables.joueurs;
 paiement = tables.paiement;
 categories = tables.categorie;
@@ -22,9 +23,7 @@ function fillPaymentTable(){
     let disablePaye = ''
     let disableCancel = 'disabled'
     $.each(players, (index, player)=>{
-      console.log(player, currentMonth+' '+currentYear);
         $.each(player.paiements, (index, paiement)=>{
-          console.log(paiement);
           if (paiement.PaiementPour === currentMonth+' '+currentYear) {
             datePaiement = new Date(paiement.DatePaiement).toLocaleDateString();
             paiementPour = paiement.PaiementPour;
@@ -88,16 +87,19 @@ function fillPaymentTable(){
  * add payment
  * @return void
 */
-function addPayment(){
+ function addPayment(){
   $('button#submit_payment').on('click', function(){
-    let paiementInst = paiement.build({
-      PaiementPour: $('select#payment_for option:selected').text()+' '+currentYear,
-      Montant: $('input#price').val()
+    payments = []
+    $.each($('input[name=payment_for]:checked'), (index, month)=>{
+      payments.push({
+        PaiementPour: months[month.value]+' '+currentYear,
+        Montant: $('input#price').val(),
+        joueurId : $('input[type=hidden]#idPlayerPayment').val()
+        })
     })
-    paiementInst.save().then((newPayment)=>{
-      newPayment.setJoueur($('input[type=hidden]#idPlayerPayment').val())
-      ipc.send('refresh-group')
-    })
+    paiement.bulkCreate(payments).then(() =>{
+        ipc.send('refresh-group')
+      })
   })
 }
 $(document).ready(function(){

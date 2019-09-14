@@ -74,7 +74,7 @@
           <tr>
             <td>Paiement pour : </td>
             <td style="max-width">
-              <div style="text-align: left; max-height: 100px; overflow-y: scroll;">
+              <div id="month_container" style="text-align: left; max-height: 100px; overflow-y: scroll;">
                 <table id="table_paiement_for">
                   <tr>
                     <td><input type="checkbox" name="payment_for" value="0" /> janvier </td>
@@ -138,10 +138,15 @@
             let date = new Date();
             $('span#date_now').html(date.toLocaleString('fr-FR',  { year: 'numeric', month: 'long', day: 'numeric' }));
             $('input#fname_lname').val($(this).closest('tr').find('td').eq(2).text()+' '+$(this).closest('tr').find('td').eq(1).text());
-            $('select#payment_for').val(date.getMonth());
+            $('input[name=payment_for][value='+date.getMonth()+']').prop('checked', true);
+            $('input[name=payment_for][value='+date.getMonth()+']').closest('td').addClass('checkedCell');
+            if (date.getMonth() >= 7) {
+              $("div#month_container").animate({ scrollTop: $("div#month_container").height()});
+            }
             $('input#cat_grp').val($(this).closest('tr').find('td').eq(3).text());
             $('input#idPlayerPayment').val($(this).closest('tr').find('td').find('input[type=hidden]#idPlayer').val());
         });
+
         $('table#table_paiement_for td').on('click', function(event){
           if ($(this).find('input[type=checkbox]').prop('checked') == false) {
             $(this).find('input[type=checkbox]').prop('checked', true)
