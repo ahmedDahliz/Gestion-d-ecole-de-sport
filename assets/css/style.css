@@ -299,7 +299,13 @@ cursor: pointer;
 }
 .checkedCell {
   background: green;
-  padding: 0
+  padding: 0;
+}
+.payedCell {
+  background: green;
+  padding: 0;
+  text-align: center;
+  font-weight: bold;
 }
 #table_paiement_for td {
   cursor: pointer;

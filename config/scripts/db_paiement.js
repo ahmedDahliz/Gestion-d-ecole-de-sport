@@ -4,7 +4,8 @@ let currentYear = new Date().getFullYear()
 let months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 let months2 = ['août', 'septembre', 'octobre', 'novembre', 'décembre','janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet']
 var modalShowPayment = document.getElementById("myModalShowPayment");
-let _player
+var modalPayment = document.getElementById("myModalPayment");
+var  _changed = false
 joueurs = tables.joueurs;
 paiement = tables.paiement;
 categories = tables.categorie;
@@ -39,7 +40,7 @@ function fillPaymentTable(){
           }
         })
        paymentData.push([hiddenIdPayment+'<input type="hidden" name="idPlayer" value="'+player.id+'" class="'+classe+'"/><button '+disablePaye+' name="payment" class="btn btn-success align-middle payment" title="Valider paiement pour '+currentMonth+'"><i class="fas fa-check"></i></button> <button name="show_payment" class="btn btn-show align-middle show_payment" title="Afficher les paiements"><i class="fas fa-eye"></i></button> <button title="Annuler paiement  pour '+currentMonth+'" '+disableCancel+' name="cancel_payment" class="btn btn-danger align-middle cancel_payment"><i class="fas fa-times"></i></button>',
-       player.Nom, player.Prenom, player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe, createdAt, paiementPour, montant])
+       player.id, player.Nom, player.Prenom, player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe, createdAt, paiementPour, montant])
        createdAt = '';
        paiementPour = '';
        montant = '';
@@ -89,10 +90,54 @@ function fillPaymentTable(){
   })
 }
 /**
+ * Check paymet
+ * @return void
+*/
+function checkPayment(){
+  $('table#table_paiement').on('click', 'button.payment', function(event){
+      modalPayment.style.display = "block";
+      let date = new Date();
+      $('input[name=payment_for]').each(function(){
+            $(this).css('display', 'inline');
+      });
+      let year = currentYear
+      $('table#table_paiement_for tbody td').each((index, month)=>{
+        if (index == 5) {
+          year++;
+        }
+        $(month).find('span.year').html(year)
+      })
+      // $.each(months2, (index, month)=>{
+      //
+      // })
+      $('input[name=payment_for]').closest('td').removeClass('payedCell');
+      $('span#date_now').html(date.toLocaleString('fr-FR',  { year: 'numeric', month: 'long', day: 'numeric' }));
+      $('input#fname_lname').val($(this).closest('tr').find('td').eq(2).text()+' '+$(this).closest('tr').find('td').eq(1).text());
+
+      if (date.getMonth() >= 1 && date.getMonth() <= 6) {
+        $("div#month_container").animate({ scrollTop: $("div#month_container").height()});
+      }
+      $('input#cat_grp').val($(this).closest('tr').find('td').eq(3).text());
+      $('input#idPlayerPayment').val($(this).closest('tr').find('td').find('input[type=hidden][name=idPlayer]').val());
+      joueurs.findOne({
+        where: {id: $(this).closest('tr').find('td').find('input[type=hidden][name=idPlayer]').val()},
+        include: [{model: paiement}]
+      }).then(player =>{
+        $.each(player.paiements, (index, paiement)=>{
+          if (paiement.PaiementPour.replace(/\D/g, '').trim() == currentYear) {
+            $('input[name=payment_for]')[months.indexOf(paiement.PaiementPour.replace(/[0-9]/g, '').trim())].style.display = 'none';
+            $('input[name=payment_for]')[months.indexOf(paiement.PaiementPour.replace(/[0-9]/g, '').trim())].parentElement.className += ' payedCell';
+          }
+
+        });
+      })
+  });
+}
+/**
  * add payment
  * @return void
 */
- function addPayment(){
+function addPayment(){
   $('button#submit_payment').on('click', function(){
     payments = []
     $.each($('input[name=payment_for]:checked'), (index, month)=>{
@@ -104,7 +149,23 @@ function fillPaymentTable(){
     })
     paiement.bulkCreate(payments).then(() =>{
         ipc.send('refresh-group')
-      })
+    })
+  })
+  $('table#table_show_months').on('click', 'button.addPayment', function(event){
+    let instPaiment = paiement.build({
+      PaiementPour: months[$(this).closest('tr').find('span#month').attr('data-number')]+' '+currentYear,
+      Montant: $(this).closest('tr').find('input#price_payment').val(),
+      joueurId : $('input[type=hidden]#show_id_player').val()
+    })
+    instPaiment.save().then((payment)=>{
+      _changed = true
+      $(this).closest('tr').addClass('rowPayed')
+      $(this).closest('tr').find('input#price_payment').prop('disabled', true)
+      $(this).closest('tr').find('input#price_payment').val(payment.Montant)
+      $(this).closest('td').append('<button class="btn btn-danger cancelPayment"><i class="fas fa-times"></i></button>')
+      $(this).closest('tr').find('input[type=hidden][name=showIdPayment]').val(payment.id)
+      $(this).remove()
+    })
   })
 }
 /**
@@ -136,12 +197,38 @@ function deletePayment(){
             }
       })
     })
+    $('table#table_show_months').on('click', 'button.cancelPayment', function(event){
+        ConfirmationDialog.showMessageBox({
+          type: 'question',
+          buttons: ['Oui', 'Non'],
+          title: 'Confirmation de suppression !',
+          message: 'Vous voulez vraiment annuler cette paiement ?',
+          noLink: true,
+          icon: iconQuestion,
+          cancelId:-1
+        }, response =>{
+            if (!response) {
+              paiement.destroy({
+                where: {
+                  id: $(this).closest('tr').find('input[type=hidden][name=showIdPayment]').val()
+                }
+              }).then(()=>{
+                  _changed = true
+                $(this).closest('tr').removeClass('rowPayed')
+                $(this).closest('tr').find('input#price_payment').removeAttr('disabled')
+                $(this).closest('tr').find('input#price_payment').val('50')
+                $(this).closest('td').append('<button class="btn btn-success addPayment"><i class="fas fa-check"></i></button>')
+                $(this).remove()
+              });
+            }
+      })
+    })
 }
 /**
  * Show all payments
  * @return void
 */
-function showPayment(){
+function showPayments(){
   $('table#table_paiement').on('click', 'button.show_payment', function(event){
     joueurs.findOne({
       where: {
@@ -154,13 +241,15 @@ function showPayment(){
       modalShowPayment.style.display = "block";
       payedMonth = player.paiements.map(function(item) { return item["PaiementPour"];})
       payedPrice = player.paiements.map(function(item) { return item["Montant"];})
+      idPayments = player.paiements.map(function(item) { return item["id"];})
       $('span#show_fname_lname').html(player.Nom+' '+player.Prenom)
       $('span#show_cat_grp').html(player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe)
       $('input#show_id_player').val(player.id)
       let classe = ''
-      let button = '<button class="btn btn-success"><i class="fas fa-check"></i></button>'
+      let button = '<button class="btn btn-success addPayment"><i class="fas fa-check"></i></button>'
       let disabled = ''
       let price = 50
+      let idPayment = ''
       $.each(months2, (index, month)=>{
         if (index == 5) {
           year = currentYear+1;
@@ -168,27 +257,31 @@ function showPayment(){
         let bold = (index == 0 || index == 11)? '': 'font-weight-bold'
         if (payedMonth.includes(month+' '+year)) {
           classe = 'rowPayed'
-          button = '<button class="btn btn-danger"><i class="fas fa-times"></i></button>'
+          button = '<button class="btn btn-danger cancelPayment"><i class="fas fa-times"></i></button>'
           disabled = 'disabled'
           price = payedPrice[payedMonth.indexOf(month+' '+year)]
+          idPayment = idPayments[payedMonth.indexOf(month+' '+year)]
         }
         $('table#table_show_months tbody').append('<tr class="'+classe+' '+bold+'">'+
-        '<td>'+month+' '+year+'</td>'+
+        '<td><input type="hidden" name="showIdPayment" value="'+ idPayment+'"/><span id="month" data-number="'+months.indexOf(month)+'">'+month+'</span> '+year+'</td>'+
         '<td class="input-box"><input '+disabled+' type="text" class="form-control form-control-sm m-1" size="2" value="'+price+'" id="price_payment"/><span style="top: 19px;" class="unit">DH</span></td>'+
         '<td>'+button+'</td>'+
         '</tr>')
         classe = ''
-        button = '<button class="btn btn-success"><i class="fas fa-check"></i></button>'
+        button = '<button class="btn btn-success addPayment"><i class="fas fa-check"></i></button>'
         disabled = ''
         price = 50
+        idPayment = ''
       })
     })
   })
 }
+
 $(document).ready(function(){
   $('span#monthName').html(currentMonth);
   fillPaymentTable()
+  checkPayment()
   addPayment()
   deletePayment()
-  showPayment()
+  showPayments()
 })

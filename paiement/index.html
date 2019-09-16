@@ -34,6 +34,7 @@
           <thead class="thead-dark">
             <tr>
               <th><i class="fas fa-cog"></i></th>
+              <th>Num</th>
               <th>Nom</th>
               <th>Prenom</th>
               <th>Categorie/Groupe</th>
@@ -77,24 +78,24 @@
               <div id="month_container" style="text-align: left; max-height: 100px; overflow-y: scroll;">
                 <table id="table_paiement_for">
                   <tr>
-                    <td><input type="checkbox" name="payment_for" value="0" /> janvier </td>
-                    <td><input type="checkbox" name="payment_for" value="1" /> février </td>
-                    <td><input type="checkbox" name="payment_for" value="2" /> mars </td></td>
+                    <td><input type="checkbox" name="payment_for" value="7" /> août <span class="year"></span> </td>
+                    <td><input type="checkbox" name="payment_for" value="8" /> septembre <span class="year"></span> </td>
+                    <td><input type="checkbox" name="payment_for" value="9" /> octobre <span class="year"></span> </td>
                   </tr>
                   <tr>
-                    <td><input type="checkbox" name="payment_for" value="3" /> avril </td>
-                    <td><input type="checkbox" name="payment_for" value="4" /> mai </td>
-                    <td><input type="checkbox" name="payment_for" value="5" /> juin </td>
+                    <td><input type="checkbox" name="payment_for" value="10" /> nobembre <span class="year"></span></td>
+                    <td><input type="checkbox" name="payment_for" value="11" /> décembre <span class="year"></span></td>
+                    <td><input type="checkbox" name="payment_for" value="0" /> janvier <span class="year"></span> </td>
                   </tr>
                   <tr>
-                    <td><input type="checkbox" name="payment_for" value="6" /> juillet </td>
-                    <td><input type="checkbox" name="payment_for" value="7" /> août </td>
-                    <td><input type="checkbox" name="payment_for" value="8" /> septembre </td>
+                    <td><input type="checkbox" name="payment_for" value="1" /> février <span class="year"></span> </td>
+                    <td><input type="checkbox" name="payment_for" value="2" /> mars <span class="year"></span> </td>
+                    <td><input type="checkbox" name="payment_for" value="3" /> avril <span class="year"></span> </td>
                   </tr>
                   <tr>
-                    <td><input type="checkbox" name="payment_for" value="9" /> octobre </td>
-                    <td><input type="checkbox" name="payment_for" value="10" /> nobembre</td>
-                    <td><input type="checkbox" name="payment_for" value="11" /> décembre</td>
+                    <td><input type="checkbox" name="payment_for" value="4" /> mai <span class="year"></span> </td>
+                    <td><input type="checkbox" name="payment_for" value="5" /> juin <span class="year"></span> </td>
+                    <td><input type="checkbox" name="payment_for" value="6" /> juillet <span class="year"></span> </td>
                   </tr>
                 </table>
               </div>
@@ -162,7 +163,7 @@
     <script src="../node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script>
     // Get the modal
-    var modalPayment = document.getElementById("myModalPayment");
+
 
 
     // Get the <span> element that closes the modal
@@ -175,21 +176,11 @@
     }
     spanShowPayment.onclick = function() {
       modalShowPayment.style.display = "none";
+      if (_changed) {
+          ipc.send('refresh-group')
+      }
     }
       $(document).ready(function () {
-        $('table#table_paiement').on('click', 'button.payment', function(event){
-            modalPayment.style.display = "block";
-            let date = new Date();
-            $('span#date_now').html(date.toLocaleString('fr-FR',  { year: 'numeric', month: 'long', day: 'numeric' }));
-            $('input#fname_lname').val($(this).closest('tr').find('td').eq(2).text()+' '+$(this).closest('tr').find('td').eq(1).text());
-            $('input[name=payment_for][value='+date.getMonth()+']').prop('checked', true);
-            $('input[name=payment_for][value='+date.getMonth()+']').closest('td').addClass('checkedCell');
-            if (date.getMonth() >= 7) {
-              $("div#month_container").animate({ scrollTop: $("div#month_container").height()});
-            }
-            $('input#cat_grp').val($(this).closest('tr').find('td').eq(3).text());
-            $('input#idPlayerPayment').val($(this).closest('tr').find('td').find('input[type=hidden][name=idPlayer]').val());
-        });
 
         $('table#table_paiement_for td').on('click', function(event){
           if ($(this).find('input[type=checkbox]').prop('checked') == false) {
