@@ -73,7 +73,10 @@
                   <td>Adresse : </td>
                   <td rowspan="2"><textarea name="name" id="adress" rows="4" class="form-control form-control-sm" required></textarea></td>
                 </tr>
-
+                <tr>
+                  <td>Nombre de joueurs <span id="nom_categorie"></span> / <span id="nom_groupe"></span> </td>
+                  <td><i class="fas fa-users"></i>  : <span id="nbr_joueurs"></span></td>
+                </tr>
               </table>
             </div>
             <div class="d-inline-block p-2 text-center" style="width: 40%;">
@@ -94,8 +97,8 @@
               <button class="btn btn-edit" id="modifierJoueur" disabled><i class="fas fa-edit"></i> Modifier</button>
               <button class="btn btn-delete" id="supprimerJoueur" disabled><i class="fas fa-user-times"></i> supprimer</button>
               <button class="btn btn-edit" id="updatePlayer"><i class="fas fa-edit"></i> Modifier</button>
-              <button class="btn btn-danger float-right" id="cancelAdd"><i class="fas fa-times"></i> Annuler</button>
 
+              <button class="btn btn-danger float-right" id="cancelAdd"><i class="fas fa-times"></i> Annuler</button>
               <span class="font-weight-bold m-1" id="msg_add_player"></span>
 
             </div>

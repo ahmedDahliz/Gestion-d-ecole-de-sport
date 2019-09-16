@@ -11,6 +11,26 @@ var avatarPath = defaultAvatar;
 var certPath = defaultCert;
 var avatarFile, certFile;
 /**
+ * count number of players in group
+ * @return integer
+*/
+function getNumberOfPlayers(){
+  joueurs.findAndCountAll({
+    include:[{
+      model: groupes,
+      where:{id: $('select#groupe').val()},
+      include:[{model: categories}]
+    }]
+  }).then(players=>{
+    if (players.count > 20) {
+      $('span#nbr_joueurs').closest('td').css('color', 'red')
+    } else $('span#nbr_joueurs').closest('td').css('color', 'black')
+    $('span#nom_groupe').html($('select#groupe option:selected').text())
+    $('span#nom_categorie').html($('select#categorie option:selected').text())
+    $('span#nbr_joueurs').html(players.count)
+  })
+}
+/**
  * Hide an element
  * @param selector @type tag element
  * @return void
@@ -152,10 +172,10 @@ function initAddPlayer(){
     $.each(fCat.groupes, (index, groupe)=>{
       $('select#groupe').append(new Option(groupe.NomGroupe, groupe.id))
     })
+    getNumberOfPlayers()
   })
 
   $('select#categorie').on('change', ()=>{
-    console.log('fds');
     categories.findOne({
       where:{id: $('select#categorie').val()},
       include:[{model: groupes}]
@@ -164,7 +184,14 @@ function initAddPlayer(){
       $.each(cat.groupes, (index, groupe)=>{
         $('select#groupe').append(new Option(groupe.NomGroupe, groupe.id))
       })
+      getNumberOfPlayers()
+
     })
+
+  })
+  $('select#groupe').on('change', ()=>{
+    getNumberOfPlayers()
+
   })
 }
 /**
@@ -236,40 +263,56 @@ function addPlayer(){
   })
   $('button#ajouterJoueur').on('click', function(){
       if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#annual_price'), $('input#birthday'), $('span#msg_add_player'))){
-        var joueurIns =  joueurs.build({
-          Nom: $('input#lname').val(),
-          Prenom: $('input#fname').val(),
-          Tele1: $('input#phone1').val(),
-          Tele2: $('input#phone2').val(),
-          Tele3: $('input#phone3').val(),
-          DateNaissance: $('input#birthday').val(),
-          Adresse:  $('textarea#adress').val(),
-          // Prix: $('input#price').val(),
-          PrixAnnuel: $('input#annual_price').val(),
-          photo: avatarPath,
-          certificat: certPath
-        })
-        joueurIns.save().then(player=>{
-          player.setGroupe($('select#groupe').val()).then((playerGroup)=>{
-            playerGroup.getGroupe().then(grp=>{
-              grp.getCategorie().then(cat=>{
-                $('table#table_new_palyer tbody').append('<tr><td class="text-center">'+
-                  '<input type="radio" name="joueur" value="'+player.id+'" class="table-radio align-middle"></td>'+
-                  '<td>'+player.Nom+'</td>'+
-                  '<td>'+player.Prenom+'</td>'+
-                  '<td>'+getLocalDate(player.DateNaissance)+'</td>'+
-                  '<td>'+player.Tele1+'</td>'+
-                  '<td>'+player.Tele2+'</td>'+
-                  '<td>'+player.Tele3+'</td>'+
-                  '<td>'+player.Adresse+'</td>'+
-                  '<td>'+player.PrixAnnuel+' DH</td>'+
-                  '<td>'+cat.NomCategorie+'</td>'+
-                  '<td>'+grp.NomGroupe+'</td></tr>');
-                  clearInputs();
-              })
+        if (parseInt($('span#nbr_joueurs').html()) > 20) {
+            var ConfirmationDialog = require('electron').remote.dialog
+            ConfirmationDialog.showMessageBox({
+              type: 'warning',
+              buttons: ['Continuer', 'Annuler'],
+              title: 'Information !',
+              message: 'Le nombre des joueurs dans ce groupe à dépasser 20 !',
+              noLink: true,
+              cancelId:-1
+            }, response =>{
+                if (!response) {
+                  var joueurIns =  joueurs.build({
+                    Nom: $('input#lname').val(),
+                    Prenom: $('input#fname').val(),
+                    Tele1: $('input#phone1').val(),
+                    Tele2: $('input#phone2').val(),
+                    Tele3: $('input#phone3').val(),
+                    DateNaissance: $('input#birthday').val(),
+                    Adresse:  $('textarea#adress').val(),
+                    // Prix: $('input#price').val(),
+                    PrixAnnuel: $('input#annual_price').val(),
+                    photo: avatarPath,
+                    certificat: certPath
+                  })
+                  joueurIns.save().then(player=>{
+                    player.setGroupe($('select#groupe').val()).then((playerGroup)=>{
+                      playerGroup.getGroupe().then(grp=>{
+                        grp.getCategorie().then(cat=>{
+                          $('table#table_new_palyer tbody').append('<tr><td class="text-center">'+
+                            '<input type="radio" name="joueur" value="'+player.id+'" class="table-radio align-middle"></td>'+
+                            '<td>'+player.Nom+'</td>'+
+                            '<td>'+player.Prenom+'</td>'+
+                            '<td>'+getLocalDate(player.DateNaissance)+'</td>'+
+                            '<td>'+player.Tele1+'</td>'+
+                            '<td>'+player.Tele2+'</td>'+
+                            '<td>'+player.Tele3+'</td>'+
+                            '<td>'+player.Adresse+'</td>'+
+                            '<td>'+player.PrixAnnuel+' DH</td>'+
+                            '<td>'+cat.NomCategorie+'</td>'+
+                            '<td>'+grp.NomGroupe+'</td></tr>');
+                            getNumberOfPlayers()
+                            clearInputs();
+                        })
+                      })
+                    })
+                  })
+                }
             })
-          })
-        })
+        }
+
       }
   })
 }
@@ -299,7 +342,8 @@ function deleteAddedPlayer(){
           }).then(()=>{
             $('input:radio[name=joueur]:checked').closest('tr').remove();
             $("button#modifierJoueur").prop("disabled", true);
-            $("button#ajouterJoueur").prop("disabled", true);
+            $("button#supprimerJoueur").prop("disabled", true);
+            getNumberOfPlayers()
           });
         }
     })
