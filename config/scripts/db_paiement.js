@@ -2,6 +2,9 @@ var tables = require('../config/scripts/db.js');
 let currentMonth = new Date().toLocaleString('fr', {month: 'long'})
 let currentYear = new Date().getFullYear()
 let months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+let months2 = ['août', 'septembre', 'octobre', 'novembre', 'décembre','janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet']
+var modalShowPayment = document.getElementById("myModalShowPayment");
+let _player
 joueurs = tables.joueurs;
 paiement = tables.paiement;
 categories = tables.categorie;
@@ -15,8 +18,7 @@ function fillPaymentTable(){
   joueurs.findAll({
     include: [{model: paiement},{model: groupes, include: [{model: categories}]}]
   }).then(players=>{
-    // console.log('hiiiha ==>', players[0].paiements[0].PaiementPour);
-    let datePaiement = '';
+    let createdAt = '';
     let paiementPour = '';
     let montant = '';
     let classe = ''
@@ -26,7 +28,7 @@ function fillPaymentTable(){
     $.each(players, (index, player)=>{
         $.each(player.paiements, (index, paiement)=>{
           if (paiement.PaiementPour === currentMonth+' '+currentYear) {
-            datePaiement = new Date(paiement.DatePaiement).toLocaleDateString();
+            createdAt = new Date(paiement.createdAt).toLocaleDateString();
             paiementPour = paiement.PaiementPour;
             montant = paiement.Montant + ' DH';
             classe = 'payed'
@@ -36,9 +38,9 @@ function fillPaymentTable(){
             return false;
           }
         })
-       paymentData.push([hiddenIdPayment+'<input type="hidden" id="idPlayer" value="'+player.id+'" class="'+classe+'"/><button '+disablePaye+' name="payment" class="btn btn-success align-middle payment" title="Valider paiement"><i class="fas fa-check"></i></button> <button name="show_payment" class="btn btn-show align-middle show_payment" title="Afficher les paiements"><i class="fas fa-eye"></i></button> <button title="Annuler paiement" '+disableCancel+' name="cancel_payment" class="btn btn-danger align-middle cancel_payment"><i class="fas fa-times"></i></button>',
-       player.Nom, player.Prenom, player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe, datePaiement, paiementPour, montant])
-       datePaiement = '';
+       paymentData.push([hiddenIdPayment+'<input type="hidden" name="idPlayer" value="'+player.id+'" class="'+classe+'"/><button '+disablePaye+' name="payment" class="btn btn-success align-middle payment" title="Valider paiement pour '+currentMonth+'"><i class="fas fa-check"></i></button> <button name="show_payment" class="btn btn-show align-middle show_payment" title="Afficher les paiements"><i class="fas fa-eye"></i></button> <button title="Annuler paiement  pour '+currentMonth+'" '+disableCancel+' name="cancel_payment" class="btn btn-danger align-middle cancel_payment"><i class="fas fa-times"></i></button>',
+       player.Nom, player.Prenom, player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe, createdAt, paiementPour, montant])
+       createdAt = '';
        paiementPour = '';
        montant = '';
        classe = ''
@@ -46,7 +48,6 @@ function fillPaymentTable(){
        disableCancel = 'disabled'
        hiddenIdPayment = ''
     })
-
     $('#table_paiement').DataTable({
       // columnDefs: [
       //   {
@@ -136,9 +137,58 @@ function deletePayment(){
       })
     })
 }
+/**
+ * Show all payments
+ * @return void
+*/
+function showPayment(){
+  $('table#table_paiement').on('click', 'button.show_payment', function(event){
+    joueurs.findOne({
+      where: {
+        id: $(this).closest('td').find('input[type=hidden][name=idPlayer]').val()
+      },
+      include: [{model: paiement}, {model: groupes, include: [{model: categories}]}]
+    }).then((player)=>{
+      year = currentYear
+      $('table#table_show_months tbody tr').remove()
+      modalShowPayment.style.display = "block";
+      payedMonth = player.paiements.map(function(item) { return item["PaiementPour"];})
+      payedPrice = player.paiements.map(function(item) { return item["Montant"];})
+      $('span#show_fname_lname').html(player.Nom+' '+player.Prenom)
+      $('span#show_cat_grp').html(player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe)
+      $('input#show_id_player').val(player.id)
+      let classe = ''
+      let button = '<button class="btn btn-success"><i class="fas fa-check"></i></button>'
+      let disabled = ''
+      let price = 50
+      $.each(months2, (index, month)=>{
+        if (index == 5) {
+          year = currentYear+1;
+        }
+        let bold = (index == 0 || index == 11)? '': 'font-weight-bold'
+        if (payedMonth.includes(month+' '+year)) {
+          classe = 'rowPayed'
+          button = '<button class="btn btn-danger"><i class="fas fa-times"></i></button>'
+          disabled = 'disabled'
+          price = payedPrice[payedMonth.indexOf(month+' '+year)]
+        }
+        $('table#table_show_months tbody').append('<tr class="'+classe+' '+bold+'">'+
+        '<td>'+month+' '+year+'</td>'+
+        '<td class="input-box"><input '+disabled+' type="text" class="form-control form-control-sm m-1" size="2" value="'+price+'" id="price_payment"/><span style="top: 19px;" class="unit">DH</span></td>'+
+        '<td>'+button+'</td>'+
+        '</tr>')
+        classe = ''
+        button = '<button class="btn btn-success"><i class="fas fa-check"></i></button>'
+        disabled = ''
+        price = 50
+      })
+    })
+  })
+}
 $(document).ready(function(){
   $('span#monthName').html(currentMonth);
   fillPaymentTable()
   addPayment()
   deletePayment()
+  showPayment()
 })

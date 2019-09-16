@@ -53,7 +53,7 @@
         <button type="button" id="deletePlayer" class="btn btn-delete" disabled><i class="fas fa-user-times"></i> Supprimer</button>
       </div> -->
     </div>
-    <!-- Edit modal for days -->
+    <!-- check payment modal -->
     <div id="myModalPayment" class="modal">
 
       <!-- The Close Button -->
@@ -117,6 +117,45 @@
       <!-- Modal Caption (Image Text) -->
       <div id="caption">Valider paiement</div>
     </div>
+    <!-- Show payment modal -->
+    <div id="myModalShowPayment" class="modal">
+
+      <!-- The Close Button -->
+      <span id="closeShowPayment" class="close">&times;</span>
+
+      <!-- Modal Content -->
+      <div  class="modal-content w-75 text-center p-3" style="height: 85%">
+        <h6>Afficher les paiements</h6>
+        <table class="table">
+          <tr>
+            <td>Nom et prenom : </td>
+            <td><span class="font-weight-bold" id="show_fname_lname" ></span></td>
+          </tr>
+          <tr>
+            <td>Categorie/Groupe : </td>
+            <td><span class="font-weight-bold" id="show_cat_grp" ></span></td>
+          </tr>
+        </table>
+        <br>
+        <div style="overflow: auto;height: 60%">
+          <input type="hidden" id="show_id_player">
+          <table id="table_show_months" class="table">
+            <thead>
+              <th>Mois</th>
+              <th style="width: 15%;">Montant</th>
+              <th>Action</th>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+
+      <!-- Modal Caption (Image Text) -->
+      <div id="caption">Afficher paiement</div>
+    </div>
     <!-- You can also require other files to run in this process -->
     <script src="../renderer.js"></script>
     <script src="../config/scripts/db_paiement.js"></script>
@@ -125,12 +164,17 @@
     // Get the modal
     var modalPayment = document.getElementById("myModalPayment");
 
+
     // Get the <span> element that closes the modal
     var spanPayment = document.getElementById("closePayment");
+    var spanShowPayment = document.getElementById("closeShowPayment");
 
     // When the user clicks on <span> (x), close the modal
     spanPayment.onclick = function() {
       modalPayment.style.display = "none";
+    }
+    spanShowPayment.onclick = function() {
+      modalShowPayment.style.display = "none";
     }
       $(document).ready(function () {
         $('table#table_paiement').on('click', 'button.payment', function(event){
@@ -144,7 +188,7 @@
               $("div#month_container").animate({ scrollTop: $("div#month_container").height()});
             }
             $('input#cat_grp').val($(this).closest('tr').find('td').eq(3).text());
-            $('input#idPlayerPayment').val($(this).closest('tr').find('td').find('input[type=hidden]#idPlayer').val());
+            $('input#idPlayerPayment').val($(this).closest('tr').find('td').find('input[type=hidden][name=idPlayer]').val());
         });
 
         $('table#table_paiement_for td').on('click', function(event){
