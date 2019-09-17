@@ -10,11 +10,13 @@ var defaultCert = 'C:\\Users\\Ahmed\\Desktop\\Desktop_stuffs\\workspace\\terrain
 var avatarPath = defaultAvatar;
 var certPath = defaultCert;
 var avatarFile, certFile;
+let table
 /**
  * count number of players in group
  * @return integer
 */
 function getNumberOfPlayers(){
+  if ($('select#groupe').val()) {
   joueurs.findAndCountAll({
     include:[{
       model: groupes,
@@ -29,6 +31,7 @@ function getNumberOfPlayers(){
     $('span#nom_categorie').html($('select#categorie option:selected').text())
     $('span#nbr_joueurs').html(players.count)
   })
+    }
 }
 /**
  * Hide an element
@@ -191,7 +194,6 @@ function initAddPlayer(){
   })
   $('select#groupe').on('change', ()=>{
     getNumberOfPlayers()
-
   })
 }
 /**
@@ -449,6 +451,36 @@ function updateAddedPlayer(){
  * @return void
 */
 function fillTablePlayer(){
+  categories.findAll({
+    include:[{model: groupes}]
+  }).then(cats=>{
+    let fCat = cats[0];
+    $('select#sch_cat').append(new Option("Tous", 0))
+    $('select#sch_grp').append(new Option("Tous", 0))
+    $.each(cats, (index, cat)=>{
+      $('select#sch_cat').append(new Option(cat.NomCategorie, cat.id))
+    })
+    // $.each(fCat.groupes, (index, groupe)=>{
+    //   $('select#sch_grp').append(new Option(groupe.NomGroupe, groupe.id))
+    // })
+  })
+  $('select#sch_cat').on('change', ()=>{
+    if ($('select#sch_cat').val() != 0) {
+      categories.findOne({
+        where:{id: $('select#sch_cat').val()},
+        include:[{model: groupes}]
+      }).then(cat=>{
+          $('select#sch_grp option').remove();
+          $('select#sch_grp').append(new Option("Tous", 0))
+        $.each(cat.groupes, (index, groupe)=>{
+          $('select#sch_grp').append(new Option(groupe.NomGroupe, groupe.id))
+        })
+      })
+    }else {
+      $('select#sch_grp option').remove();
+      $('select#sch_grp').append(new Option("Tous", 0))
+    }
+  })
   let playerData = [];
   joueurs.findAll({
     include: [{model: groupes, include: [{model: categories}]}]
@@ -456,7 +488,7 @@ function fillTablePlayer(){
     $.each(players, (index, player)=>{
       playerData.push(['<input type="radio" name="player" value="'+player.id+'" class="table-radio align-middle">', player.id,player.Nom, player.Prenom, player.Tele1, getLocalDate(player.DateNaissance), player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe])
     })
-    $('#table_player').DataTable({
+    table = $('#table_player').DataTable({
       // columnDefs: [
       //   {
       //     orderable: false,
@@ -468,6 +500,7 @@ function fillTablePlayer(){
       //   }
       // ],
       data: playerData,
+      sDom: 'lrtip',
       pageLength : 7,
       lengthMenu: [[7, 10, 30, 50, -1], [7, 10, 30, 50, 'Tous']],
       language: {
@@ -494,7 +527,6 @@ function fillTablePlayer(){
       }
     });
   })
-
 }
 /**
  * Delete a player
@@ -667,6 +699,40 @@ function updatePlayer(){
     }
   })
 }
+/**
+ * cusiomize shearch for players table
+ * @return void
+*/
+function shearchPlayer(){
+  $('#sch_id').on( 'keyup', function () {
+    if (this.value == "") {
+      table.search( '' ).columns().search( '' ).draw();
+      return;
+    }
+    table.columns(1).search("^"+this.value+"$", true, false).draw();
+  });
+  $('#sch_lname').on( 'keyup', function () {
+    table.columns(2).search( this.value ).draw();
+  });
+  $('#sch_fname').on( 'keyup', function () {
+    table.columns(3).search( this.value ).draw();
+  });
+  $('#sch_cat, #sch_grp').on( 'change', function () {
+    if ($('#sch_cat').val() == 0 && $('#sch_grp').val() != 0) {
+      table.columns(6).search('/'+$('#sch_grp option:selected').text()).draw();
+      return;
+    }
+    if ($('#sch_cat').val() != 0 && $('#sch_grp').val() == 0) {
+      table.columns(6).search($('#sch_cat option:selected').text()+'/').draw();
+      return;
+    }
+    if (this.value == 0) {
+      table.search( '' ).columns().search( '' ).draw();
+      return;
+    }
+    table.columns(6).search($('#sch_cat option:selected').text()+'/'+$('#sch_grp option:selected').text()).draw();
+  });
+}
 $(document).ready(function(){
   $('button#updatePlayer').hide();
   initAddPlayer();
@@ -674,7 +740,7 @@ $(document).ready(function(){
   deleteAddedPlayer();
   editAddedPlayer();
   updateAddedPlayer();
-  fillTablePlayer();
+  // fillTablePlayer();
   deletePlayer();
   // if show player window
   if (_idPlayer) {
@@ -682,4 +748,7 @@ $(document).ready(function(){
     updatePlayer();
   }
   cancelAddPlayer();
+  $.when(fillTablePlayer()).done(function () {
+    shearchPlayer()
+  })
 })
