@@ -6,6 +6,7 @@ let months2 = ['août', 'septembre', 'octobre', 'novembre', 'décembre','janvier
 var modalShowPayment = document.getElementById("myModalShowPayment");
 var modalPayment = document.getElementById("myModalPayment");
 var  _changed = false
+var table
 joueurs = tables.joueurs;
 paiement = tables.paiement;
 categories = tables.categorie;
@@ -49,7 +50,7 @@ function fillPaymentTable(){
        disableCancel = 'disabled'
        hiddenIdPayment = ''
     })
-    $('#table_paiement').DataTable({
+    table = $('#table_paiement').DataTable({
       // columnDefs: [
       //   {
       //     orderable: false,
@@ -276,7 +277,33 @@ function showPayments(){
     })
   })
 }
-
+/**
+  * Show all payments
+  * @return void
+*/
+function showAllPayments(){
+  $('button#show_all_payments').on('click', function(){
+      table.search('').columns().search('').draw()
+  })
+}
+/**
+  * Show all payed payments
+  * @return void
+*/
+function showPayedPayments(){
+  $('button#payed_payments').on('click', function(){
+      table.column(6).search(currentMonth+' '+currentYear).draw()
+  })
+}
+/**
+  * Show all unpayed payments
+  * @return void
+*/
+function showUnpayedPayments(){
+  $('button#unpayed_payments').on('click', function(){
+      table.column(6).search('^$', true, false).draw()
+  })
+}
 $(document).ready(function(){
   $('span#monthName').html(currentMonth);
   fillPaymentTable()
@@ -284,4 +311,7 @@ $(document).ready(function(){
   addPayment()
   deletePayment()
   showPayments()
+  showAllPayments()
+  showPayedPayments()
+  showUnpayedPayments()
 })

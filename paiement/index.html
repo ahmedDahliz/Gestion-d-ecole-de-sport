@@ -48,11 +48,12 @@
           </tbody>
         </table>
       </div>
-      <!-- <div class="m-2">
-        <button type="button" id="showPlayer" class="btn btn-show" disabled><i class="fas fa-eye"></i> Afficher</button>
-        <button type="button" id="ajouter" class="btn btn-add"><i class="fas fa-plus"></i> Ajouter</button>
-        <button type="button" id="deletePlayer" class="btn btn-delete" disabled><i class="fas fa-user-times"></i> Supprimer</button>
-      </div> -->
+      <div class="m-2">
+        <button id="show_all_payments" class="btn btn-show" ><i class="fas fa-eye"></i> Afficher tous</button>
+        <button id="payed_payments" class="btn btn-success"><i class="fas fa-eye"></i> <i class="fas fa-check"></i> Afficher les payé</button>
+        <button id="unpayed_payments" class="btn btn-danger" ><i class="fas fa-eye"></i> <i class="fas fa-times"></i> Afficher les non payé</button>
+      </div>
+
     </div>
     <!-- check payment modal -->
     <div id="myModalPayment" class="modal">
@@ -104,7 +105,6 @@
           <tr>
             <td>Montant : </td>
             <td class="input-box"><input type="text" id="price" class="form-control form-control-sm m-1" value="50"><span style="top: 19px;" class="unit">DH</span></td>
-
           </tr>
           <tr>
             <td><input type="hidden" id="idPlayerPayment"> <button class="btn btn-add" id="submit_payment"><i class="fas fa-check"></i> Valider</button><br>
