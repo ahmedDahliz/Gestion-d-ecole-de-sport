@@ -15,17 +15,19 @@ let jours  = sequelize.define('jours', {
 let categorie  = sequelize.define('categorie', {
   NomCategorie: { type: Sequelize.STRING, allowNull: false, unique: { args: true,  msg: 'Cette categorie existe déja !'} }
 })
-let groupes = sequelize.define('groupes', {
-  NomGroupe: { type: Sequelize.STRING, allowNull: false}
-})
 let entreneurs  = sequelize.define('entreneurs', {
   NomE: { type: Sequelize.STRING, allowNull: false },
   PrenomE: { type: Sequelize.STRING, allowNull: false },
   TelephoneE : { type: Sequelize.STRING, allowNull: false }
 })
-let horaire = sequelize.define('horaire', {
-  horaire: {type: Sequelize.TIME, allowNull: false}
+let groupes = sequelize.define('groupes', {
+  NomGroupe: { type: Sequelize.STRING, allowNull: false},
+  horaire1: {type: Sequelize.TIME, allowNull: false},
+  horaire2: {type: Sequelize.TIME, allowNull: false}
 })
+// let horaire = sequelize.define('horaire', {
+//
+// })
 let joueurs = sequelize.define('joueurs', {
   Nom: { type: Sequelize.STRING, allowNull: false },
   Prenom: { type: Sequelize.STRING, allowNull: false },
@@ -40,31 +42,26 @@ let joueurs = sequelize.define('joueurs', {
   certificat: { type: Sequelize.STRING, allowNull: true },
 })
 
-
 let paiement = sequelize.define('paiement', {
-  DatePaiement: {type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
   PaiementPour: {type: Sequelize.STRING, allowNull: false },
   Montant: {type: Sequelize.DECIMAL, allowNull: false }
 })
 exports.jours = jours;
 exports.categorie = categorie;
 exports.groupes = groupes;
-exports.horaire = horaire;
+// exports.horaire = horaire;
 exports.entreneur = entreneurs;
 exports.joueurs = joueurs;
 exports.paiement = paiement;
 // exports.entreneur_groupe = entreneur_groupe;
+
 //relationShips
-jours.hasMany(categorie)
-jours.hasMany(horaire)
-horaire.belongsTo(jours, {onDelete:'CASCADE'})
-horaire.belongsTo(categorie, {onDelete:'CASCADE'})
-categorie.belongsToMany(jours, {through: horaire, onDelete: 'CASCADE'})
-categorie.hasMany(horaire, {onDelete:'CASCADE'})
+jours.belongsToMany(categorie, {through: 'jours_categories', onDelete: 'CASCADE'})
+categorie.belongsToMany(jours, {through: 'jours_categories', onDelete: 'CASCADE'})
+jours.hasMany(groupes, {onDelete:'CASCADE'})
+groupes.belongsTo(jours, {onDelete:'CASCADE'})
 categorie.hasMany(groupes, {onDelete:'CASCADE'})
 groupes.belongsTo(categorie, {onDelete:'CASCADE'})
-groupes.belongsTo(entreneurs, {onDelete:'CASCADE'})
-entreneurs.belongsToMany(groupes, {through: 'entreneur_groupe',onDelete:'CASCADE'});
 joueurs.belongsTo(groupes)
 groupes.hasMany(joueurs)
 joueurs.hasMany(paiement)

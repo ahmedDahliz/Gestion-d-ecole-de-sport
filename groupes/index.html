@@ -37,10 +37,10 @@
             <tr>
               <!-- <th><i class="fas fa-cog"></i></th> -->
               <th>Jours</th>
-              <th>Categories</th>
+              <th>Groupes</th>
               <!-- <th>Groupes</th> -->
             </tr>
-          </thea
+          </thead>
           <tbody>
 
           </tbody>
@@ -59,25 +59,46 @@
             <td>Jours</td>
             <td><select name="EditJours" id="Edit_Jours" class="form-control form-control-sm m-1">
             </select>
-            <button class="btn btn-delete m-1" id="deleteDay"><i class="fas fa-times"></i> Supprimer les jours</button>
-            <button class="btn btn-edit m-1" id="editDay"><i class="fas fa-edit"></i> Modifer les jours</button>
+            <button class="btn btn-delete m-1" id="deleteDay"><i class="fas fa-times"></i></button>
+            <button class="btn btn-edit m-1" id="editDay"><i class="fas fa-edit"></i></button>
           </td>
-            <td style="width: 150px;">Categories</td>
-            <td style="width: 200px;">
-              <select name="Edit_Cat" id="Edit_Cat" size="3" class="form-control form-control-sm m-1 float-left" style="width:60px">
+            <td>Categories</td>
+            <td>
+              <select name="Edit_Cat" id="Edit_Cat" class="form-control form-control-sm" style="width:60px">
               </select>
-              <button class="btn btn-edit m-1 float-right" id="deleteCatFromDay" title="supprimer du jours" disabled>X</button>
+              <div class="btn-group m-1">
+                <button type="button" class="btn btn-delete dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-times"></i>
+                </button>
+                <div class="dropdown-menu">
+                  <button class="dropdown-item" id="deleteCatFromDay">Supprimer de <span id="nameDays"></span></button>
+                  <button class="dropdown-item" id="deleteCat">Supprimer totalement</button>
+                </div>
+              </div>
+              <button class="btn btn-edit m-1" id="editCat"><i class="fas fa-edit"></i></button>
           </td>
-            <td>Heure</td>
-            <td><input id="Edit_Heure" class="m-1" width="80" readonly/>
-              <button class="btn btn-edit m-1" id="EditTime">Modifier</button> <br>
+          <td>Groupe</td>
+          <td>
+            <select name="EditGroup" class="form-control form-control-sm m-1" id="Edit_groupe" size="3" style="width:60px">
+            </select>
+              <button class="btn btn-delete m-1" id="deleteGroup" disabled><i class="fas fa-times"></i></button>
+          </td>
+            <td style="width: 90px;">Heure 1</td>
+            <td><input id="Edit_Heure1" class="m-1" width="80" readonly/>
+              <button class="btn btn-edit m-1" id="EditTime1">Modifier</button> <br>
               <span class="text-warning font-weight-bold" id="msgTime"></span>
+            </td>
+            <td style="width: 90px;">Heure 2</td>
+            <td>
+              <input id="Edit_Heure2" class="m-1" width="80" readonly/>
+                <button class="btn btn-edit m-1" id="EditTime2">Modifier</button> <br>
+                <span class="text-warning font-weight-bold" id="msgTime"></span>
             </td>
           </tr>
         </table>
         <hr>
-        <br>
-        <legend>Modifier Groupes</legend>
+        <!-- <br> -->
+        <!-- <legend>Modifier Groupes</legend>
         <table class="table table-bordered border-dark">
           <tr>
             <td>Categorie</td>
@@ -94,7 +115,7 @@
               <button class="btn btn-delete m-1" id="deleteGroup" disabled><X></X>suprimer le groupe</button>
           </td>
           </tr>
-        </table>
+        </table> -->
       </fieldset>
     </div>
     <!-- Edit modal for days -->
@@ -184,12 +205,14 @@
       <span class="close" id="closeShowCat">&times;</span>
 
       <!-- Modal Content (The Image) -->
-      <div  class="modal-content w-75 h-75 text-center p-5">
+      <div style="overflow: auto;" class="modal-content w-75 h-75 text-center p-5">
         <h4 id="titleDayes"></h4>
         <table id="table_show_cat" class="table">
           <thead>
-            <th>Categorie</th>
+
+            <th>Groupes</th>
             <th>Horaire</th>
+            <th>Categorie</th>
           </thead>
           <tbody></tbody>
         </table>
@@ -200,6 +223,8 @@
     <!-- You can also require other files to run in this process -->
 
     <script src="../node_modules/gijgo/js/gijgo.js"></script>
+    <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="../config/scripts/db_groupes.js"></script>
     <script src="../renderer.js"></script>
     <script src="../node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -239,7 +264,8 @@
       modalShowCat.style.display = "none";
     }
      $(document).ready(function () {
-       $('#Edit_Heure').timepicker();
+       $('#Edit_Heure1').timepicker();
+       $('#Edit_Heure2').timepicker();
        $('.edit-groupe').hide()
        $('#group_list tbody').on('change', 'input:radio[name="group"]', function() {
             $('.edit-groupe').hide()

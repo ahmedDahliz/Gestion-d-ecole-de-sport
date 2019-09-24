@@ -64,18 +64,14 @@
                   <td><select id="cat" class="form-control form-control-sm">
                     <option value="null">Nouveau categorie</option>
                     </select></td>
-                  <td colspan="2">Nom catégorie</td>
-                  <td colspan="2"><input type="text" id="nomCategorie" class="form-control form-control-sm"></td>
+                  <td colspan="2"><input type="text" id="nomCategorie" placeholder="Nom categorie" class="form-control form-control-sm"></td>
+                  <td colspan="2"></td>
                 </tr>
                 <tr>
                   <td>Jours</td>
                   <td>
                     <select name="" id="jours_cat" class="form-control form-control-sm">
                     </select>
-                  </td>
-                  <td>Horaire</td>
-                  <td>
-                  <input id="heure" width="80" name="H1" readonly/>
                   </td>
                 </tr>
               </table>
@@ -112,13 +108,32 @@
                 <tr>
                   <td>Nom groupe</td>
                   <td><input type="text" id="nomGroupe" class="form-control form-control-sm"></td>
+                  <td>Jours</td>
+                  <td>
+                    <select id="jours_group" class="form-control form-control-sm">
+                    </select>
+                  </td>
                   <td>Categorie</td>
-                  <td><select id="cat_group" class="form-control form-control-sm">
-
-                    </select></td>
+                  <td>
+                    <select id="cat_group" class="form-control form-control-sm">
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Horaire de jour 1</td>
+                  <td>
+                  <input id="heure1" width="80" name="H1" readonly/>
+                  </td>
+                  <td>Horaire de jour 2</td>
+                  <td>
+                  <input id="heure2" width="80" name="H1" readonly/>
+                  </td>
+                  <td></td>
+                  <td></td>
                 </tr>
               </table>
               <button type="button" id="addGroup" class="btn btn-add" name="ajouterGroupe"><i class="fas fa-plus"></i> Ajouter</button>
+              <img src="..\assets\image\spinner.gif" alt="" width="40" id="loaderGrp">
               <span class="m-1 font-weight-bold" id="GroupMessage"></span>
             </div>
 
@@ -151,7 +166,9 @@
       <script src="../config/scripts/db_groupes.js"></script>
       <script type="text/javascript">
       $(document).ready(function () {
-        $('#heure').timepicker();
+        $('img#loaderGrp').hide();
+        $('#heure1').timepicker();
+        $('#heure2').timepicker();
         $('#H2').timepicker();
         $('input:radio[name="addGroup"]').change(function () {
            if(this.checked){

@@ -3,6 +3,8 @@ var tables = require('../config/scripts/db.js');
 var fs = require('fs');
 
 var joueurs  = tables.joueurs;
+var jours  = tables.jours;
+var horaire  = tables.horaire;
 var categories  = tables.categorie;
 var groupes  = tables.groupes;
 var defaultAvatar = 'C:\\Users\\Ahmed\\Desktop\\Desktop_stuffs\\workspace\\terrains\\Gestion_Ecole\\electron-quick-start\\assets\\image\\avatars\\default.png';
@@ -460,9 +462,12 @@ function fillTablePlayer(){
     $.each(cats, (index, cat)=>{
       $('select#sch_cat').append(new Option(cat.NomCategorie, cat.id))
     })
-    // $.each(fCat.groupes, (index, groupe)=>{
-    //   $('select#sch_grp').append(new Option(groupe.NomGroupe, groupe.id))
-    // })
+    $.each(cats, (index, cat)=>{
+      $('select#abs_cat').append(new Option(cat.NomCategorie, cat.id))
+    })
+    $.each(fCat.groupes, (index, groupe)=>{
+      $('select#abs_grp').append(new Option(groupe.NomGroupe, groupe.id))
+    })
   })
   $('select#sch_cat').on('change', ()=>{
     if ($('select#sch_cat').val() != 0) {
@@ -480,6 +485,17 @@ function fillTablePlayer(){
       $('select#sch_grp option').remove();
       $('select#sch_grp').append(new Option("Tous", 0))
     }
+  })
+  $('select#abs_cat').on('change', ()=>{
+      categories.findOne({
+        where:{id: $('select#abs_cat').val()},
+        include:[{model: groupes}]
+      }).then(cat=>{
+          $('select#abs_grp option').remove();
+        $.each(cat.groupes, (index, groupe)=>{
+          $('select#abs_grp').append(new Option(groupe.NomGroupe, groupe.id))
+        })
+      })
   })
   let playerData = [];
   joueurs.findAll({
@@ -501,6 +517,29 @@ function fillTablePlayer(){
       // ],
       data: playerData,
       sDom: 'lrtip',
+      // dom: 'Bfrtip',
+      buttons: [
+           {
+              extend: 'excel',
+              text: '<i class="fas fa-file-excel"></i> Excel',
+              exportOptions: {
+                  columns: [1, 2, 3, 4, 5, 6]
+              },
+              className: 'btn btn-success btn-xs',
+              customize: function (xlsx){
+                var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                 $('row:first c', sheet).attr( 's', '42' );
+              }
+           },
+           {
+              extend: 'pdf',
+              text: '<i class="fas fa-file-excel"></i> Pdf',
+              exportOptions: {
+                  columns: [1, 2, 3, 4, 5, 6]
+              },
+              className: 'btn btn-danger btn-xs'
+           }
+       ],
       pageLength : 7,
       lengthMenu: [[7, 10, 30, 50, -1], [7, 10, 30, 50, 'Tous']],
       language: {
