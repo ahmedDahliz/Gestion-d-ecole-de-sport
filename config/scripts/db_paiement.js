@@ -126,8 +126,8 @@ function checkPayment(){
       }).then(player =>{
         $.each(player.paiements, (index, paiement)=>{
           if (paiement.PaiementPour.replace(/\D/g, '').trim() == currentYear) {
-            $('input[name=payment_for]')[months.indexOf(paiement.PaiementPour.replace(/[0-9]/g, '').trim())].style.display = 'none';
-            $('input[name=payment_for]')[months.indexOf(paiement.PaiementPour.replace(/[0-9]/g, '').trim())].parentElement.className += ' payedCell';
+            $('input[name=payment_for]')[months2.indexOf(paiement.PaiementPour.replace(/[0-9]/g, '').trim())].style.display = 'none';
+            $('input[name=payment_for]')[months2.indexOf(paiement.PaiementPour.replace(/[0-9]/g, '').trim())].parentElement.className += ' payedCell';
           }
 
         });

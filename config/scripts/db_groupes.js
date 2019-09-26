@@ -366,7 +366,6 @@ function editData(){
     categorie.findAll({
       include: [{model: groupes, require: true}]
     }).then(categories=>{
-      console.log(categories);
       pCategorie = categories[0]
       $.each(categories, function(index, categorie){
         $('select#Edit_categorie').append(new Option(categorie.NomCategorie, categorie.id))
@@ -634,14 +633,20 @@ function showCategorie(){
       console.log(jours);
       $('table#table_show_cat tbody tr').remove()
         $('h4#titleDayes').html(jours.Jour1+'-'+jours.Jour2)
+        let nmC = ''
+        let classe = ''
         $.each(jours.groupes, function(index, grp){
-          console.log(grp.categorie.NomCategorie);
-          $('table#table_show_cat tbody').append('<tr>'+
+          if (nmC != grp.categorie.NomCategorie) {
+            classe = 'border-top: #b95a5a solid 2px'
+          }else classe = '';
+          nmC = grp.categorie.NomCategorie
+          $('table#table_show_cat tbody').append('<tr style="'+classe+'">'+
           '<td>'+grp.NomGroupe+'</td>'+
           '<td>'+grp.horaire1+'/'+grp.horaire2+'</td>'+
           '<td>'+grp.categorie.NomCategorie+'</td>'+
           '</tr>')
         })
+          $('table#table_show_cat tbody tr:first-child').css('border-top', 'none')
   })//.map(function(item) { return item["NomGroupe"]; })
   modalShowCat.style.display = "block";
 })

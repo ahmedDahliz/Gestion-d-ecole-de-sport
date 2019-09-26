@@ -56,16 +56,15 @@
                   <td><input type="text" value="" id="phone3" class="form-control form-control-sm d-inline"></td>
                 </tr>
                 <tr>
+                  <td>Jours : </td>
+                  <td><select id="jours" class="form-control form-control-sm d-inline"></select></td>
+
                   <td>categorie : </td>
                   <td><select id="categorie" class="form-control form-control-sm d-inline"></select></td>
-                  <td>Groupe : </td>
-                  <td><select id="groupe" class="form-control form-control-sm d-inline"></select></td>
                 </tr>
                 <tr>
-                  <td>Prix annuel: </td>
-                  <td class="input-box"><input type="text" id="annual_price" value="150" class="form-control form-control-sm d-inline" required>
-                    <span class="unit">DH</span>
-                  </td>
+                  <td>Groupe : </td>
+                  <td><select id="groupe" class="form-control form-control-sm d-inline"></select></td>
                   <!-- <td>Prix : </td>
                   <td class="input-box"><input type="text" value="50" id="price" class="form-control form-control-sm d-inline" required>
                       <span class="unit">DH</span>
@@ -74,8 +73,14 @@
                   <td rowspan="2"><textarea name="name" id="adress" rows="4" class="form-control form-control-sm" required></textarea></td>
                 </tr>
                 <tr>
-                  <td>Nombre de joueurs <span id="nom_categorie"></span> / <span id="nom_groupe"></span> </td>
-                  <td><i class="fas fa-users"></i>  : <span id="nbr_joueurs"></span></td>
+                  <td>Prix annuel: </td>
+                  <td class="input-box"><input type="text" id="annual_price" value="150" class="form-control form-control-sm d-inline" required>
+                    <span class="unit">DH</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="4">Nombre de joueurs <span id="nom_categorie"></span> / <span id="nom_groupe"></span> du jours <span id="nom_jours"></span>&nbsp;&nbsp;&nbsp;&nbsp; <i class="fas fa-users"></i> : <span id="nbr_joueurs"></span></td>
+                  <!-- <td colspan="3"> </td> -->
                 </tr>
               </table>
             </div>
@@ -116,6 +121,7 @@
               <th>Télephone 3</th>
               <th style="width: 220px">Address</th>
               <th>Prix annuel</th>
+              <th>Jours</th>
               <th>Categorie</th>
               <th>Groupe</th>
             </tr>
@@ -139,6 +145,7 @@
       <script src="../renderer.js"></script>
       <script src="../config/scripts/db_players.js"></script>
       <script type="text/javascript">
+      _idPlayer = null
       // Get the modal
       var modal = document.getElementById("myModal");
 

@@ -31,6 +31,7 @@ function getNumberOfPlayers(){
     } else $('span#nbr_joueurs').closest('td').css('color', 'black')
     $('span#nom_groupe').html($('select#groupe option:selected').text())
     $('span#nom_categorie').html($('select#categorie option:selected').text())
+    $('span#nom_jours').html($('select#jours option:selected').text())
     $('span#nbr_joueurs').html(players.count)
   })
     }
@@ -167,32 +168,48 @@ function getShortDate(date){
  * @return void
 */
 function initAddPlayer(){
-  categories.findAll({
-    include:[{model: groupes}]
-  }).then(cats=>{
-    let fCat = cats[0];
-    $.each(cats, (index, cat)=>{
-      $('select#categorie').append(new Option(cat.NomCategorie, cat.id))
-    })
-    $.each(fCat.groupes, (index, groupe)=>{
-      $('select#groupe').append(new Option(groupe.NomGroupe, groupe.id))
-    })
-    getNumberOfPlayers()
-  })
+  jours.findAll({
+      include: [{model: categories, include: groupes, require: true}],
+  }).then(res => {
+      //itirate days
+      pJours = res[0]
+      $.each(res, function(index, jours){
+        $('select#jours').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
+      })
+      pCat = pJours.categories[0]
+      $.each(pJours.categories, function(index, cat){
+        $('select#categorie').append(new Option(cat.NomCategorie, cat.id));
+      })
+      $('select#categorie').change()
 
+  });
+  $('select#jours').on('change', function() {
+    jours.findOne({
+      where: {id: $(this).val()},
+        include: [{model: categories}]
+    }).then(jours => {
+        //itirate times for the first days
+        $('select#categorie option').remove();
+        $.each(jours.categories, function(index, cat){
+          $('select#categorie').append(new Option(cat.NomCategorie, cat.id));
+        })
+        $('select#categorie').change()
+
+    });
+  });
   $('select#categorie').on('change', ()=>{
     categories.findOne({
-      where:{id: $('select#categorie').val()},
-      include:[{model: groupes}]
-    }).then(cat=>{
-        $('select#groupe option').remove();
-      $.each(cat.groupes, (index, groupe)=>{
-        $('select#groupe').append(new Option(groupe.NomGroupe, groupe.id))
-      })
-      getNumberOfPlayers()
-
+      where: {id: $('select#categorie').val()},
+      include: {model: groupes, where: {jourId:  $('select#jours').val() }}
+    }).then(cats => {
+      $('select#groupe option').remove();
+      if (cats) {
+        $.each(cats.groupes, function(index, grp){
+            $('select#groupe').append(new Option(grp.NomGroupe, grp.id))
+        })
+        getNumberOfPlayers()
+      }
     })
-
   })
   $('select#groupe').on('change', ()=>{
     getNumberOfPlayers()
@@ -277,46 +294,49 @@ function addPlayer(){
               noLink: true,
               cancelId:-1
             }, response =>{
-                if (!response) {
-                  var joueurIns =  joueurs.build({
-                    Nom: $('input#lname').val(),
-                    Prenom: $('input#fname').val(),
-                    Tele1: $('input#phone1').val(),
-                    Tele2: $('input#phone2').val(),
-                    Tele3: $('input#phone3').val(),
-                    DateNaissance: $('input#birthday').val(),
-                    Adresse:  $('textarea#adress').val(),
-                    // Prix: $('input#price').val(),
-                    PrixAnnuel: $('input#annual_price').val(),
-                    photo: avatarPath,
-                    certificat: certPath
-                  })
-                  joueurIns.save().then(player=>{
-                    player.setGroupe($('select#groupe').val()).then((playerGroup)=>{
-                      playerGroup.getGroupe().then(grp=>{
-                        grp.getCategorie().then(cat=>{
-                          $('table#table_new_palyer tbody').append('<tr><td class="text-center">'+
-                            '<input type="radio" name="joueur" value="'+player.id+'" class="table-radio align-middle"></td>'+
-                            '<td>'+player.Nom+'</td>'+
-                            '<td>'+player.Prenom+'</td>'+
-                            '<td>'+getLocalDate(player.DateNaissance)+'</td>'+
-                            '<td>'+player.Tele1+'</td>'+
-                            '<td>'+player.Tele2+'</td>'+
-                            '<td>'+player.Tele3+'</td>'+
-                            '<td>'+player.Adresse+'</td>'+
-                            '<td>'+player.PrixAnnuel+' DH</td>'+
-                            '<td>'+cat.NomCategorie+'</td>'+
-                            '<td>'+grp.NomGroupe+'</td></tr>');
-                            getNumberOfPlayers()
-                            clearInputs();
-                        })
-                      })
-                    })
-                  })
+                if (response) {
+                  return;
                 }
             })
         }
-
+        var joueurIns =  joueurs.build({
+          Nom: $('input#lname').val(),
+          Prenom: $('input#fname').val(),
+          Tele1: $('input#phone1').val(),
+          Tele2: $('input#phone2').val(),
+          Tele3: $('input#phone3').val(),
+          DateNaissance: $('input#birthday').val(),
+          Adresse:  $('textarea#adress').val(),
+          // Prix: $('input#price').val(),
+          PrixAnnuel: $('input#annual_price').val(),
+          photo: avatarPath,
+          certificat: certPath
+        })
+        joueurIns.save().then(player=>{
+          player.setGroupe($('select#groupe').val()).then((playerGroup)=>{
+            playerGroup.getGroupe().then(grp=>{
+              grp.getCategorie().then(cat=>{
+                grp.getJour().then(jrs=>{
+                  $('table#table_new_palyer tbody').append('<tr><td class="text-center">'+
+                    '<input type="radio" name="joueur" value="'+player.id+'" class="table-radio align-middle"></td>'+
+                    '<td>'+player.Nom+'</td>'+
+                    '<td>'+player.Prenom+'</td>'+
+                    '<td>'+getLocalDate(player.DateNaissance)+'</td>'+
+                    '<td>'+player.Tele1+'</td>'+
+                    '<td>'+player.Tele2+'</td>'+
+                    '<td>'+player.Tele3+'</td>'+
+                    '<td>'+player.Adresse+'</td>'+
+                    '<td>'+player.PrixAnnuel+' DH</td>'+
+                    '<td>'+jrs.Jour1+'-'+jrs.Jour2+'</td>'+
+                    '<td>'+cat.NomCategorie+'</td>'+
+                    '<td>'+grp.NomGroupe+'</td></tr>');
+                    getNumberOfPlayers()
+                    clearInputs();
+                })
+              })
+            })
+          })
+        })
       }
   })
 }
@@ -453,39 +473,35 @@ function updateAddedPlayer(){
  * @return void
 */
 function fillTablePlayer(){
-  categories.findAll({
-    include:[{model: groupes}]
-  }).then(cats=>{
-    let fCat = cats[0];
-    $('select#sch_cat').append(new Option("Tous", 0))
-    $('select#sch_grp').append(new Option("Tous", 0))
-    $.each(cats, (index, cat)=>{
-      $('select#sch_cat').append(new Option(cat.NomCategorie, cat.id))
-    })
-    $.each(cats, (index, cat)=>{
-      $('select#abs_cat').append(new Option(cat.NomCategorie, cat.id))
-    })
-    $.each(fCat.groupes, (index, groupe)=>{
-      $('select#abs_grp').append(new Option(groupe.NomGroupe, groupe.id))
-    })
-  })
-  $('select#sch_cat').on('change', ()=>{
-    if ($('select#sch_cat').val() != 0) {
-      categories.findOne({
-        where:{id: $('select#sch_cat').val()},
-        include:[{model: groupes}]
-      }).then(cat=>{
-          $('select#sch_grp option').remove();
-          $('select#sch_grp').append(new Option("Tous", 0))
-        $.each(cat.groupes, (index, groupe)=>{
-          $('select#sch_grp').append(new Option(groupe.NomGroupe, groupe.id))
-        })
+  jours.findAll().then(res => {
+      //itirate days
+      $('select#sch_day').append(new Option("Tous", 0))
+      $.each(res, function(index, jours){
+        $('select#sch_day').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
       })
-    }else {
-      $('select#sch_grp option').remove();
+  });
+  categories.findAll().then(res => {
+      //itirate days
+      $('select#sch_cat').append(new Option("Tous", 0))
+      $.each(res, function(index, cat){
+        $('select#sch_cat').append(new Option(cat.NomCategorie, cat.id));
+      })
+  });
+  groupes.findAll({
+    group: ['NomGroupe']
+  }).then(res => {
+      //itirate days
       $('select#sch_grp').append(new Option("Tous", 0))
-    }
-  })
+      $.each(res, function(index, grp){
+        $('select#sch_grp').append(new Option(grp.NomGroupe, grp.id));
+      })
+      // let pCat = pJours.categories[0]
+      // $.each(pJours.categories, function(index, cat){
+      //   $('select#sch_cat').append(new Option(cat.NomCategorie, cat.id));
+      // })
+      // $('select#sch_cat').change()
+  });
+
   $('select#abs_cat').on('change', ()=>{
       categories.findOne({
         where:{id: $('select#abs_cat').val()},
@@ -499,10 +515,10 @@ function fillTablePlayer(){
   })
   let playerData = [];
   joueurs.findAll({
-    include: [{model: groupes, include: [{model: categories}]}]
+    include: [{model: groupes, include: [{model: categories},{model: jours}]}]
   }).then(players=>{
     $.each(players, (index, player)=>{
-      playerData.push(['<input type="radio" name="player" value="'+player.id+'" class="table-radio align-middle">', player.id,player.Nom, player.Prenom, player.Tele1, getLocalDate(player.DateNaissance), player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe])
+      playerData.push(['<input type="radio" name="player" value="'+player.id+'" class="table-radio align-middle">', player.id,player.Nom, player.Prenom, player.Tele1, getLocalDate(player.DateNaissance), player.groupe.jour.Jour1+'-'+player.groupe.jour.Jour2 ,player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe])
     })
     table = $('#table_player').DataTable({
       // columnDefs: [
@@ -565,6 +581,91 @@ function fillTablePlayer(){
         }
       }
     });
+  })
+  $('select#sch_cat').on('change', ()=>{
+    // if ($('select#sch_day').val() == 0 && $('select#sch_cat').val() == 0) {
+    //   $('select#sch_grp option').remove();
+    //   $('select#sch_grp').append(new Option("Tous", 0))
+    //   return;
+    // }
+    // if ($('select#sch_day').val() == 0 && $('select#sch_cat').val() != 0) {
+    //   groupes.findAll({
+    //     include: {model: categories, where: {id: $('select#sch_cat').val()}},
+    //     group: ['NomGroupe']
+    //   }).then(grps => {
+    //     $('select#sch_grp option').remove();
+    //     $('select#sch_grp').append(new Option('tous', 0))
+    //     if (grps) {
+    //       console.log(grps);
+    //       $.each(grps, function(index, grp){
+    //           $('select#sch_grp').append(new Option(grp.NomGroupe, grp.id))
+    //       })
+    //     }
+    //     return;
+    //   })
+    // }
+    // if ($('select#sch_day').val() != 0 && $('select#sch_cat').val() == 0) {
+    //   groupes.findAll({
+    //     include: {model: jours, where: {id:  $('select#sch_day').val() }},
+    //     group: ['NomGroupe']
+    //   }).then(grps => {
+    //     $('select#sch_grp option').remove();
+    //     $('select#sch_grp').append(new Option('tous', 0))
+    //     if (grps) {
+    //       $.each(grps, function(index, grp){
+    //           $('select#sch_grp').append(new Option(grp.NomGroupe, grp.id))
+    //       })
+    //     }
+    //   })
+    // }
+    // if ($('select#sch_day').val() != 0 && $('select#sch_cat').val() != 0) {
+    //   groupes.findAll({
+    //     include: [
+    //       {
+    //         model: jours, where: {id:  $('select#sch_day').val() }
+    //       },
+    //       {
+    //         model: categories, where: {id:  $('select#sch_cat').val() }
+    //       }
+    //     ]
+    //   }).then(grps => {
+    //     $('select#sch_grp option').remove();
+    //     $('select#sch_grp').append(new Option('tous', 0))
+    //     console.log(grps);
+    //     if (grps) {
+    //       $.each(grps, function(index, grp){
+    //
+    //           $('select#sch_grp').append(new Option(grp.NomGroupe, grp.id))
+    //       })
+    //     }
+    //   })
+    // }
+
+  })
+  $('select#sch_day').on('change', ()=>{
+    // if ($('select#sch_day').val() != 0) {
+    //   categories.findAll({
+    //     include: {model: jours, where: {id: $('select#sch_day').val()}}
+    //   }).then(cats => {
+    //     $('select#sch_cat option').remove();
+    //     $('select#sch_cat').append(new Option('tous', 0))
+    //     if (cats) {
+    //       $.each(cats, function(index, cat){
+    //           $('select#sch_cat').append(new Option(cat.NomCategorie, cat.id))
+    //       })
+    //     }
+    //   })
+    // }else {
+    //   categories.findAll().then(cats => {
+    //     $('select#sch_cat option').remove();
+    //     $('select#sch_cat').append(new Option('tous', 0))
+    //     if (cats) {
+    //       $.each(cats, function(index, cat){
+    //           $('select#sch_cat').append(new Option(cat.NomCategorie, cat.id))
+    //       })
+    //     }
+    //   })
+    // }
   })
 }
 /**
@@ -756,21 +857,31 @@ function shearchPlayer(){
   $('#sch_fname').on( 'keyup', function () {
     table.columns(3).search( this.value ).draw();
   });
+
   $('#sch_cat, #sch_grp').on( 'change', function () {
     if ($('#sch_cat').val() == 0 && $('#sch_grp').val() != 0) {
-      table.columns(6).search('/'+$('#sch_grp option:selected').text()).draw();
+      table.columns(7).search('/'+$('#sch_grp option:selected').text()).draw();
       return;
     }
     if ($('#sch_cat').val() != 0 && $('#sch_grp').val() == 0) {
-      table.columns(6).search($('#sch_cat option:selected').text()+'/').draw();
+      table.columns(7).search($('#sch_cat option:selected').text()+'/').draw();
       return;
     }
     if (this.value == 0) {
       table.search( '' ).columns().search( '' ).draw();
       return;
     }
-    table.columns(6).search($('#sch_cat option:selected').text()+'/'+$('#sch_grp option:selected').text()).draw();
+    table.columns(7).search($('#sch_cat option:selected').text()+'/'+$('#sch_grp option:selected').text()).draw();
   });
+  
+  $('#sch_day').on( 'change', function () {
+    if (this.value == 0) {
+      table.search( '' ).columns().search( '' ).draw();
+      return;
+    }
+    table.columns(6).search($('#sch_day option:selected').text()).draw();
+  });
+
 }
 $(document).ready(function(){
   $('button#updatePlayer').hide();
