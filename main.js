@@ -19,7 +19,7 @@ function createWindows () {
     }
   })
   // and load the index.html of the app.
-  mainWindow.loadFile('joueurs/index.html')
+  mainWindow.loadFile('index.html')
   mainWindow.once("ready-to-show", function(){
     mainWindow.show();
   })
