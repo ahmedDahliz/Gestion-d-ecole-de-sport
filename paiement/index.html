@@ -37,6 +37,7 @@
               <th>Num</th>
               <th>Nom</th>
               <th>Prenom</th>
+              <th>Jours</th>
               <th>Categorie/Groupe</th>
               <th>Date de paiement</th>
               <th>Paiement pour</th>
@@ -70,7 +71,7 @@
             <td><input type="text" id="fname_lname" class="form-control form-control-sm m-1" readonly/></td>
           </tr>
           <tr>
-            <td>Categorie/Groupe : </td>
+            <td>Jours Categorie/Groupe : </td>
             <td><input type="text" id="cat_grp" class="form-control form-control-sm m-1" readonly></td>
           </tr>
           <tr>
@@ -79,24 +80,24 @@
               <div id="month_container" style="text-align: left; max-height: 100px; overflow-y: scroll;">
                 <table id="table_paiement_for">
                   <tr>
-                    <td><input type="checkbox" name="payment_for" value="7" /> août <span class="year"></span> </td>
-                    <td><input type="checkbox" name="payment_for" value="8" /> septembre <span class="year"></span> </td>
-                    <td><input type="checkbox" name="payment_for" value="9" /> octobre <span class="year"></span> </td>
+                    <td><input type="checkbox" data-year="" data-month="août" name="payment_for" value="7" /> août <span class="year"></span> </td>
+                    <td><input type="checkbox" data-year="" data-month="septembre" name="payment_for" value="8" /> septembre <span class="year"></span> </td>
+                    <td><input type="checkbox" data-year="" data-month="octobre" name="payment_for" value="9" /> octobre <span class="year"></span> </td>
                   </tr>
                   <tr>
-                    <td><input type="checkbox" name="payment_for" value="10" /> novembre <span class="year"></span></td>
-                    <td><input type="checkbox" name="payment_for" value="11" /> décembre <span class="year"></span></td>
-                    <td><input type="checkbox" name="payment_for" value="0" /> janvier <span class="year"></span> </td>
+                    <td><input type="checkbox" data-year="" data-month="novembre" name="payment_for" value="10" /> novembre <span class="year"></span></td>
+                    <td><input type="checkbox" data-year="" data-month="décembre" name="payment_for" value="11" /> décembre <span class="year"></span></td>
+                    <td><input type="checkbox" data-year="" data-month="janvier" name="payment_for" value="0" /> janvier <span class="year"></span> </td>
                   </tr>
                   <tr>
-                    <td><input type="checkbox" name="payment_for" value="1" /> février <span class="year"></span> </td>
-                    <td><input type="checkbox" name="payment_for" value="2" /> mars <span class="year"></span> </td>
-                    <td><input type="checkbox" name="payment_for" value="3" /> avril <span class="year"></span> </td>
+                    <td><input type="checkbox" data-year="" data-month="février" name="payment_for" value="1" /> février <span class="year"></span> </td>
+                    <td><input type="checkbox" data-year="" data-month="mars" name="payment_for" value="2" /> mars <span class="year"></span> </td>
+                    <td><input type="checkbox" data-year="" data-month="avril" name="payment_for" value="3" /> avril <span class="year"></span> </td>
                   </tr>
                   <tr>
-                    <td><input type="checkbox" name="payment_for" value="4" /> mai <span class="year"></span> </td>
-                    <td><input type="checkbox" name="payment_for" value="5" /> juin <span class="year"></span> </td>
-                    <td><input type="checkbox" name="payment_for" value="6" /> juillet <span class="year"></span> </td>
+                    <td><input type="checkbox" data-year="" data-month="mai" name="payment_for" value="4" /> mai <span class="year"></span> </td>
+                    <td><input type="checkbox" data-year="" data-month="juin" name="payment_for" value="5" /> juin <span class="year"></span> </td>
+                    <td><input type="checkbox" data-year="" data-month="juillet" name="payment_for" value="6" /> juillet <span class="year"></span> </td>
                   </tr>
                 </table>
               </div>

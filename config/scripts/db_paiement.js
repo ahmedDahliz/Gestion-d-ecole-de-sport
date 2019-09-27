@@ -8,6 +8,7 @@ var modalPayment = document.getElementById("myModalPayment");
 var  _changed = false
 var table
 joueurs = tables.joueurs;
+jours = tables.jours;
 paiement = tables.paiement;
 categories = tables.categorie;
 groupes = tables.groupes;
@@ -18,7 +19,7 @@ groupes = tables.groupes;
 function fillPaymentTable(){
   let paymentData = [];
   joueurs.findAll({
-    include: [{model: paiement},{model: groupes, include: [{model: categories}]}]
+    include: [{model: paiement},{model: groupes, include: [jours, categories]}]
   }).then(players=>{
     let createdAt = '';
     let paiementPour = '';
@@ -41,7 +42,7 @@ function fillPaymentTable(){
           }
         })
        paymentData.push([hiddenIdPayment+'<input type="hidden" name="idPlayer" value="'+player.id+'" class="'+classe+'"/><button '+disablePaye+' name="payment" class="btn btn-success align-middle payment" title="Valider paiement pour '+currentMonth+'"><i class="fas fa-check"></i></button> <button name="show_payment" class="btn btn-show align-middle show_payment" title="Afficher les paiements"><i class="fas fa-eye"></i></button> <button title="Annuler paiement  pour '+currentMonth+'" '+disableCancel+' name="cancel_payment" class="btn btn-danger align-middle cancel_payment"><i class="fas fa-times"></i></button>',
-       player.id, player.Nom, player.Prenom, player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe, createdAt, paiementPour, montant])
+       player.id, player.Nom, player.Prenom, player.groupe.jour.Jour1+'-'+player.groupe.jour.Jour2, player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe, createdAt, paiementPour, montant])
        createdAt = '';
        paiementPour = '';
        montant = '';
@@ -101,36 +102,52 @@ function checkPayment(){
       $('input[name=payment_for]').each(function(){
             $(this).css('display', 'inline');
       });
-      let year = currentYear
       $('table#table_paiement_for tbody td').each((index, month)=>{
-        if (index == 5) {
-          year++;
+        year = currentYear
+        if (date.getMonth() >= 8 && date.getMonth() <= 11) {
+          console.log('+++');
+          if (index >= 5 && index <= 11) {
+            year = currentYear + 1;
+          }
+        }else if (date.getMonth() >= 0 && date.getMonth() <= 6){
+          console.log('---');
+          if (index >= 0 && index <= 4) {
+            year = currentYear - 1;
+          }
         }
         $(month).find('span.year').html(year)
+        $(month).find('input[name=payment_for]').attr('data-year', year)
       })
       // $.each(months2, (index, month)=>{
       //
       // })
       $('input[name=payment_for]').closest('td').removeClass('payedCell');
       $('span#date_now').html(date.toLocaleString('fr-FR',  { year: 'numeric', month: 'long', day: 'numeric' }));
-      $('input#fname_lname').val($(this).closest('tr').find('td').eq(2).text()+' '+$(this).closest('tr').find('td').eq(1).text());
+      $('input#fname_lname').val($(this).closest('tr').find('td').eq(3).text()+' '+$(this).closest('tr').find('td').eq(2).text());
 
       if (date.getMonth() >= 1 && date.getMonth() <= 6) {
         $("div#month_container").animate({ scrollTop: $("div#month_container").height()});
       }
-      $('input#cat_grp').val($(this).closest('tr').find('td').eq(3).text());
+      $('input#cat_grp').val($(this).closest('tr').find('td').eq(4).text()+' '+ $(this).closest('tr').find('td').eq(5).text());
       $('input#idPlayerPayment').val($(this).closest('tr').find('td').find('input[type=hidden][name=idPlayer]').val());
       joueurs.findOne({
         where: {id: $(this).closest('tr').find('td').find('input[type=hidden][name=idPlayer]').val()},
         include: [{model: paiement}]
       }).then(player =>{
         $.each(player.paiements, (index, paiement)=>{
-          if (paiement.PaiementPour.replace(/\D/g, '').trim() == currentYear) {
-            $('input[name=payment_for]')[months2.indexOf(paiement.PaiementPour.replace(/[0-9]/g, '').trim())].style.display = 'none';
-            $('input[name=payment_for]')[months2.indexOf(paiement.PaiementPour.replace(/[0-9]/g, '').trim())].parentElement.className += ' payedCell';
-          }
-
-        });
+          pYear = paiement.PaiementPour.replace(/\D/g, '').trim()
+          pMonth = paiement.PaiementPour.replace(/[0-9]/g, '').trim()
+          console.log(pYear);
+          console.log($('input[name=payment_for][data-year='+pYear+']'));
+          $('input[name=payment_for][data-year='+pYear+'][data-month='+pMonth+']').css('display', 'none');
+          $('input[name=payment_for][data-year='+pYear+'][data-month='+pMonth+']').closest('td').addClass('payedCell');
+        //   if (pYear == currentYear) {
+        //
+        //   }else if ((pMonth>= 5 && pMonth<=11) && pYear == (currentYear - 1)){
+        //     $('input[name=payment_for]')[pMonth].style.display = 'none';
+        //     $('input[name=payment_for]')[pMonth].parentElement.className += ' payedCell';
+        // }
+      });
       })
   });
 }
@@ -142,19 +159,20 @@ function addPayment(){
   $('button#submit_payment').on('click', function(){
     payments = []
     $.each($('input[name=payment_for]:checked'), (index, month)=>{
+
       payments.push({
-        PaiementPour: months[month.value]+' '+currentYear,
+        PaiementPour: months[month.value]+' '+month.getAttribute('data-year'),
         Montant: $('input#price').val(),
         joueurId : $('input[type=hidden]#idPlayerPayment').val()
         })
     })
     paiement.bulkCreate(payments).then(() =>{
         ipc.send('refresh-group')
-    })
+     })
   })
   $('table#table_show_months').on('click', 'button.addPayment', function(event){
     let instPaiment = paiement.build({
-      PaiementPour: months[$(this).closest('tr').find('span#month').attr('data-number')]+' '+currentYear,
+      PaiementPour: $(this).closest('tr').find('span#month').attr('data-month')+' '+$(this).closest('tr').find('span#month').attr('data-year'),
       Montant: $(this).closest('tr').find('input#price_payment').val(),
       joueurId : $('input[type=hidden]#show_id_player').val()
     })
@@ -235,16 +253,16 @@ function showPayments(){
       where: {
         id: $(this).closest('td').find('input[type=hidden][name=idPlayer]').val()
       },
-      include: [{model: paiement}, {model: groupes, include: [{model: categories}]}]
+      include: [{model: paiement}, {model: groupes, include: [jours, categories]}]
     }).then((player)=>{
-      year = currentYear
+      date = new Date();
       $('table#table_show_months tbody tr').remove()
       modalShowPayment.style.display = "block";
       payedMonth = player.paiements.map(function(item) { return item["PaiementPour"];})
       payedPrice = player.paiements.map(function(item) { return item["Montant"];})
       idPayments = player.paiements.map(function(item) { return item["id"];})
       $('span#show_fname_lname').html(player.Nom+' '+player.Prenom)
-      $('span#show_cat_grp').html(player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe)
+      $('span#show_cat_grp').html(player.groupe.jour.Jour1 +'-'+player.groupe.jour.Jour2 +' '+player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe)
       $('input#show_id_player').val(player.id)
       let classe = ''
       let button = '<button class="btn btn-success addPayment"><i class="fas fa-check"></i></button>'
@@ -252,8 +270,17 @@ function showPayments(){
       let price = 50
       let idPayment = ''
       $.each(months2, (index, month)=>{
-        if (index == 5) {
-          year = currentYear+1;
+        year = currentYear
+        if (date.getMonth() >= 8 && date.getMonth() <= 11) {
+          console.log('+++');
+          if (index >= 5 && index <= 11) {
+            year = currentYear + 1;
+          }
+        }else if (date.getMonth() >= 0 && date.getMonth() <= 6){
+          console.log('---');
+          if (index >= 0 && index <= 4) {
+            year = currentYear - 1;
+          }
         }
         let bold = (index == 0 || index == 11)? '': 'font-weight-bold'
         if (payedMonth.includes(month+' '+year)) {
@@ -264,7 +291,7 @@ function showPayments(){
           idPayment = idPayments[payedMonth.indexOf(month+' '+year)]
         }
         $('table#table_show_months tbody').append('<tr class="'+classe+' '+bold+'">'+
-        '<td><input type="hidden" name="showIdPayment" value="'+ idPayment+'"/><span id="month" data-number="'+months.indexOf(month)+'">'+month+'</span> '+year+'</td>'+
+        '<td><input type="hidden" name="showIdPayment" value="'+ idPayment+'"/><span id="month" data-year="'+year+'" data-month="'+month+'">'+month+'</span> '+year+'</td>'+
         '<td class="input-box"><input '+disabled+' type="text" class="form-control form-control-sm m-1" size="2" value="'+price+'" id="price_payment"/><span style="top: 19px;" class="unit">DH</span></td>'+
         '<td>'+button+'</td>'+
         '</tr>')

@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 var tables = require('../config/scripts/db.js');
 
 var entreneur  = tables.entreneur;
-var groupes = tables.groupes;
+// var groupes = tables.groupes;
 var categories = tables.categorie;
 
 /**
@@ -19,32 +19,32 @@ function hideElement(selector){
  *init the add coach form
  *@return void
 */
-function initAddForm(){
-  categories.findAll({
-    include: [{model: groupes, require: true}]
-  }).then(cats=>{
-    if(cats){
-      let Fcat = cats[0];
-      $.each(cats, (index, cat)=>{
-        $('select#catE').append(new Option(cat.NomCategorie, cat.id))
-      });
-      $.each(Fcat.groupes, (index, groupe)=>{
-        $('select#groupeE').append(new Option(groupe.NomGroupe, groupe.id))
-      });
-    }
-  })
-  $('select#catE').on('change', ()=>{
-    categories.findOne({
-      where: {id: $('select#catE').val()},
-      include: {model: groupes}
-    }).then(cat =>{
-      $('select#groupeE option').remove();
-      $.each(cat.groupes, (index, groupe)=>{
-        $('select#groupeE').append(new Option(groupe.NomGroupe, groupe.id));
-      });
-    })
-  })
-}
+// function initAddForm(){
+//   categories.findAll({
+//     include: [{model: groupes, require: true}]
+//   }).then(cats=>{
+//     if(cats){
+//       let Fcat = cats[0];
+//       $.each(cats, (index, cat)=>{
+//         $('select#catE').append(new Option(cat.NomCategorie, cat.id))
+//       });
+//       $.each(Fcat.groupes, (index, groupe)=>{
+//         $('select#groupeE').append(new Option(groupe.NomGroupe, groupe.id))
+//       });
+//     }
+//   })
+//   $('select#catE').on('change', ()=>{
+//     categories.findOne({
+//       where: {id: $('select#catE').val()},
+//       include: {model: groupes}
+//     }).then(cat =>{
+//       $('select#groupeE option').remove();
+//       $.each(cat.groupes, (index, groupe)=>{
+//         $('select#groupeE').append(new Option(groupe.NomGroupe, groupe.id));
+//       });
+//     })
+//   })
+// }
 /**
  * Validation of inputs coach form
  * @Param fname @type input tag
@@ -218,9 +218,7 @@ let coachData = []
  *@return void
 */
 function fillCoachTable(){
-  entreneur.findAll({
-    include:[{model: groupes}]
-  }).then(coaches=>{
+  entreneur.findAll().then(coaches=>{
     $.each(coaches, function(index, coach){
       coachData.push(['<input type="radio" name="entreneur" value="'+coach.id+'" class="table-radio align-middle">', coach.NomE, coach.PrenomE, coach.TelephoneE/*,coach.groupes.map(function(item) { return item["NomGroupe"]; })*/])
     })
@@ -326,7 +324,7 @@ function updateCoach(){
   })
 }
 $(document).ready(function(){
-  initAddForm();
+  // initAddForm();
   addCoach();
   editNewCoach();
   updateAddedCoach();
