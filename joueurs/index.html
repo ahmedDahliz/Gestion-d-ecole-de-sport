@@ -73,19 +73,25 @@
         <button type="button" id="ajouter" class="btn btn-add"><i class="fas fa-plus"></i> Ajouter</button>
         <button type="button" id="deletePlayer" class="btn btn-delete" disabled><i class="fas fa-user-times"></i> Supprimer</button>
       </div>
-      <!-- <div class="float-right m-2">
+      <div class="float-right m-2">
+        <span id="msg_export_all" class="font-weight-bold"></span> &nbsp;
+        <img src="..\assets\image\spinner.gif" alt="" width="40" id="loader_export_all">
         <button type="button" id="export_all" class="btn btn-success"><i class="fas fa-file-excel"></i> Exporter tous</button>
         <button type="button" id="export_abs" class="btn btn-show"><i class="fas fa-file-export"></i> Exporter les listes d'abscence</button>
-      </div> -->
+      </div>
     </div>
     <!-- check payment modal -->
-    <!-- <div id="myModalAbs" class="modal">
-
+    <div id="myModalAbs" class="modal">
+      <!-- The Close Button -->
       <span id="closeAbs" class="close">&times;</span>
-
+      <!-- Modal Content -->
       <div  class="modal-content w-75 text-center p-3">
         <h6>Le mois courant : <span id="month_now"></span></h6>
         <table class="table">
+          <tr>
+            <td>Jours : </td>
+            <td><select  class="form-control form-control-sm" name="" id="abs_day"></select></td>
+          </tr>
           <tr>
             <td>Categorie : </td>
             <td><select  class="form-control form-control-sm" name="" id="abs_cat"></select></td>
@@ -115,30 +121,34 @@
           </tr>
           <tr>
             <td><button id="export_list_abs" class="btn btn-success"><i class="fas fa-file-excel"></i> Exporter la liste</button></td>
+            <td><img src="..\assets\image\spinner.gif" alt="" width="40" id="loader_export_abs"> <span id="msg_export_abs" class="font-weight-bold"></span> </td>
           </tr>
         </table>
       </div>
 
 
+      <!-- Modal Caption (Image Text) -->
       <div id="caption">Exporter les listes d'absence</div>
-    </div> -->
+    </div>
     <!-- You can also require other files to run in this process -->
     <script src="../renderer.js"></script>
     <script src="../node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script src="../config/scripts/db_players.js"></script>
-    <!-- <script src="../assets/javascript/exportExcel.js"></script> -->
+    <script src="../assets/javascript/exportExcel.js"></script>
     <script>
       _idPlayer = null
-      // var modalAbs = document.getElementById("myModalAbs");
-      // var spanAbs = document.getElementById("closeAbs");
-      // spanAbs.onclick = function() {
-      //   modalAbs.style.display = "none";
-      // }
-      // $('button#export_abs').on('click', function(){
-      //   modalAbs.style.display = "block";
-      //   $('select#abs_months').val(new Date().getMonth())
-      // })
+      var modalAbs = document.getElementById("myModalAbs");
+      var spanAbs = document.getElementById("closeAbs");
+      spanAbs.onclick = function() {
+        modalAbs.style.display = "none";
+      }
+      $('button#export_abs').on('click', function(){
+        modalAbs.style.display = "block";
+        $('select#abs_months').val(new Date().getMonth())
+      })
       $(document).ready(function () {
+        $('img#loader_export_abs').hide();
+        $('img#loader_export_all').hide();
         $('span#month_now').html(new Date().toLocaleString('fr', {month: 'long'}))
         $('table#table_player').on('change', 'input:radio[name="player"]', function () {
            if(this.checked){

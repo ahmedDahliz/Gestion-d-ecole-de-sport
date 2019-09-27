@@ -3,6 +3,7 @@ var tables = require('../config/scripts/db.js');
 var fs = require('fs');
 
 var joueurs  = tables.joueurs;
+var paiement  = tables.paiement;
 var jours  = tables.jours;
 var horaire  = tables.horaire;
 var categories  = tables.categorie;
@@ -581,6 +582,7 @@ function fillTablePlayer(){
         }
       }
     });
+
   })
   $('select#sch_cat').on('change', ()=>{
     // if ($('select#sch_day').val() == 0 && $('select#sch_cat').val() == 0) {
@@ -873,13 +875,64 @@ function shearchPlayer(){
     }
     table.columns(7).search($('#sch_cat option:selected').text()+'/'+$('#sch_grp option:selected').text()).draw();
   });
-  
+
   $('#sch_day').on( 'change', function () {
     if (this.value == 0) {
       table.search( '' ).columns().search( '' ).draw();
       return;
     }
     table.columns(6).search($('#sch_day option:selected').text()).draw();
+  });
+
+}
+
+/**
+ * init export Abcesnce list
+ * @return void
+*/
+function initExportllistAbsceance(){
+  jours.findAll({
+      include: [{model: categories, include: groupes, require: true}],
+  }).then(res => {
+      pJours = res[0]
+      $.each(res, function(index, jours){
+        $('select#abs_day').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
+      })
+      //itirate times for the first days
+      pCat = pJours.categories[0]
+      $.each(pJours.categories, function(index, cat){
+        $('select#abs_cat').append(new Option(cat.NomCategorie, cat.id));
+      })
+      $('select#abs_cat').change()
+  });
+  $('select#abs_day').on('change', function() {
+    jours.findOne({
+      where: {id: $(this).val()},
+        include: [{model: categories}]
+    }).then(jours => {
+        $('select#abs_cat option').remove();
+        $.each(jours.categories, function(index, cat){
+          $('select#abs_cat').append(new Option(cat.NomCategorie, cat.id));
+        })
+        $('select#abs_cat').change()
+
+    });
+  });
+  $('select#abs_cat').on('change', function() {
+    if ($('select#abs_cat').val()) {
+      categories.findOne({
+        where: {id: $(this).val()},
+        include: {model: groupes, where: {jourId:  $('select#abs_day').val() }}
+      }).then(cats => {
+        $('select#abs_grp option').remove();
+        if (cats) {
+          $.each(cats.groupes, function(index, grp){
+              $('select#abs_grp').append(new Option(grp.NomGroupe, grp.id))
+          })
+        }
+      })
+    }
+
   });
 
 }
@@ -901,4 +954,5 @@ $(document).ready(function(){
   $.when(fillTablePlayer()).done(function () {
     shearchPlayer()
   })
+  initExportllistAbsceance()
 })

@@ -26,10 +26,12 @@
   "dependencies": {
     "bootstrap": "^4.3.1",
     "datatables.net-bs4": "^1.10.19",
+    "exceljs": "^2.0.1",
     "gijgo": "^1.9.13",
     "jquery": "^3.4.1",
     "popper": "^1.0.1",
-    "sequelize": "^5.12.2",
+    "popper.js": "^1.14.7",
+    "sequelize": "^5.19.0",
     "sqlite3": "^4.0.9"
   }
 }
