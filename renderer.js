@@ -82,6 +82,9 @@ $('#P').on('click', function () {
 $('#U').on('click', function () {
   ipc.send('change-main', 'utilisateur/index.html')
 });
+$('#D').on('click', function () {
+  ipc.send('change-main', 'index.html')
+});
 
 //functionality of group buttons
 $('#ajouterGroupe').on('click', function () {

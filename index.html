@@ -34,21 +34,21 @@
         <h2 class="m-2"><i class="fas fa-sign-in-alt"></i> Connexion</h2>
       </div>
       <div class="m-3 mx-auto w-50">
-        <form>
           <div class="form-group">
             <label class="font-weight-bold" for="exampleInputEmail1">Nom d'utilisateur : </label>
             <input type="text" class="form-control" id="username" aria-describedby="emailHelp" placeholder="Utilisateur">
           </div>
           <div class="form-group">
             <label class="font-weight-bold" for="exampleInputPassword1">Mot de passe : </label>
-            <input type="password" class="form-control" id="password" placeholder="Nouveau mot de passe">
+            <input type="password" class="form-control" id="password" placeholder="Mot de passe">
           </div>
-
-          <button type="submit" class="btn btn-danger"><i class="fas fa-sign-in-alt"></i> Connexion</button>
-        </form>
+          <button id="login" class="btn btn-danger"><i class="fas fa-sign-in-alt"></i> Connexion</button>
+          <span style="color:#580303" class="font-weight-bold d-block m-2" id="msg_login"></span>
       </div>
     </div>
     <!-- You can also require other files to run in this process -->
     <script src="renderer.js"></script>
+    <script src="config/scripts/db_connection.js"></script>
+
   </body>
 </html>

@@ -46,6 +46,11 @@ let paiement = sequelize.define('paiement', {
   PaiementPour: {type: Sequelize.STRING, allowNull: false },
   Montant: {type: Sequelize.DECIMAL, allowNull: false }
 })
+let users = sequelize.define('users', {
+  username: {type: Sequelize.STRING, allowNull: false },
+  password: {type: Sequelize.DECIMAL, allowNull: false }
+})
+
 exports.jours = jours;
 exports.categorie = categorie;
 exports.groupes = groupes;
@@ -53,6 +58,7 @@ exports.groupes = groupes;
 exports.entreneur = entreneurs;
 exports.joueurs = joueurs;
 exports.paiement = paiement;
+exports.users = users;
 // exports.entreneur_groupe = entreneur_groupe;
 
 //relationShips
@@ -66,7 +72,7 @@ joueurs.belongsTo(groupes)
 groupes.hasMany(joueurs)
 joueurs.hasMany(paiement)
 paiement.belongsTo(joueurs)
-// sequelize.sync({force: true})
+// sequelize.sync()
 // exports.seq = sequelize.authenticate()
 // .then(() => {
 //   console.log('Connection has been established successfully.');

@@ -10,7 +10,7 @@ if (currentMonth >= 0) {
 }
 /**
  * getPlayerData
- * @return void
+ * @return promesse
 */
 var dataPlayerRows = []
 let testData = []
