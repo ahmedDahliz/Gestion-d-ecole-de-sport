@@ -24,6 +24,7 @@ function createWindows () {
   mainWindow.loadFile('index.html')
   mainWindow.once("ready-to-show", function(){
     mainWindow.show();
+
   })
   ipcMain.on('change-main', function(event, args){
     mainWindow.loadFile(args)
@@ -34,10 +35,7 @@ function createWindows () {
   ipcMain.on('refresh-group', function(){
     mainWindow.reload();
   })
-  // ipcMain.on('idPlayer', function(event, args){
-  //   console.log(args);
-  //   event.reply('redirect-idPlayer', args)
-  // })
+
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
@@ -71,12 +69,3 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-
-
-// connecting to the database
-const Sequelize = require('sequelize');
-
-exports.sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: 'config/db/EcoleDeTerraines.db'
-})

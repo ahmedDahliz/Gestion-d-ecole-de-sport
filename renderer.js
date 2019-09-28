@@ -6,6 +6,9 @@ const remote = require('electron').remote
 const ipc = require('electron').ipcRenderer
 let BrowserWindow = remote.BrowserWindow
 let isSaved = true;
+let mainWindow;
+
+
 //datatable configuration
 require( 'datatables.net-bs4' )()
 let datatable;
@@ -17,12 +20,16 @@ $(window).on('load', function() {
   setTimeout(()=>{$(".loader").css('z-index', -1);}, 300)
 });
 $(document).ready( function () {
+  mainWindow = BrowserWindow.getAllWindows()[0];
+
 } );
 
 //functonality of player buttons
 $('#showPlayer').on('click', function () {
   afficherJoueur = new BrowserWindow({
     width: 1250,
+    parent: mainWindow,
+    modal: true,
     height: 780,
     show: false,
     webPreferences: {
@@ -30,12 +37,15 @@ $('#showPlayer').on('click', function () {
     }
   })
   afficherJoueur.loadFile('joueurs/afficher.html')
-  afficherJoueur.once("ready-to-show", function(){
+  afficherJoueur.once("ready-to-show", function(idPlayer){
     afficherJoueur.show();
-    afficherJoueur.webContents.send('idPlayer', $('input:radio[name=player]:checked').val())
+    afficherJoueur.webContents.on('dom-ready', () => {
+        afficherJoueur.webContents.send('idPlayer',  $('input:radio[name=player]:checked').val())
+    })
+
   })
   afficherJoueur.on('closed', function(){
-    ipc.send('refresh-group')
+    mainWindow.reload();
   })
   //
   // afficherJoueur.on('close', function(e){
@@ -52,6 +62,8 @@ $('#ajouter').on('click', function () {
     width: 1350,
     height: 780,
     show: false,
+    parent: mainWindow,
+    modal: true,
     webPreferences: {
         nodeIntegration: true
     }
@@ -92,6 +104,8 @@ $('#ajouterGroupe').on('click', function () {
     width: 1150,
     height: 750,
     show: false,
+    parent: mainWindow,
+    modal: true,
     webPreferences: {
         nodeIntegration: true
     }
@@ -111,6 +125,8 @@ $('#ajouterEntreneur').on('click', function () {
     width: 1150,
     height: 650,
     show: false,
+    parent: mainWindow,
+    modal: true,
     webPreferences: {
         nodeIntegration: true
     }

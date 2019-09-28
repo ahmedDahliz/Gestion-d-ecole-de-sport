@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 var tables = require('../config/scripts/db.js');
 var fs = require('fs');
+const path = require('path')
 
 var joueurs  = tables.joueurs;
 var paiement  = tables.paiement;
@@ -8,8 +9,8 @@ var jours  = tables.jours;
 var horaire  = tables.horaire;
 var categories  = tables.categorie;
 var groupes  = tables.groupes;
-var defaultAvatar = 'C:\\Users\\Ahmed\\Desktop\\Desktop_stuffs\\workspace\\terrains\\Gestion_Ecole\\electron-quick-start\\assets\\image\\avatars\\default.png';
-var defaultCert = 'C:\\Users\\Ahmed\\Desktop\\Desktop_stuffs\\workspace\\terrains\\Gestion_Ecole\\electron-quick-start\\assets\\image\\certificats\\defaultFile.png';
+var defaultAvatar = path.join(__dirname, '..\\assets\\image\\avatars\\default.png');
+var defaultCert = path.join(__dirname, '..\\assets\\image\\certificats\\defaultFile.png');
 var avatarPath = defaultAvatar;
 var certPath = defaultCert;
 var avatarFile, certFile;

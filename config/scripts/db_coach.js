@@ -291,13 +291,12 @@ function editCoach(){
   $('button#modiferEntreneur').on('click', function(){
     entreneur.findOne({
       where:{id:$('input:radio[name="entreneur"]:checked').val()},
-      include: [{model: groupes}]
     }).then(coach=>{
       $('input:hidden[name=editIdCoach]').val(coach.id);
       $('input#edit_lname').val(coach.NomE);
       $('input#edit_fname').val(coach.PrenomE);
       $('input#edit_phone').val(coach.TelephoneE);
-      $('select#edit_group').val([coach.groupes.map(function(item) { return item["id"]; })]);
+      // $('select#edit_group').val([coach.groupes.map(function(item) { return item["id"]; })]);
     })
   })
 }
@@ -310,7 +309,6 @@ function updateCoach(){
     if (validateCoachData($('input#edit_fname'), $('input#edit_lname'), $('input#edit_phone'), $('span#msg_update'))) {
       entreneur.findOne({
         where:{id:$('input:hidden[name=editIdCoach]').val()},
-        include: [{model: groupes}]
       }).then(coachToUpdate=>{
         coachToUpdate.update({
           NomE:$('input#edit_lname').val(),
