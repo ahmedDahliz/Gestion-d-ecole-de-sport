@@ -12,13 +12,14 @@ jours = tables.jours;
 paiement = tables.paiement;
 categories = tables.categorie;
 groupes = tables.groupes;
+
 /**
  * Fill the payment index table
  * @return void
 */
 function fillPaymentTable(){
   let paymentData = [];
-  joueurs.findAll({
+  return joueurs.findAll({
     include: [{model: paiement},{model: groupes, include: [jours, categories]}]
   }).then(players=>{
     let createdAt = '';
@@ -63,6 +64,11 @@ function fillPaymentTable(){
       //   }
       // ],
       data: paymentData,
+      createdRow: function (row, data, index) {
+         if (data[7] != "") {
+             $(row).addClass('rowPayed');
+         }
+       },
       pageLength : 7,
       lengthMenu: [[7, 10, 30, 50, -1], [7, 10, 30, 50, 'Tous']],
       language: {
@@ -88,7 +94,14 @@ function fillPaymentTable(){
         }
       }
     });
-    $('input[type=hidden].payed').closest('tr').addClass('rowPayed')
+    // $('input[type=hidden].payed').closest('tr').addClass('rowPayed')
+    // table.rows( '.ready' ).nodes().to$().removeClass( 'ready' );
+    // console.log(table.rows().nodes().to$());
+    // console.log(table.rows().nodes());
+    // $('#table_paiement').on( 'page.dt', function () {
+    //
+    // } );
+
   })
 }
 /**
@@ -118,9 +131,6 @@ function checkPayment(){
         $(month).find('span.year').html(year)
         $(month).find('input[name=payment_for]').attr('data-year', year)
       })
-      // $.each(months2, (index, month)=>{
-      //
-      // })
       $('input[name=payment_for]').closest('td').removeClass('payedCell');
       $('span#date_now').html(date.toLocaleString('fr-FR',  { year: 'numeric', month: 'long', day: 'numeric' }));
       $('input#fname_lname').val($(this).closest('tr').find('td').eq(3).text()+' '+$(this).closest('tr').find('td').eq(2).text());
@@ -137,8 +147,6 @@ function checkPayment(){
         $.each(player.paiements, (index, paiement)=>{
           pYear = paiement.PaiementPour.replace(/\D/g, '').trim()
           pMonth = paiement.PaiementPour.replace(/[0-9]/g, '').trim()
-          console.log(pYear);
-          console.log($('input[name=payment_for][data-year='+pYear+']'));
           $('input[name=payment_for][data-year='+pYear+'][data-month='+pMonth+']').css('display', 'none');
           $('input[name=payment_for][data-year='+pYear+'][data-month='+pMonth+']').closest('td').addClass('payedCell');
         //   if (pYear == currentYear) {
@@ -319,7 +327,8 @@ function showAllPayments(){
 */
 function showPayedPayments(){
   $('button#payed_payments').on('click', function(){
-      table.column(6).search(currentMonth+' '+currentYear).draw()
+      table.column(7).search(currentMonth+' '+currentYear).draw()
+      $('input[type=hidden].payed').closest('tr').addClass('rowPayed')
   })
 }
 /**
@@ -328,7 +337,7 @@ function showPayedPayments(){
 */
 function showUnpayedPayments(){
   $('button#unpayed_payments').on('click', function(){
-      table.column(6).search('^$', true, false).draw()
+      table.column(7).search('^$', true, false).draw()
   })
 }
 $(document).ready(function(){
@@ -341,4 +350,5 @@ $(document).ready(function(){
   showAllPayments()
   showPayedPayments()
   showUnpayedPayments()
+
 })
