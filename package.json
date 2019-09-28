@@ -1,23 +1,15 @@
 {
-  "name": "electron-quick-start",
+  "name": "Gestion-ecole-sportive",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Gestion des joueurs",
   "main": "main.js",
   "scripts": {
     "rebuild": "electron-rebuild -f -w sqlite3",
     "postinstall": "install-app-deps",
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "repository": "",
+  "author": "Ahmed Dahliz",
   "devDependencies": {
     "electron": "^5.0.8",
     "electron-rebuild": "^1.8.5",

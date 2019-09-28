@@ -4,6 +4,7 @@ var fs = require('fs');
 let months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 let currentMonth = new Date().toLocaleString('fr', {month: 'long'})
 let currentYear = new Date().getFullYear()
+let totalSum = 0;
 let academicYear = currentYear+'_'+(currentYear + 1)
 if (currentMonth >= 0) {
   academicYear = currentYear+'_'+(currentYear - 1)
@@ -45,6 +46,7 @@ function getPlayerData(){
          '12': '', '1': '', '2': '' ,
          '3': '', '4': '', '5': '' ,'6': ''
        }
+       totalSum += somme
        somme = 0
       })
         return dataPlayerRows
@@ -56,7 +58,7 @@ function getPlayerData(){
 */
 function exportAbscence(){
   $('button#export_list_abs').on('click', function(){
-      $('img#loader_export_abs').show();
+    $('img#loader_export_abs').show();
     $('span#msg_export_abs').html('')
     var workbook = new Excel.Workbook();
     workbook.creator = 'EcoleSportifeAbscence'
@@ -70,22 +72,20 @@ function exportAbscence(){
           }
       ]
     }).then(dataPlayers=>{
-      console.log(dataPlayers);
       if (dataPlayers.length != 0) {
         let nameList = $('select#abs_day option:selected').text()+'_'+$('select#abs_cat option:selected').text()+'_'+$('select#abs_grp option:selected').text()
         var sheet = workbook.addWorksheet(nameList)
         sheet.mergeCells('E2:G2');
         sheet.getCell('E2').value = $('select#abs_day option:selected').text()
-        // sheet.getRow(2).height = 20
         sheet.mergeCells('E4:G4');
         sheet.getCell('E4').value = dataPlayers[0].groupe.horaire1+'/'+dataPlayers[0].groupe.horaire2
-        // sheet.getRow(4).height = 20
+        sheet.getRow(4).height = 20
         sheet.mergeCells('E6:G6');
         sheet.getCell('E6').value = $('select#abs_cat option:selected').text()
-        // sheet.getRow(6).height = 20
+        sheet.getRow(6).height = 20
         sheet.mergeCells('E8:G8');
         sheet.getCell('E8').value = $('select#abs_grp option:selected').text()
-        // sheet.getRow(8).height = 20
+        sheet.getRow(8).height = 20
         days = $('select#abs_day option:selected').text().split('-')
         fDay = days[0].charAt(0)
         sDay = days[1].charAt(0)
@@ -107,10 +107,7 @@ function exportAbscence(){
         ]
         $.each(dataPlayers, (index, player)=>{
           row = sheet.addRow({id: player.id, name: player.Prenom+' '+player.Nom, birthday: getLocalDate(player.DateNaissance, '', '', '', '', '', '', '', '', '', '')})
-          // row.eachCell(function(cell) {
-          //      cell.
-          //    })
-          row.height = 25
+          row.height = 30
         })
         sheet.eachRow({ includeEmpty: true }, function(row, rowNumber){
             row.eachCell(function(cell, colNumber){
@@ -164,15 +161,19 @@ function exportAbscence(){
         fs.mkdir(app.getPath("desktop")+'/liste/Absences/'+$('select#abs_months option:selected').text()+'/'+$('select#abs_cat option:selected').text()+'/', { recursive: true }, (err) => {
           workbook.xlsx.writeFile(app.getPath('desktop')+"/liste/Absences/"+$('select#abs_months option:selected').text()+'/'+$('select#abs_cat option:selected').text()+'/'+currentMonth+currentYear+"_"+nameList+".xlsx").then(()=>{
             $('img#loader_export_abs').hide('fast');
-            $('span#msg_export_abs').html("La liste d'absence est exporté !")
+            $('span#msg_export_abs').html("<i class='fas fa-check-circle'></i> La liste d'absence est exporté !")
             $('span#msg_export_abs').removeClass('text-danger').addClass('text-success')
           }).catch(err=>{
-            console.log(err.message);
+            $('img#loader_export_abs').hide('fast');
+            if (err.message.includes('EBUSY: resource busy or locked')) {
+              $('span#msg_export_abs').html("<i class='fas fa-times-circle'></i> Ce fichier est ouvert, veuillez la fermer avant de l'exporter")
+              $('span#msg_export_abs').removeClass('text-success').addClass('text-danger')
+            }
           })
          });
       } else {
         $('img#loader_export_abs').hide('fast');
-        $('span#msg_export_abs').html("il n'y a pas de joueurs dans ce groupe !")
+        $('span#msg_export_abs').html("<i class='fas fa-times-circle'></i> il n'y a pas de joueurs dans ce groupe !")
         $('span#msg_export_abs').removeClass('text-success').addClass('text-danger')
       }
     })
@@ -193,7 +194,6 @@ function exportAll(){
       var sheet = workbook.addWorksheet(nameList)
       sheet.mergeCells('D2:H2');
       sheet.getCell('D2').value = "Liste des joueurs pour l'année "+academicYear.replace('_', '/')
-
       sheet.getRow(4).values = ['Num', 'Nom et prenom','Date de naissance', 'Categorie', 'Séance', 'Prix annuel', '9','10', '11','12', '1', '2', '3','4','5','6', 'Somme'];
       sheet.columns = [
         {key: 'id'},
@@ -274,48 +274,39 @@ function exportAll(){
                  }
            });
       });
-      // $.each(dataPlayerRows, function(index, dataPlayer){
-      //   console.log(dataPlayer);
-      //   row = sheet.addRow({id: dataPlayer.id, name: dataPlayer.name,
-      //   birthday: dataPlayer.birthday, cat: dataPlayer.cat,
-      //   sea:   dataPlayer.sea, aPrice: dataPlayer.aPrice, m9: dataPlayer.m9, m10: dataPlayer.m10 ,m11: dataPlayer.m11,
-      //   m12: dataPlayer.m12, m1: dataPlayer.m1, m2: dataPlayer.m2, m3: dataPlayer.m3,
-      //   m4: dataPlayer.m4, m5: dataPlayer.m5, m6: dataPlayer.m6, Somme: dataPlayer.Somme})
-      //   row.height = 25
-      //   console.log(row);
-      // })
+      sheet.mergeCells('N'+(sheet.lastRow.number+2)+':Q'+(sheet.lastRow.number+2))
+      sheet.getRow(sheet.lastRow.number).height = 25
+      totalCell = sheet.getCell('N'+(sheet.lastRow.number))
+      totalCell.value = "Total de toute l'année : "+totalSum+' DH'
+      totalCell.alignment = {
+           vertical: 'middle', horizontal: 'center'
+         };
+       totalCell.font = {
+         name: 'Arial',
+         family: 2,
+         bold: true,
+         size: 11,
+       };
+
       fs.mkdir(app.getPath("desktop")+'/liste', { recursive: true }, (err) => {
         workbook.xlsx.writeFile(app.getPath('desktop')+"/liste/"+nameList+".xlsx").then(()=>{
           $('img#loader_export_all').hide('long');
-          $('span#msg_export_all').html("La liste est exporté ! ")
-          $('span#msg_export_all').addClass('text-success')
+          $('span#msg_export_all').html("<i class='fas fa-check-circle'></i> La liste est exporté ! ")
+          $('span#msg_export_all').removeClass('text-danger').addClass('text-success')
         }).catch(err=>{
-          console.log(err.message);
+          $('img#loader_export_all').hide('long');
+          if (err.message.includes('EBUSY: resource busy or locked')) {
+            $('span#msg_export_all').html("<i class='fas fa-times-circle'></i> Ce fichier est ouvert, veuillez la fermer avant de l'exporter")
+            $('span#msg_export_all').removeClass('text-success').addClass('text-danger')
+          }
         })
        });
     })
 
 
     })
-  // })
 }
-// sheet.columns = [
-//   {header: 'Id', key: 'id'},
-//   {header: 'name', key: 'name'},
-//   {header: 'age', key: 'age'}
-// ]
-//
-// sheet.addRow({id: 1, name: 'dah', age: 0634789845, style: {numFmt:'#############'}})
-// sheet.addRow({id: 2, name: 'kha', age: 22})
-// sheet.addRow({id: 3, name: 'mir', age: 27})
-// sheet.addRow({id: 4, name: 'bou', age: 25})
-// sheet.getCell('A2').font = {
-//   name: 'Arial Black',
-//   color: { argb: 'FF00FF00' },
-//   family: 2,
-//   size: 14,
-//   italic: true
-// };
+
 $(document).ready(function(){
   exportAbscence();
   exportAll();

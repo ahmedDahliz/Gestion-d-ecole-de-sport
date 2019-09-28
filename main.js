@@ -12,12 +12,14 @@ function createWindows () {
     width: 1600,
     height: 850,
     resizable: false,
+    icon: __dirname+'/assets/image/iconApp.ico',
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true
     }
   })
+  // mainWindow.removeMenu()
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
   mainWindow.once("ready-to-show", function(){
