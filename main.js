@@ -12,7 +12,7 @@ function createWindows () {
     width: 1600,
     height: 850,
     resizable: false,
-    icon: __dirname+'/assets/image/iconApp.ico',
+    icon: __dirname+'/assets/image/icons/iconApp.ico',
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
