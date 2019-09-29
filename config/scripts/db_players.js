@@ -19,22 +19,22 @@ let table
  * count number of players in group
  * @return integer
 */
-function getNumberOfPlayers(){
-  if ($('select#groupe').val()) {
+function getNumberOfPlayers(groupe, nbrPlayer){
+  if (groupe.val()) {
   joueurs.findAndCountAll({
     include:[{
       model: groupes,
-      where:{id: $('select#groupe').val()},
+      where:{id: groupe.val()},
       include:[{model: categories}]
     }]
   }).then(players=>{
     if (players.count > 20) {
-      $('span#nbr_joueurs').closest('td').css('color', 'red')
-    } else $('span#nbr_joueurs').closest('td').css('color', 'black')
+      nbrPlayer.closest('td').css('color', 'red')
+    } else nbrPlayer.closest('td').css('color', 'black')
     $('span#nom_groupe').html($('select#groupe option:selected').text())
     $('span#nom_categorie').html($('select#categorie option:selected').text())
     $('span#nom_jours').html($('select#jours option:selected').text())
-    $('span#nbr_joueurs').html(players.count)
+    nbrPlayer.html(players.count)
   })
     }
 }
@@ -209,12 +209,12 @@ function initAddPlayer(){
         $.each(cats.groupes, function(index, grp){
             $('select#groupe').append(new Option(grp.NomGroupe, grp.id))
         })
-        getNumberOfPlayers()
+        getNumberOfPlayers($('select#groupe'), $('span#nbr_joueurs'))
       }
     })
   })
   $('select#groupe').on('change', ()=>{
-    getNumberOfPlayers()
+    getNumberOfPlayers($('select#groupe'), $('span#nbr_joueurs'))
   })
 }
 /**
@@ -224,24 +224,31 @@ function initAddPlayer(){
  * @param type @type String
  * @return void
 */
-function uploeadImage(file, name, type){
+function uploadImage(file, name, type, message){
   var path = require('path');
+  var imageExt = ['JPEG', 'JPG', 'PNG']
   fs.readFile(file[0], (err, data)=>{
     if (!err) {
       let ext = file[0].split('.')[1]
       newPath = path.join(__dirname+ '/../assets/image/'+type+'/'+name+'_'+(new Date).getTime()+'.'+ext);
-      fs.writeFile(newPath, data, function (err) {
-        if (err) {
-          $('span#msg_add_player').html('une erreur dans le chargement de l\'image !');
-          $('span#msg_add_player').removeClass('text-success text-danger').addClass('text-warning');
-          return;
-        }
-      });
-      if (type == 'avatars') {
-        avatarPath = newPath;
-      }else if (type == 'certificats') certPath = newPath;
-    }else{$('span#msg_add_player').html('une erreur dans le chargement de l\'image !');
-    $('span#msg_add_player').removeClass('text-success text-danger').addClass('text-warning')};
+      if (imageExt.includes(ext.toUpperCase())) {
+        message.html('')
+        fs.writeFile(newPath, data, function (err) {
+          if (err) {
+            message.html('une erreur dans le chargement de l\'image !');
+            message.removeClass('text-success text-warning').addClass('text-danger');
+            return;
+          }
+        });
+        if (type == 'avatars') {
+          avatarPath = newPath;
+        }else if (type == 'certificats') certPath = newPath;
+      }else {
+        message.html("l'image doit être : .png, .jpeg ou .jpg");
+        message.removeClass('text-success text-danger').addClass('text-warning');
+      }
+    }else{message.html('une erreur dans le chargement de l\'image !');
+    message.removeClass('text-success text-warning').addClass('text-danger')};
   })
 }
 /**
@@ -254,7 +261,7 @@ function addPlayer(){
       var SaveDialog = require('electron').remote.dialog
       SaveDialog.showOpenDialog((file)=>{
           if (file !== undefined) {
-            uploeadImage(file, $('input#fname').val()+$('input#lname').val() ,'avatars');
+            uploadImage(file, $('input#fname').val()+$('input#lname').val() ,'avatars', $('span#msg_add_player'));
             setTimeout(()=>{
               console.log('upload complete');
               $('img#avatar').attr('src',avatarPath)
@@ -272,7 +279,7 @@ function addPlayer(){
       var SaveDialog = require('electron').remote.dialog
       SaveDialog.showOpenDialog((file)=>{
           if (file !== undefined) {
-            uploeadImage(file, $('input#fname').val()+$('input#lname').val() ,'certificats');
+            uploadImage(file, $('input#fname').val()+$('input#lname').val() ,'certificats', $('span#msg_add_player'));
             setTimeout(()=>{
               console.log('upload complete');
               $('img#cert').attr('src',certPath)
@@ -286,59 +293,103 @@ function addPlayer(){
   })
   $('button#ajouterJoueur').on('click', function(){
       if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#annual_price'), $('input#birthday'), $('span#msg_add_player'))){
-        if (parseInt($('span#nbr_joueurs').html()) > 20) {
+        if (parseInt($('span#nbr_joueurs').html()) >= 20) {
+          let msg = 'Le nombre des joueurs dans ce groupe va dépasser 20 !';
+          if (parseInt($('span#nbr_joueurs').html()) > 20) {
+            msg = 'Le nombre des joueurs dans ce groupe a dépasser 20 !';
+          }
             var ConfirmationDialog = require('electron').remote.dialog
             ConfirmationDialog.showMessageBox({
               type: 'warning',
               buttons: ['Continuer', 'Annuler'],
               title: 'Information !',
-              message: 'Le nombre des joueurs dans ce groupe à dépasser 20 !',
+              message: msg,
               noLink: true,
               cancelId:-1
             }, response =>{
                 if (response) {
                   return;
+                }else{
+                  var joueurIns =  joueurs.build({
+                    Nom: $('input#lname').val(),
+                    Prenom: $('input#fname').val(),
+                    Tele1: $('input#phone1').val(),
+                    Tele2: $('input#phone2').val(),
+                    Tele3: $('input#phone3').val(),
+                    DateNaissance: $('input#birthday').val(),
+                    Adresse:  $('textarea#adress').val(),
+                    // Prix: $('input#price').val(),
+                    PrixAnnuel: $('input#annual_price').val(),
+                    photo: avatarPath,
+                    certificat: certPath
+                  })
+                  joueurIns.save().then(player=>{
+                    player.setGroupe($('select#groupe').val()).then((playerGroup)=>{
+                      playerGroup.getGroupe().then(grp=>{
+                        grp.getCategorie().then(cat=>{
+                          grp.getJour().then(jrs=>{
+                            $('table#table_new_palyer tbody').append('<tr><td class="text-center">'+
+                              '<input type="radio" name="joueur" value="'+player.id+'" class="table-radio align-middle"></td>'+
+                              '<td>'+player.Nom+'</td>'+
+                              '<td>'+player.Prenom+'</td>'+
+                              '<td>'+getLocalDate(player.DateNaissance)+'</td>'+
+                              '<td>'+player.Tele1+'</td>'+
+                              '<td>'+player.Tele2+'</td>'+
+                              '<td>'+player.Tele3+'</td>'+
+                              '<td>'+player.Adresse+'</td>'+
+                              '<td>'+player.PrixAnnuel+' DH</td>'+
+                              '<td>'+jrs.Jour1+'-'+jrs.Jour2+'</td>'+
+                              '<td>'+cat.NomCategorie+'</td>'+
+                              '<td>'+grp.NomGroupe+'</td></tr>');
+                              getNumberOfPlayers($('select#groupe'), $('span#nbr_joueurs'))
+                              clearInputs();
+                          })
+                        })
+                      })
+                    })
+                  })
                 }
             })
-        }
-        var joueurIns =  joueurs.build({
-          Nom: $('input#lname').val(),
-          Prenom: $('input#fname').val(),
-          Tele1: $('input#phone1').val(),
-          Tele2: $('input#phone2').val(),
-          Tele3: $('input#phone3').val(),
-          DateNaissance: $('input#birthday').val(),
-          Adresse:  $('textarea#adress').val(),
-          // Prix: $('input#price').val(),
-          PrixAnnuel: $('input#annual_price').val(),
-          photo: avatarPath,
-          certificat: certPath
-        })
-        joueurIns.save().then(player=>{
-          player.setGroupe($('select#groupe').val()).then((playerGroup)=>{
-            playerGroup.getGroupe().then(grp=>{
-              grp.getCategorie().then(cat=>{
-                grp.getJour().then(jrs=>{
-                  $('table#table_new_palyer tbody').append('<tr><td class="text-center">'+
-                    '<input type="radio" name="joueur" value="'+player.id+'" class="table-radio align-middle"></td>'+
-                    '<td>'+player.Nom+'</td>'+
-                    '<td>'+player.Prenom+'</td>'+
-                    '<td>'+getLocalDate(player.DateNaissance)+'</td>'+
-                    '<td>'+player.Tele1+'</td>'+
-                    '<td>'+player.Tele2+'</td>'+
-                    '<td>'+player.Tele3+'</td>'+
-                    '<td>'+player.Adresse+'</td>'+
-                    '<td>'+player.PrixAnnuel+' DH</td>'+
-                    '<td>'+jrs.Jour1+'-'+jrs.Jour2+'</td>'+
-                    '<td>'+cat.NomCategorie+'</td>'+
-                    '<td>'+grp.NomGroupe+'</td></tr>');
-                    getNumberOfPlayers()
-                    clearInputs();
+        }else {
+          var joueurIns =  joueurs.build({
+            Nom: $('input#lname').val(),
+            Prenom: $('input#fname').val(),
+            Tele1: $('input#phone1').val(),
+            Tele2: $('input#phone2').val(),
+            Tele3: $('input#phone3').val(),
+            DateNaissance: $('input#birthday').val(),
+            Adresse:  $('textarea#adress').val(),
+            // Prix: $('input#price').val(),
+            PrixAnnuel: $('input#annual_price').val(),
+            photo: avatarPath,
+            certificat: certPath
+          })
+          joueurIns.save().then(player=>{
+            player.setGroupe($('select#groupe').val()).then((playerGroup)=>{
+              playerGroup.getGroupe().then(grp=>{
+                grp.getCategorie().then(cat=>{
+                  grp.getJour().then(jrs=>{
+                    $('table#table_new_palyer tbody').append('<tr><td class="text-center">'+
+                      '<input type="radio" name="joueur" value="'+player.id+'" class="table-radio align-middle"></td>'+
+                      '<td>'+player.Nom+'</td>'+
+                      '<td>'+player.Prenom+'</td>'+
+                      '<td>'+getLocalDate(player.DateNaissance)+'</td>'+
+                      '<td>'+player.Tele1+'</td>'+
+                      '<td>'+player.Tele2+'</td>'+
+                      '<td>'+player.Tele3+'</td>'+
+                      '<td>'+player.Adresse+'</td>'+
+                      '<td>'+player.PrixAnnuel+' DH</td>'+
+                      '<td>'+jrs.Jour1+'-'+jrs.Jour2+'</td>'+
+                      '<td>'+cat.NomCategorie+'</td>'+
+                      '<td>'+grp.NomGroupe+'</td></tr>');
+                      getNumberOfPlayers($('select#groupe'), $('span#nbr_joueurs'))
+                      clearInputs();
+                  })
                 })
               })
             })
           })
-        })
+        }
       }
   })
 }
@@ -369,7 +420,7 @@ function deleteAddedPlayer(){
             $('input:radio[name=joueur]:checked').closest('tr').remove();
             $("button#modifierJoueur").prop("disabled", true);
             $("button#supprimerJoueur").prop("disabled", true);
-            getNumberOfPlayers()
+            getNumberOfPlayers($('select#groupe'), $('span#nbr_joueurs'))
           });
         }
     })
@@ -710,6 +761,7 @@ function cancelAddPlayer(){
       clearInputs();
   })
 }
+let grpId;
 /**
  * Show a player
  * @return void
@@ -725,8 +777,31 @@ function showPlayer(){
   })
   joueurs.findOne({
     where: {id: _idPlayer},
-    include:[{model: groupes, include: [{model: categories}]}]
+    include:[{model: groupes, include: [jours, categories]}]
   }).then(player=>{
+    jours.findAll({
+        include: [{model: categories, include: groupes, require: true}],
+    }).then(res => {
+        //itirate days
+        pJours = res[0]
+        grpId = player.groupe.id
+        $.each(res, function(index, jours){
+          $('select#edit_days').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
+        })
+        pCat = pJours.categories[0]
+        $.each(pJours.categories, function(index, cat){
+          $('select#edit_categorie').append(new Option(cat.NomCategorie, cat.id));
+        })
+        $('select#edit_days').val(player.groupe.jour.id).change()
+        setTimeout(()=>{
+          $('select#edit_categorie').val(player.groupe.categorie.id).change();
+        }, 300)
+        setTimeout(()=>{
+          $('select#edit_group').val(player.groupe.id).change();
+        }, 350)
+        getNumberOfPlayers($('select#edit_group'), $('span#nbr_joueurs'))
+        $('button#update_player').prop('disabled', true);
+    });
     categories.findAll({
       include:[{model: groupes}]
     }).then(cats=>{
@@ -737,9 +812,8 @@ function showPlayer(){
       $.each(fCat.groupes, (index, groupe)=>{
         $('select#edit_group').append(new Option(groupe.NomGroupe, groupe.id))
       })
-      $('select#edit_categorie').val(player.groupe.categorie.id).change()
-      setTimeout(()=>{$('select#edit_group').val(player.groupe.id);}, 300)
-      $('button#update_player').prop('disabled', true);
+
+
     })
 
     $('input#edit_lname').val(player.Nom);
@@ -756,20 +830,38 @@ function showPlayer(){
     avatarPath = player.photo;
     certPath = player.certificat
 })
+  $('select#edit_days').on('change', function() {
+    jours.findOne({
+      where: {id: $(this).val()},
+        include: [{model: categories}]
+    }).then(jours => {
+        //itirate times for the first days
+        $('select#edit_categorie option').remove();
+        $.each(jours.categories, function(index, cat){
+          $('select#edit_categorie').append(new Option(cat.NomCategorie, cat.id));
+        })
+        $('select#edit_categorie').change()
+
+    });
+  });
   $('select#edit_categorie').on('change', ()=>{
     categories.findOne({
-      where:{id: $('select#edit_categorie').val()},
-      include:[{model: groupes}]
-    }).then(cat=>{
-      if (cat) {
-        $('select#edit_group option').remove();
-        $.each(cat.groupes, (index, groupe)=>{
-          $('select#edit_group').append(new Option(groupe.NomGroupe, groupe.id))
+      where: {id: $('select#edit_categorie').val()},
+      include: {model: groupes, where: {jourId:  $('select#edit_days').val() }}
+    }).then(cats => {
+      $('select#edit_group option').remove();
+      if (cats) {
+        $.each(cats.groupes, function(index, grp){
+            $('select#edit_group').append(new Option(grp.NomGroupe, grp.id))
         })
+        getNumberOfPlayers($('select#edit_group'), $('span#nbr_joueurs'))
       }
     })
-  })
 
+  })
+    $('select#edit_group').on('change', ()=>{
+        getNumberOfPlayers($('select#edit_group'), $('span#nbr_joueurs'))
+    })
 }
 /**
  * updayePlayer
@@ -781,7 +873,7 @@ function updatePlayer(){
       var SaveDialog = require('electron').remote.dialog
       SaveDialog.showOpenDialog((file)=>{
           if (file !== undefined) {
-            uploeadImage(file, $('input#edit_fname').val()+$('input#edit_lname').val() ,'avatars');
+            uploadImage(file, $('input#edit_fname').val()+$('input#edit_lname').val() ,'avatars', $('span#msg_update_player'));
             setTimeout(()=>{
               console.log('upload complete');
               $('img#avatar').attr('src',avatarPath)
@@ -792,8 +884,8 @@ function updatePlayer(){
           }
         })
     } else {
-      $('span#msg_add_player').html('veuillez saisir le nom et le prenom dabord !')
-      $('span#msg_add_player').removeClass('text-success text-danger').addClass('text-warning')
+      $('span#msg_update_player').html('veuillez saisir le nom et le prenom dabord !')
+      $('span#msg_update_player').removeClass('text-success text-danger').addClass('text-warning')
     }
   })
   $('button#edit_cert').on('click', function(){
@@ -801,7 +893,7 @@ function updatePlayer(){
       var SaveDialog = require('electron').remote.dialog
       SaveDialog.showOpenDialog((file)=>{
           if (file !== undefined) {
-            uploeadImage(file, $('input#edit_fname').val()+$('input#edit_lname').val() ,'certificats');
+            uploadImage(file, $('input#edit_fname').val()+$('input#edit_lname').val() ,'certificats', $('span#msg_update_player'));
             setTimeout(()=>{
               console.log('upload complete');
               $('img#cert').attr('src',certPath)
@@ -812,33 +904,81 @@ function updatePlayer(){
           }
         })
     } else {
-      $('span#msg_add_player').html('veuillez saisir le nom et le prenom dabord !')
-      $('span#msg_add_player').removeClass('text-success text-danger').addClass('text-warning')
+      $('span#msg_update_player').html('veuillez saisir le nom et le prenom dabord !')
+      $('span#msg_update_player').removeClass('text-success text-danger').addClass('text-warning')
     }
   })
   $('button#update_player').on('click', function(){
+    let doUpdate = false
     if(validatePlayerData($('input#edit_lname'), $('input#edit_fname'), $('input#edit_phone1'), $('input#edit_phone2'), $('input#edit_phone3') , $('input#edit_anuual_price'), $('input#edit_birthday'), $('span#msg_update_player'))){
-      joueurs.findOne({
-        where: {id: _idPlayer}
-      }).then(playerToUpdate => {
-        playerToUpdate.update({
-          Nom: $('input#edit_lname').val(),
-          Prenom: $('input#edit_fname').val(),
-          Tele1: $('input#edit_phone1').val(),
-          Tele2: $('input#edit_phone2').val(),
-          Tele3: $('input#edit_phone3').val(),
-          DateNaissance: $('input#edit_birthday').val(),
-          Adresse:  $('textarea#edit_adress').val(),
-          // Prix: $('input#edit_price').val(),
-          PrixAnnuel: $('input#edit_anuual_price').val(),
-          photo: avatarPath,
-          certificat: certPath,
-          groupeId: $('select#edit_group').val()
-        }).then(()=>{
-            isSaved = false;
-            $('button#update_player').prop('disabled', true);
+      if (grpId != $('select#edit_group').val() && parseInt($('span#nbr_joueurs').html()) >= 20) {
+          let msg = 'Le nombre des joueurs dans ce groupe va dépasser 20 !';
+          if (parseInt($('span#nbr_joueurs').html()) > 20) {
+            msg = 'Le nombre des joueurs dans ce groupe a dépasser 20 !';
+          }
+          var ConfirmationDialog = require('electron').remote.dialog
+          ConfirmationDialog.showMessageBox({
+            type: 'warning',
+            buttons: ['Continuer', 'Annuler'],
+            title: 'Information !',
+            message: msg,
+            noLink: true,
+            cancelId:-1
+          }, response =>{
+              if (response) {
+                return;
+              }else{
+                joueurs.findOne({
+                  where: {id: _idPlayer}
+                }).then(playerToUpdate => {
+                  playerToUpdate.update({
+                    Nom: $('input#edit_lname').val(),
+                    Prenom: $('input#edit_fname').val(),
+                    Tele1: $('input#edit_phone1').val(),
+                    Tele2: $('input#edit_phone2').val(),
+                    Tele3: $('input#edit_phone3').val(),
+                    DateNaissance: $('input#edit_birthday').val(),
+                    Adresse:  $('textarea#edit_adress').val(),
+                    // Prix: $('input#edit_price').val(),
+                    PrixAnnuel: $('input#edit_anuual_price').val(),
+                    photo: avatarPath,
+                    certificat: certPath,
+                    groupeId: $('select#edit_group').val()
+                  }).then(()=>{
+                      isSaved = false;
+                      grpId = $('select#edit_group').val()
+                      getNumberOfPlayers($('select#edit_group'), $('span#nbr_joueurs'))
+                      $('button#update_player').prop('disabled', true);
+                  })
+                })
+              }
+          })
+      }else{
+        joueurs.findOne({
+          where: {id: _idPlayer}
+        }).then(playerToUpdate => {
+          playerToUpdate.update({
+            Nom: $('input#edit_lname').val(),
+            Prenom: $('input#edit_fname').val(),
+            Tele1: $('input#edit_phone1').val(),
+            Tele2: $('input#edit_phone2').val(),
+            Tele3: $('input#edit_phone3').val(),
+            DateNaissance: $('input#edit_birthday').val(),
+            Adresse:  $('textarea#edit_adress').val(),
+            // Prix: $('input#edit_price').val(),
+            PrixAnnuel: $('input#edit_anuual_price').val(),
+            photo: avatarPath,
+            certificat: certPath,
+            groupeId: $('select#edit_group').val()
+          }).then(()=>{
+              isSaved = false;
+              grpId = $('select#edit_group').val()
+              getNumberOfPlayers($('select#edit_group'), $('span#nbr_joueurs'))
+              $('button#update_player').prop('disabled', true);
+          })
         })
-      })
+      }
+
     }
   })
 }

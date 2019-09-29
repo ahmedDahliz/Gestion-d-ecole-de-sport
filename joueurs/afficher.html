@@ -49,18 +49,24 @@
                   <td colspan="2">Date naissance : &nbsp;</td>
                   <td colspan="2"><input type="date" id="edit_birthday" class="change form-control form-control-sm d-inline"></td>
                 </tr>
-                <tr>
-                  <td class="m-1">Categorie : </td>
-                  <td class="m-1"><select id="edit_categorie" class="change form-control form-control-sm d-inline"></select></td>
-                  <td class="m-1">Groupe : </td>
-                  <td class="m-1"><select id="edit_group"  class="change form-control form-control-sm d-inline"></select></td>
-                </tr>
               </table>
             </div>
 
             <div class="w-25 clearfix">
               <div>
                   <table class="table table-sm">
+                    <tr>
+                      <td class="m-1">Jours : </td>
+                      <td class="m-1"><select id="edit_days"  class="change form-control form-control-sm d-inline"></select></td>
+                    </tr>
+                    <tr>
+                      <td class="m-1">Categorie : </td>
+                      <td class="m-1"><select id="edit_categorie" class="change form-control form-control-sm d-inline"></select></td>
+                    </tr>
+                    <tr>
+                      <td class="m-1">Groupe : </td>
+                      <td class="m-1"><select id="edit_group"  class="change form-control form-control-sm d-inline"></select></td>
+                    </tr>
                     <tr>
                       <td>Télephone 1</td>
                       <td><input type="text" id="edit_phone1" class="change form-control form-control-sm"></td>
@@ -85,12 +91,14 @@
                       <td>Adresse</td>
                       <td><textarea name="name" id="edit_adress" cols="10" class="change form-control form-control-sm"></textarea></td>
                     </tr>
+                    <tr>
+                      <td><i class="fas fa-users"></i> : <span id="nbr_joueurs"></span></td>
+                    </tr>
                   </table>
                     <button class="btn btn-edit" id="update_player"><i class="fas fa-edit"></i> Enregistrer</button>
-                    <span id="msg_update_player" class="font-weight-bold"></span>
               </div>
           </div>
-
+          <span id="msg_update_player" class="font-weight-bold m-3 mt-5"></span>
         </div>
       </div>
   </body>

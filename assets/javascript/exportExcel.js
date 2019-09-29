@@ -1,4 +1,3 @@
-const Excel = require('exceljs');
 var  app = require('electron').remote.app
 var fs = require('fs');
 let months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
@@ -58,6 +57,7 @@ function getPlayerData(){
 */
 function exportAbscence(){
   $('button#export_list_abs').on('click', function(){
+    const Excel = require('exceljs');
     $('img#loader_export_abs').show();
     $('span#msg_export_abs').html('')
     var workbook = new Excel.Workbook();
@@ -188,6 +188,7 @@ function exportAll(){
     $('img#loader_export_all').show();
     $('span#msg_export_all').html('')
     $.when(getPlayerData()).done(function(){
+      const Excel = require('exceljs');
       var workbook = new Excel.Workbook();
       workbook.creator = 'EcoleSportifeAbscence'
       let nameList = 'ListeJoueurs_'+academicYear
@@ -274,9 +275,9 @@ function exportAll(){
                  }
            });
       });
-      sheet.mergeCells('N'+(sheet.lastRow.number+2)+':Q'+(sheet.lastRow.number+2))
+      sheet.mergeCells('L'+(sheet.lastRow.number+2)+':Q'+(sheet.lastRow.number+2))
       sheet.getRow(sheet.lastRow.number).height = 25
-      totalCell = sheet.getCell('N'+(sheet.lastRow.number))
+      totalCell = sheet.getCell('L'+(sheet.lastRow.number))
       totalCell.value = "Total de toute l'année : "+totalSum+' DH'
       totalCell.alignment = {
            vertical: 'middle', horizontal: 'center'
