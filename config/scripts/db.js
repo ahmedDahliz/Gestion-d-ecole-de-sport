@@ -56,7 +56,7 @@ exports.entreneur = entreneurs;
 exports.joueurs = joueurs;
 exports.paiement = paiement;
 exports.users = users;
-// exports.sequelize = sequelize
+exports.sequelize = sequelize
 
 // exports.entreneur_groupe = entreneur_groupe;
 

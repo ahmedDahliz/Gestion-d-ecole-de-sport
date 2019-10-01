@@ -28,17 +28,23 @@ function updateUserData(){
               username: $('input#edit_username').val(),
               password: $('input#new_password').val()
             }).then(updatedUser=>{
-              $('span#msg_edit_user').html("<i class='fas fa-check'></i> Les informations sont mise à jour ")
+              $('input#cnf_new_password').val("")
+              $('input#new_password').val("")
+              $('input#old_password').val("")
+              $('span#msg_edit_user').html("<i class='fas fa-check'></i> Les informations sont mise à jour !")
               $('span#msg_edit_user').removeClass('text-danger').addClass('text-success')
+                setTimeout(()=>{$('span#msg_edit_user').html("")}, 3000)
             })
           }else {
             $('span#msg_edit_user').html("<i class='fas fa-times-circle'></i> Mot de passe actuel est incorrect ! ")
             $('span#msg_edit_user').removeClass('text-success').addClass('text-danger')
+              setTimeout(()=>{$('span#msg_edit_user').html("")}, 3000)
           }
         })
       }else {
         $('span#msg_edit_user').html("<i class='fas fa-times-circle'></i> la confirmation de mot de passe est incorrect !")
         $('span#msg_edit_user').removeClass('text-success').addClass('text-danger')
+          setTimeout(()=>{$('span#msg_edit_user').html("")}, 3000)
       }
     }else {
       users.findOne({
@@ -48,12 +54,15 @@ function updateUserData(){
           user.update({
             username: $('input#edit_username').val(),
           }).then(updatedUser=>{
-            $('span#msg_edit_user').html("<i class='fas fa-check'></i> Les informations sont mis à jour ")
+            $('input#new_password').val("")
+            $('span#msg_edit_user').html("<i class='fas fa-check'></i> Les informations sont mise à jour ! ")
             $('span#msg_edit_user').removeClass('text-danger').addClass('text-success')
+            setTimeout(()=>{$('span#msg_edit_user').html("")}, 3000)
           })
         }else {
           $('span#msg_edit_user').html("<i class='fas fa-times-circle'></i> Mot de passe actuel est incorrect ! ")
           $('span#msg_edit_user').removeClass('text-success').addClass('text-danger')
+            setTimeout(()=>{$('span#msg_edit_user').html("")}, 3000)
         }
       })
     }
