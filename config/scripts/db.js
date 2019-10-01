@@ -1,13 +1,12 @@
 const Sequelize = require('sequelize');
+const path = require('path')
 // init connection
-sequelize = new Sequelize({
+let sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: 'config/db/db_ecole.db'
+  storage: 'config/db/db_ecole.sqlite'
 })
-
-//for groupes page
-
-
+seq = sequelize
+console.log(seq.options.storage);
 let jours  = sequelize.define('jours', {
   Jour1: { type: Sequelize.STRING, allowNull: false },
   Jour2: { type: Sequelize.STRING, allowNull: false }
@@ -25,9 +24,7 @@ let groupes = sequelize.define('groupes', {
   horaire1: {type: Sequelize.TIME, allowNull: false},
   horaire2: {type: Sequelize.TIME, allowNull: false}
 })
-// let horaire = sequelize.define('horaire', {
-//
-// })
+
 let joueurs = sequelize.define('joueurs', {
   Nom: { type: Sequelize.STRING, allowNull: false },
   Prenom: { type: Sequelize.STRING, allowNull: false },
@@ -59,6 +56,8 @@ exports.entreneur = entreneurs;
 exports.joueurs = joueurs;
 exports.paiement = paiement;
 exports.users = users;
+// exports.sequelize = sequelize
+
 // exports.entreneur_groupe = entreneur_groupe;
 
 //relationShips
@@ -72,7 +71,6 @@ joueurs.belongsTo(groupes)
 groupes.hasMany(joueurs)
 joueurs.hasMany(paiement)
 paiement.belongsTo(joueurs)
-// sequelize.sync()
 // exports.seq = sequelize.authenticate()
 // .then(() => {
 //   console.log('Connection has been established successfully.');
@@ -80,8 +78,3 @@ paiement.belongsTo(joueurs)
 // .catch(err => {
 //   console.error('Unable to connect to the database:', err);
 // });
-
-  //send the connector to the ORM files
-  // ipcMain.on('connector', (event, arg) =>{
-  //   event.reply('connector-reply', sequelize)
-  // })

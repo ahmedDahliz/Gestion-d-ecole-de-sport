@@ -1,6 +1,18 @@
 const Sequelize = require('sequelize');
 var tables = require(__dirname+'/config/scripts/db.js');
 let users = tables.users
+let sequelize = tables.sequelize
+// sequelize.sync().then(()=>{
+//   users.findAll().then(user=>{
+//     if (!user) {
+//       users.create({
+//         username: 'admin',
+//         password: 'admin'
+//       })
+//     }
+//   })
+//
+// })
 /**
  * log in to application
  * @return void
