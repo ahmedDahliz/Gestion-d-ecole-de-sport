@@ -158,12 +158,6 @@ function addCategory(){
       hideElement($('span#categoryMessage'));
       return;
     }
-    // if ($('input#heure').val() == "") {
-    //   $('span#categoryMessage').html("Vous devez determiner l'heure !")
-    //   $('span#categoryMessage').removeClass( "text-danger text-success" ).addClass('text-warning');
-    //   hideElement($('span#categoryMessage'));
-    //   return;
-    // }
     if($('select#cat').val() != 'null'){
       categorie.findOne({
         where: {id: $('select#cat').val()}
@@ -171,6 +165,7 @@ function addCategory(){
         cat.addJours([$('select#jours_cat').val()]).then(()=>{
           $('span#categoryMessage').html('Categorie ajouter avec succès');
           $('span#categoryMessage').removeClass( "text-warning text-danger" ).addClass('text-success');
+            $('select#jours_group').change();
           hideElement($('span#categoryMessage'));
         })
       });
@@ -182,6 +177,7 @@ function addCategory(){
     catInstence.save().then(cat=>{
       cat.setJours([$('select#jours_cat').val()]).then(ct=>{
         $('select#cat').append(new Option(cat.NomCategorie, cat.id));
+        $('select#jours_group').change();
         $('select#cat').removeAttr('disabled')
         $('select#cat_group').removeAttr('disabled')
         $('select#cat_group').removeAttr('title')
@@ -235,7 +231,7 @@ function addGroups(){
                 $('span#GroupMessage').removeClass( "text-warning text-success" ).addClass('text-danger');
               });
             }else {
-              $('span#GroupMessage').html('ce groupe de la categorie '+ $('select#cat_group option:selected').text()+ 'déja exist dans les jours : '+$('select#jours_group option:selected').text());
+              $('span#GroupMessage').html('ce groupe de la categorie '+ $('select#cat_group option:selected').text()+ ' déja exist dans les jours : '+$('select#jours_group option:selected').text());
               $('span#GroupMessage').removeClass( "text-success text-danger" ).addClass('text-warning');
             }
           })
@@ -343,36 +339,33 @@ function editData(){
     }).then(res => {
         //itirate days
         pJours = res[0]
-        $('span#nameDays').html(pJours.Jour1+"-"+pJours.Jour2)
-        $.each(res, function(index, jours){
-          $('select#Edit_Jours').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
-        })
-        //itirate times for the first days
-        pCat = pJours.categories[0]
-        $.each(pJours.categories, function(index, cat){
-          $('select#Edit_Cat').append(new Option(cat.NomCategorie, cat.id));
-        })
-        $('select#Edit_Cat').change()
-        // $.each(pCat.groupes, function(index, grp){
-        //   grp.getJour().then(jr=>{
-        //     if (pJours.id === jr.id) {
-        //       $('select#Edit_groupe').append(new Option(grp.NomGroupe, grp.id))
-        //     }
-        //   })
-        //   // $('select#Edit_Cat').append(new Option(horaire.categorie.NomCategorie, horaire.categorie.id));
-        // })
+        if (pJours) {
+          $('span#nameDays').html(pJours.Jour1+"-"+pJours.Jour2)
+          $.each(res, function(index, jours){
+            $('select#Edit_Jours').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
+          })
+          //itirate times for the first days
+          pCat = pJours.categories[0]
+          $.each(pJours.categories, function(index, cat){
+            $('select#Edit_Cat').append(new Option(cat.NomCategorie, cat.id));
+          })
+          $('select#Edit_Cat').change()
+        }
+
 
     });
     categorie.findAll({
       include: [{model: groupes, require: true}]
     }).then(categories=>{
       pCategorie = categories[0]
-      $.each(categories, function(index, categorie){
-        $('select#Edit_categorie').append(new Option(categorie.NomCategorie, categorie.id))
-      })
-      $.each(pCategorie.groupes, function(index, groupe){
-// $('select#Edit_group').append(new Option(groupe.NomGroupe, groupe.id))
-      })
+      if (pCategorie) {
+        $.each(categories, function(index, categorie){
+          $('select#Edit_categorie').append(new Option(categorie.NomCategorie, categorie.id))
+        })
+      }
+//       $.each(pCategorie.groupes, function(index, groupe){
+// // $('select#Edit_group').append(new Option(groupe.NomGroupe, groupe.id))
+//       })
 
     })
     if ($('.edit-groupe').is(":hidden")) $('.edit-groupe').show('long');
@@ -407,7 +400,7 @@ function editData(){
            ipc.send('refresh-group')
          });
        });
-     }else $('span#msg_edit_day').html('les jours ne doivent pas être identique !');
+    }else $('span#msg_edit_day').html('les jours ne doivent pas être identique !');
   });
 }
 function fillDataTableGroupe(){
@@ -626,9 +619,10 @@ function showCategorie(){
       include: [
         {model: groupes,
          require: true,
-         include: categorie
+         include: [{model: categorie}]
        }
-      ]
+     ],
+     order:[ [groupes, categorie, 'NomCategorie', 'ASC']]
     }).then(jours => {
       console.log(jours);
       $('table#table_show_cat tbody tr').remove()

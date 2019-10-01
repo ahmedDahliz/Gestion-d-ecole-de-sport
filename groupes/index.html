@@ -64,7 +64,7 @@
           </td>
             <td>Categories</td>
             <td>
-              <select name="Edit_Cat" id="Edit_Cat" class="form-control form-control-sm" style="width:60px">
+              <select name="Edit_Cat" id="Edit_Cat" class="form-control form-control-sm" style="width:80px">
               </select>
               <div class="btn-group m-1">
                 <button type="button" class="btn btn-delete dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -134,6 +134,7 @@
           <tr>
             <td>jour 1 : </td>
             <td><select id="new_day1" class="form-control form-control-sm m-1">
+              <option value="null">Choisir le jour 1</option>
               <option value="Lundi">Lundi</option>
               <option value="Mardi">Mardi</option>
               <option value="Mercredi">Mercredi</option>
@@ -148,6 +149,7 @@
             <td>jour 2 : </td>
             <td>
               <select id="new_day2" class="form-control form-control-sm m-1">
+                <option value="null">Choisir le jour 2</option>
                 <option value="Lundi">Lundi</option>
                 <option value="Mardi">Mardi</option>
                 <option value="Mercredi">Mercredi</option>
@@ -159,7 +161,7 @@
             </td>
           </tr>
           <tr>
-            <td><button class="btn btn-add" id="submit_edit_day">Valider</button><br>
+            <td><button class="btn btn-add" id="submit_edit_day" disabled>Valider</button><br>
             </td>
             <td><input type="hidden" id="idDays"><span class="text-warning font-weight-bold" id="msg_edit_day"></span></td>
           </tr>
@@ -240,12 +242,14 @@
     buttonEditDay.onclick = function(){
       modalDays.style.display = "block";
       $('input#old_days').val($('select#Edit_Jours option:selected').text());
+      $('select#new_day1').val('null')
+      $('select#new_day2').val('null')
       $('input#idDays').val($('select#Edit_Jours').val());
     }
     buttonEditCat.onclick = function(){
       modalCat.style.display = "block";
-      $('input#old_categorie_name').val($('select#Edit_categorie option:selected').text());
-      $('input#idCat').val($('select#Edit_categorie').val());
+      $('input#old_categorie_name').val($('select#Edit_Cat option:selected').text());
+      $('input#idCat').val($('select#Edit_Cat').val());
     }
 
     // Get the <span> element that closes the modal
@@ -276,9 +280,15 @@
             $('input[id=EditH2]').val($(this).closest('tr').find('td').eq(5).text())
             $(".btn-edit").removeAttr("disabled")
             $(".btn-delete").removeAttr("disabled")
-
        });
-     });
+       });
+       $('select#new_day1, select#new_day2').on('change', function(){
+          if ($('select#new_day1').val() != 'null' && $('select#new_day2').val() != 'null') {
+            $('button#submit_edit_day').removeAttr('disabled')
+          }else {
+              $('button#submit_edit_day').prop('disabled', true)
+          }
+       })
     </script>
   </body>
 </html>

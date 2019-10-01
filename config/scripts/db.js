@@ -3,7 +3,7 @@ const path = require('path')
 // init connection
 let sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: 'config/db/db_ecole.sqlite'
+  storage: './db_ecole.sqlite'
 })
 seq = sequelize
 console.log(seq.options.storage);
