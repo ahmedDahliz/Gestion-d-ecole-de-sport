@@ -174,15 +174,19 @@ function initAddPlayer(){
       include: [{model: categories, include: groupes, require: true}],
   }).then(res => {
       //itirate days
+    if (res) {
       pJours = res[0]
-      $.each(res, function(index, jours){
-        $('select#jours').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
-      })
-      pCat = pJours.categories[0]
-      $.each(pJours.categories, function(index, cat){
-        $('select#categorie').append(new Option(cat.NomCategorie, cat.id));
-      })
-      $('select#categorie').change()
+      if (pJours) {
+        $.each(res, function(index, jours){
+          $('select#jours').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
+        })
+        pCat = pJours.categories[0]
+        $.each(pJours.categories, function(index, cat){
+          $('select#categorie').append(new Option(cat.NomCategorie, cat.id));
+        })
+        $('select#categorie').change()
+      }
+    }
 
   });
   $('select#jours').on('change', function() {
@@ -1036,6 +1040,7 @@ function initExportllistAbsceance(){
       include: [{model: categories, include: groupes, require: true}],
   }).then(res => {
       pJours = res[0]
+    if (pJours) {
       $.each(res, function(index, jours){
         $('select#abs_day').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
       })
@@ -1045,6 +1050,7 @@ function initExportllistAbsceance(){
         $('select#abs_cat').append(new Option(cat.NomCategorie, cat.id));
       })
       $('select#abs_cat').change()
+    }
   });
   $('select#abs_day').on('change', function() {
     jours.findOne({
