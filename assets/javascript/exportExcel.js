@@ -1,4 +1,3 @@
-var  app = require('electron').remote.app
 var fs = require('fs');
 let months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 let currentMonth = new Date().toLocaleString('fr', {month: 'long'})

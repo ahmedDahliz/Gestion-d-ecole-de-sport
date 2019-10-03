@@ -30,7 +30,6 @@
   },
   "build": {
     "appId": "dahliz.gestion.ecole.sportive",
-    "asar": false,
     "productName": "Gestion d'école sportive",
     "target": "NSIS",
     "directories": {

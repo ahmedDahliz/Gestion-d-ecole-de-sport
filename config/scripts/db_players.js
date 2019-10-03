@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 var tables = require('../config/scripts/db.js');
 var fs = require('fs');
 const path = require('path')
+const app = require('electron').remote.app
 
 var joueurs  = tables.joueurs;
 var paiement  = tables.paiement;
@@ -234,15 +235,18 @@ function uploadImage(file, name, type, message){
   fs.readFile(file[0], (err, data)=>{
     if (!err) {
       let ext = file[0].split('.')[1]
-      newPath = path.join(__dirname+ '/../assets/image/'+type+'/'+name+'_'+(new Date).getTime()+'.'+ext);
       if (imageExt.includes(ext.toUpperCase())) {
+        resPath = app.getPath("userData")+'/ressources/images/'+type;
+        newPath = path.join(resPath, '/'+name+'_'+(new Date).getTime()+'.'+ext);
         message.html('')
-        fs.writeFile(newPath, data, function (err) {
-          if (err) {
-            message.html('une erreur dans le chargement de l\'image !');
-            message.removeClass('text-success text-warning').addClass('text-danger');
-            return;
-          }
+        fs.mkdir(resPath, { recursive: true }, (err) => {
+          fs.writeFile(newPath, data, function (errw) {
+            if (errw) {
+              message.html('une erreur dans le chargement de l\'image !'+errw);
+              message.removeClass('text-success text-warning').addClass('text-danger');
+              return;
+            }
+          });
         });
         if (type == 'avatars') {
           avatarPath = newPath;
@@ -251,7 +255,7 @@ function uploadImage(file, name, type, message){
         message.html("l'image doit être : .png, .jpeg ou .jpg");
         message.removeClass('text-success text-danger').addClass('text-warning');
       }
-    }else{message.html('une erreur dans le chargement de l\'image !');
+    }else{message.html('une erreur dans le chargement de l\'image !'+err);
     message.removeClass('text-success text-warning').addClass('text-danger')};
   })
 }
