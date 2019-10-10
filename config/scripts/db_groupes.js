@@ -112,6 +112,42 @@ function initAddForm(){
       })
     }
   })
+  jours.findAll({
+    // where: {id: $(this).closest('tr').find('td').find('input[name=idJours]').val()},
+      include: [{model: categorie, include: groupes, require: true}],
+      // order: [[{model: groupes}, 'id', 'DESC']]
+  }).then(res => {
+      //itirate days
+      pJours = res[0]
+      if (pJours) {
+        $('span#nameDays').html(pJours.Jour1+"-"+pJours.Jour2)
+        $.each(res, function(index, jours){
+          $('select#Edit_Jours').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
+        })
+        //itirate times for the first days
+        pCat = pJours.categories[0]
+        $.each(pJours.categories, function(index, cat){
+          $('select#Edit_Cat').append(new Option(cat.NomCategorie, cat.id));
+        })
+        $('select#Edit_Cat').change()
+      }
+
+
+  });
+  categorie.findAll({
+    include: [{model: groupes, require: true}]
+  }).then(categories=>{
+    pCategorie = categories[0]
+    if (pCategorie) {
+      $.each(categories, function(index, categorie){
+        $('select#Edit_categorie').append(new Option(categorie.NomCategorie, categorie.id))
+      })
+    }
+//       $.each(pCategorie.groupes, function(index, groupe){
+// // $('select#Edit_group').append(new Option(groupe.NomGroupe, groupe.id))
+//       })
+
+  })
 }
 /**
   @return void
@@ -126,6 +162,7 @@ function addDays(){
       jourInstance.save().then(j=>{
         $('select#jours_group').append(new Option(j.Jour1+"-"+j.Jour2, j.id));
         $('select#jours_cat').append(new Option(j.Jour1+"-"+j.Jour2, j.id));
+        $('select#Edit_Jours').append(new Option(j.Jour1+"-"+j.Jour2, j.id))
         // category block
         $('select#jours_cat').removeAttr('disabled')
         $('select#jours_cat').removeAttr('title')
@@ -133,6 +170,7 @@ function addDays(){
         $('select#jours_group').removeAttr('title')
         $('button#addCategory').removeAttr('disabled')
         $('button#addCategory').removeAttr('title')
+        $('select#Edit_Jours').change()
         $('span#DayMessage').html('Jours ajouter avec succès');
         $('span#DayMessage').removeClass( "text-warning text-danger" ).addClass('text-success');
       }).catch(error => {
@@ -141,7 +179,6 @@ function addDays(){
       });
     } else {
       $('span#DayMessage').html('les jours ne doivent pas être identique !');
-      $('span#DayMessage').removeClass( "text-warning text-success" ).addClass('text-danger');
     }
     hideElement($('span#DayMessage'));
   });
@@ -154,51 +191,70 @@ function addCategory(){
   $('button#addCategory').on('click', function(){
     if ($('input#nomCategorie').val() == "" && $('select#cat').val() == 'null') {
       $('span#categoryMessage').html("Vous devez choisir une categorie !")
-      $('span#categoryMessage').removeClass( "text-danger text-success" ).addClass('text-warning');
       hideElement($('span#categoryMessage'));
       return;
     }
     if($('select#cat').val() != 'null'){
       categorie.findOne({
-        where: {id: $('select#cat').val()}
+        where: {id: $('select#cat').val()},
+        include: [jours]
       }).then(cat=>{
-        cat.addJours([$('select#jours_cat').val()]).then(()=>{
-          $('span#categoryMessage').html('Categorie ajouter avec succès');
-          $('span#categoryMessage').removeClass( "text-warning text-danger" ).addClass('text-success');
-            $('select#jours_group').change();
-          hideElement($('span#categoryMessage'));
+        cat.getJours({
+          where: {id: $('select#cat').val()}
+        }).then(jours=>{
+          if(!jours){
+            cat.addJours([$('select#jours_cat').val()]).then(()=>{
+              $('select#Edit_Jours').change()
+              $('span#categoryMessage').html('Categorie ajouter avec succès');
+              $('span#categoryMessage').removeClass( "text-warning text-danger" ).addClass('text-success');
+                $('select#jours_group').change();
+              hideElement($('span#categoryMessage'));
+            })
+          }else {
+            $('span#categoryMessage').html("Cette categorie existe déja dans ces jours !")
+            hideElement($('span#categoryMessage'));
+          }
         })
+
       });
       return;
     }
     var catInstence = categorie.build({
       NomCategorie: $('input#nomCategorie').val(),
     });
-    catInstence.save().then(cat=>{
-      cat.setJours([$('select#jours_cat').val()]).then(ct=>{
-        $('select#cat').append(new Option(cat.NomCategorie, cat.id));
-        $('select#jours_group').change();
-        $('select#cat').removeAttr('disabled')
-        $('select#cat_group').removeAttr('disabled')
-        $('select#cat_group').removeAttr('title')
-        $('button#addGroup').removeAttr('disabled')
-        $('button#addGroup').removeAttr('title')
-        $('span#categoryMessage').html('Categorie ajouter avec succès');
-        $('span#categoryMessage').removeClass( "text-warning text-danger" ).addClass('text-success');
-      })
-    }).catch(error => {
-      // $('span#categoryMessage').html(error.message);
-      $('span#categoryMessage').removeClass( "text-warning text-success" ).addClass('text-danger');
-    });
-    hideElement($('span#categoryMessage'));
+    categorie.findOne({
+      where: {NomCategorie: $('input#nomCategorie').val()},
+    }).then(cat=>{
+      if (!cat) {
+        console.log('ddd');
+        catInstence.save().then(cat=>{
+          cat.setJours([$('select#jours_cat').val()]).then(ct=>{
+            $('select#cat').append(new Option(cat.NomCategorie, cat.id));
+            $('select#jours_group').change();
+            $('select#cat').removeAttr('disabled')
+            $('select#cat_group').removeAttr('disabled')
+            $('select#cat_group').removeAttr('title')
+            $('button#addGroup').removeAttr('disabled')
+            $('button#addGroup').removeAttr('title')
+            $('span#categoryMessage').html('Categorie ajouter avec succès');
+            $('span#categoryMessage').removeClass( "text-warning text-danger" ).addClass('text-success');
+          })
+        }).catch(error => {
+          // $('span#categoryMessage').html(error.message);
+        });
+      }else {
+        $('span#categoryMessage').html("Cette categorie existe déja dans ces jours !")
+      }
+      hideElement($('span#categoryMessage'));
+    })
   })
 }
 
 function addGroups(){
     $('button#addGroup').on('click', function(){
-        if (!$('input#heure1').val() || !$('input#heure2').val()) {
-          $('span#GroupMessage').html('Les deux heurs sont obligatoire !');
-          $('span#GroupMessage').removeClass( "text-success text-danger" ).addClass('text-warning');
+        if (!$('input#heure').val()) {
+          $('span#GroupMessage').html('L\'horaire est obligatoire !');
+          // $('span#GroupMessage').removeClass( "text-success text-danger" ).addClass('text-warning');
             hideElement($('span#GroupMessage'));
           return;
         }
@@ -214,16 +270,15 @@ function addGroups(){
             if (!grp) {
               var groupInstance = groupes.build({
                 NomGroupe: $('input#nomGroupe').val().toUpperCase(),
-                horaire1: $('input#heure1').val(),
-                horaire2: $('input#heure2').val()
+                horaire: $('input#heure').val(),
               });
               $('img#loaderGrp').show();
               groupInstance.save().then((grp)=>{
                 grp.setJour( $('select#jours_group').val()).then(()=>{
                   grp.setCategorie($('select#cat_group').val()).then(()=>{
+                    $('select#Edit_Jours').change()
                     $('img#loaderGrp').hide();
                     $('span#GroupMessage').html('Groupe ajouter avec succès');
-                    $('span#GroupMessage').removeClass( "text-warning text-danger" ).addClass('text-success');
                   })
                 })
               }).catch(error => {
@@ -232,12 +287,10 @@ function addGroups(){
               });
             }else {
               $('span#GroupMessage').html('ce groupe de la categorie '+ $('select#cat_group option:selected').text()+ ' déja exist dans les jours : '+$('select#jours_group option:selected').text());
-              $('span#GroupMessage').removeClass( "text-success text-danger" ).addClass('text-warning');
             }
           })
         }else {
           $('span#GroupMessage').html('Le nom du groupe est obligatoire !');
-          $('span#GroupMessage').removeClass( "text-success text-danger" ).addClass('text-warning');
         }
           hideElement($('span#GroupMessage'));
     });
@@ -320,8 +373,7 @@ function editData(){
       groupes.findOne({
         where: {id: $(this).val()}
       }).then(grp => {
-        $('input#Edit_Heure1').val(grp.horaire1);
-        $('input#Edit_Heure2').val(grp.horaire2);
+        $('input#Edit_Heure').val(grp.horaire);
       })
       $('button#deleteGroup').removeAttr('disabled')
     }
@@ -480,8 +532,10 @@ function deletesDaysCategorie(){
             }
           }).then((cat)=>{
             cat.removeJour($('select#Edit_Jours').val()).then(()=>{
-              cat.removeGroupes([$('select#Edit_groupe options').val()])
-              ipc.send('refresh-group');
+              cat.removeGroupes([$('select#Edit_groupe options').val()]).then(()=>{
+                $('select#Edit_Jours').change()
+              })
+              // ipc.send('refresh-group');
             })
 
           });
@@ -534,7 +588,8 @@ function deletesCategoriegroups(){
               id: $('select#Edit_Cat').val()
             }
           }).then(()=>{
-            ipc.send('refresh-group');
+            // ipc.send('refresh-group');
+          $('select#Edit_Jours').change()
           });
         }
 
@@ -557,7 +612,10 @@ function deletesCategoriegroups(){
               id: $('select#Edit_groupe option:selected').val()
             }
           }).then(()=>{
-            ipc.send('refresh-group');
+            // ipc.send('refresh-group');
+            $('select#Edit_groupe option:selected').remove()
+            $('input#Edit_Heure1').val('')
+            $('input#Edit_Heure2').val('')
           });
         }
 
@@ -573,40 +631,23 @@ function updateTime(){
       $('span#msgTime').html("Vous devez choisir un groupe !")
       return;
     }
-    if ($('input#Edit_Heure1').val() != "") {
+    if ($('input#Edit_Heure').val() != "") {
       groupes.findOne({
         where: {id:$('select#Edit_groupe').val()}
       }).then(grpToUpdate => {
         grpToUpdate.update({
-          horaire1: $('input#Edit_Heure1').val()
+          horaire: $('input#Edit_Heure').val()
         }).then(()=>{
-           $('#group_list').find("tr:gt(0)").remove();
-           ipc.send('refresh-group')
-           $('.edit-groupe').hide()
+           $('span#msgTime').html("l'horaire est modifier")
+           $('span#msgTime').addClass('text-success')
          });
        });
-    }else $('span#msgTime').html("l'heure 1 ne doit pas être vide !")
-  })
-  $('button#EditTime2').on('click', function(){
-    // let trToUpdate = $('#group_list tbody').find('td').find('input:radio[name="group"]:checked').closest('tr');
-    if (!$('select#Edit_groupe').val()) {
-      $('span#msgTime').html("Vous devez choisir un groupe !")
-      return;
+    }else {
+      $('span#msgTime').html("l'horaire ne doit pas être vide !")
+      $('span#msgTime').removeClass('text-success')
     }
-    if ($('input#Edit_Heure2').val() != "") {
-      groupes.findOne({
-        where: {id:$('select#Edit_groupe').val()}
-      }).then(grpToUpdate => {
-        grpToUpdate.update({
-          horaire2: $('input#Edit_Heure2').val()
-        }).then(()=>{
-           // $('#group_list').find("tr:gt(0)").remove();
-           // ipc.send('refresh-group')
-           $('.edit-groupe').hide()
-         });
-       });
-    }else $('span#msgTime').html("l'heure 2 ne doit pas être vide !")
   })
+
 }
 /**
  * show categorie and time in modal
@@ -636,7 +677,7 @@ function showCategorie(){
           nmC = grp.categorie.NomCategorie
           $('table#table_show_cat tbody').append('<tr style="'+classe+'">'+
           '<td>'+grp.NomGroupe+'</td>'+
-          '<td>'+grp.horaire1+'/'+grp.horaire2+'</td>'+
+          '<td>'+grp.horaire+'</td>'+
           '<td>'+grp.categorie.NomCategorie+'</td>'+
           '</tr>')
         })

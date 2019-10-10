@@ -53,24 +53,15 @@ function fillPaymentTable(){
        hiddenIdPayment = ''
     })
     table = $('#table_paiement').DataTable({
-      // columnDefs: [
-      //   {
-      //     orderable: false,
-      //     className: "text-center",
-      //     targets: [ 0 ],
-      //     render: function (data, type, full, meta){
-      //          return '<input class="table-radio" type="radio" name="group">';
-      //      }
-      //   }
-      // ],
       data: paymentData,
       createdRow: function (row, data, index) {
          if (data[7] != "") {
              $(row).addClass('rowPayed');
          }
        },
-      pageLength : 7,
-      lengthMenu: [[7, 10, 30, 50, -1], [7, 10, 30, 50, 'Tous']],
+       // sDom: 'lrtip',
+       pageLength : 10,
+       lengthMenu: [[10, 15, 20, 30, -1], [10, 15, 20, 30, 'Tous']],
       language: {
         processing:     "Traitement en cours...",
         search:         "Rechercher&nbsp;:",

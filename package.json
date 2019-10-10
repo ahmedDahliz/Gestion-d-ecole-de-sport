@@ -39,6 +39,17 @@
       "ext": "ico",
       "icon": "build/icon.ico"
     },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    },
     "nsis":{
       "allowToChangeInstallationDirectory": true,
       "oneClick": false

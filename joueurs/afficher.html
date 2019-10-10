@@ -42,7 +42,7 @@
                   <td colspan="2"><input type="text" id="edit_lname" class="change form-control form-control-sm d-inline"></td>
                 </tr>
                 <tr>
-                  <td colspan="2">Prenom : </td>
+                  <td colspan="2">Prénom : </td>
                   <td colspan="2"><input type="text" id="edit_fname" class="change form-control form-control-sm d-inline"></td>
                 </tr>
                 <tr>
@@ -60,7 +60,7 @@
                       <td class="m-1"><select id="edit_days"  class="change form-control form-control-sm d-inline"></select></td>
                     </tr>
                     <tr>
-                      <td class="m-1">Categorie : </td>
+                      <td class="m-1">Catégorie : </td>
                       <td class="m-1"><select id="edit_categorie" class="change form-control form-control-sm d-inline"></select></td>
                     </tr>
                     <tr>
@@ -84,7 +84,7 @@
                       <td><input type="text" id="edit_price" class="change form-control form-control-sm"></td>
                     </tr> -->
                     <tr>
-                      <td>Prix annuler</td>
+                      <td>Prix annuel</td>
                       <td><input type="text" id="edit_anuual_price" class="change form-control form-control-sm"></td>
                     </tr>
                     <tr>
@@ -92,13 +92,15 @@
                       <td><textarea name="name" id="edit_adress" cols="10" class="change form-control form-control-sm"></textarea></td>
                     </tr>
                     <tr>
-                      <td><i class="fas fa-users"></i> : <span id="nbr_joueurs"></span></td>
+                      <td colspan="2">
+                        <i class="fas fa-users"></i> : <span id="nbr_joueurs"></span><br>
+                        <span id="msg_update_player" class="font-weight-bold m-3 mt-5"></span>
+                      </td>
                     </tr>
                   </table>
                     <button class="btn btn-edit" id="update_player"><i class="fas fa-edit"></i> Enregistrer</button>
               </div>
           </div>
-          <span id="msg_update_player" class="font-weight-bold m-3 mt-5"></span>
         </div>
       </div>
   </body>

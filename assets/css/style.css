@@ -324,3 +324,10 @@ cursor: pointer;
   border-radius: 10px;
   opacity: 0.95;
 }
+#table_player tbody tr{
+  cursor: pointer;
+}
+#table_paiement tbody td, #table_player tbody tr td{
+  padding: 5px;
+  font-size: 15px;
+}

@@ -37,13 +37,13 @@ function updateUserData(){
             })
           }else {
             $('span#msg_edit_user').html("<i class='fas fa-times-circle'></i> Mot de passe actuel est incorrect ! ")
-            $('span#msg_edit_user').removeClass('text-success').addClass('text-danger')
+            // $('span#msg_edit_user').removeClass('text-success').addClass('text-danger')
               setTimeout(()=>{$('span#msg_edit_user').html("")}, 3000)
           }
         })
       }else {
         $('span#msg_edit_user').html("<i class='fas fa-times-circle'></i> la confirmation de mot de passe est incorrect !")
-        $('span#msg_edit_user').removeClass('text-success').addClass('text-danger')
+        // $('span#msg_edit_user').removeClass('text-success').addClass('text-danger')
           setTimeout(()=>{$('span#msg_edit_user').html("")}, 3000)
       }
     }else {
@@ -61,7 +61,7 @@ function updateUserData(){
           })
         }else {
           $('span#msg_edit_user').html("<i class='fas fa-times-circle'></i> Mot de passe actuel est incorrect ! ")
-          $('span#msg_edit_user').removeClass('text-success').addClass('text-danger')
+          // $('span#msg_edit_user').removeClass('text-success').addClass('text-danger')
             setTimeout(()=>{$('span#msg_edit_user').html("")}, 3000)
         }
       })

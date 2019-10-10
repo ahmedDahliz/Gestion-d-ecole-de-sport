@@ -18,9 +18,9 @@
     </div>
     <div id="mainMenu">
       <button id="J" class="btn btn-danger"><i class="fas fa-users"></i> Joueurs</button>
-      <button id="G" class="btn btn-danger"><i class="fas fa-grip-horizontal"></i> Categorie/Groupes</button>
-      <button id="E" class="btn btn-danger"><i class="fas fa-chalkboard-teacher"></i> Entreneurs</button>
-      <button id="P" class="btn btn-danger" style="background: #b54747; color: black"><i class="fas fa-file-invoice-dollar"></i> Payment</button>
+      <button id="G" class="btn btn-danger"><i class="fas fa-grip-horizontal"></i> Catégories/Groupes</button>
+      <button id="E" class="btn btn-danger"><i class="fas fa-chalkboard-teacher"></i> Entraîneurs</button>
+      <button id="P" class="btn btn-danger" style="background: #b54747; color: black"><i class="fas fa-file-invoice-dollar"></i> Paiement</button>
       <button id="U" class="btn btn-danger"><i class="fas fa-user-cog"></i> Utilisateur</button>
       <button id="D" class="btn btn-danger"><i class="fas fa-power-off"></i> Deconnexion</button>
     </div>
@@ -36,9 +36,9 @@
               <th><i class="fas fa-cog"></i></th>
               <th>Num</th>
               <th>Nom</th>
-              <th>Prenom</th>
+              <th>Prénom</th>
               <th>Jours</th>
-              <th>Categorie/Groupe</th>
+              <th>Catégorie/Groupe</th>
               <th>Date de paiement</th>
               <th>Paiement pour</th>
               <th>Montant</th>
@@ -67,11 +67,11 @@
         <h6>Date de paiement : <span id="date_now"></span></h6>
         <table class="table">
           <tr>
-            <td>Nom et prenom : </td>
+            <td>Nom et prénom : </td>
             <td><input type="text" id="fname_lname" class="form-control form-control-sm m-1" readonly/></td>
           </tr>
           <tr>
-            <td>Jours Categorie/Groupe : </td>
+            <td>Jours Catégorie/Groupe : </td>
             <td><input type="text" id="cat_grp" class="form-control form-control-sm m-1" readonly></td>
           </tr>
           <tr>
@@ -80,7 +80,7 @@
               <div id="month_container" style="text-align: left; max-height: 100px; overflow-y: scroll;">
                 <table id="table_paiement_for">
                   <tr>
-                    <td><input type="checkbox" data-year="" data-month="août" name="payment_for" value="7" /> août <span class="year"></span> </td>
+               Paiementd><input type="checkbox" data-year="" data-month="août" name="payment_for" value="7" /> août <span class="year"></span> </td>
                     <td><input type="checkbox" data-year="" data-month="septembre" name="payment_for" value="8" /> septembre <span class="year"></span> </td>
                     <td><input type="checkbox" data-year="" data-month="octobre" name="payment_for" value="9" /> octobre <span class="year"></span> </td>
                   </tr>
@@ -130,11 +130,11 @@
         <h6>Afficher les paiements</h6>
         <table class="table">
           <tr>
-            <td>Nom et prenom : </td>
+            <td>Nom et prénom : </td>
             <td><span class="font-weight-bold" id="show_fname_lname" ></span></td>
           </tr>
           <tr>
-            <td>Categorie/Groupe : </td>
+            <td>Catégorie/Groupe : </td>
             <td><span class="font-weight-bold" id="show_cat_grp" ></span></td>
           </tr>
         </table>

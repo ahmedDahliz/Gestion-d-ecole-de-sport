@@ -2,8 +2,8 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Ajouter Categorie/Groupes</title>
-    <link rel="stylesheet" type="text/css" href="../node_modules/gijgo/css/gijgo.min.css">
+    <title>Ajouter Catégorie/Groupes</title>
+    <!-- <link rel="stylesheet" type="text/css" href="../node_modules/gijgo/css/gijgo.min.css"> -->
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="../assets/css/style.css" type="text/css"/>
@@ -19,7 +19,7 @@
     </div>
       <div class="secWindow">
         <div class="w-100 text-center mb-5">
-          <h2 class="m-2"><i class="fas fa-grip-horizontal"></i><i class="fas fa-plus align-top" style="font-size: 18px"></i> Ajouter Categorie/Groupes</h2>
+          <h2 class="m-2"><i class="fas fa-grip-horizontal"></i><i class="fas fa-plus align-top" style="font-size: 18px"></i> Ajouter Catégorie/Groupes</h2>
         </div>
         <div class="container-fluid">
           <div class="form-group row" id="form_add_group">
@@ -57,14 +57,16 @@
             </div>
             <!--Categorie-->
             <div class="col-12 p-1 m-1 border border-secondary" style="border-color: #a54646">
-              <h4 class="pl-2">Categorie</h4>
+              <h4 class="pl-2">Catégories</h4>
               <table class="table">
                 <tr>
-                  <td>Categorie</td>
+                  <td>Catégories</td>
                   <td><select id="cat" class="form-control form-control-sm">
-                    <option value="null">Nouveau categorie</option>
+                    <option value="null">Nouvelle Catégorie</option>
                     </select></td>
-                  <td colspan="2"><input type="text" id="nomCategorie" placeholder="Nom categorie" class="form-control form-control-sm"></td>
+                  <td colspan="2"><input type="text" id="nomCategorie" placeholder="Catégorie" class="form-control form-control-sm">
+                     <small>Exemple : U6</small>
+                  </td>
                   <td colspan="2"></td>
                 </tr>
                 <tr>
@@ -106,27 +108,26 @@
               <h4>Groupes</h4>
               <table class="table">
                 <tr>
-                  <td>Nom groupe</td>
+                  <td>Groupe</td>
                   <td><input type="text" id="nomGroupe" class="form-control form-control-sm"></td>
                   <td>Jours</td>
                   <td>
                     <select id="jours_group" class="form-control form-control-sm">
                     </select>
                   </td>
-                  <td>Categorie</td>
+                  <td>Catégorie</td>
                   <td>
                     <select id="cat_group" class="form-control form-control-sm">
                     </select>
                   </td>
                 </tr>
                 <tr>
-                  <td>Horaire de jour 1</td>
+                  <td>Horaire</td>
                   <td>
-                  <input id="heure1" width="80" name="H1" readonly/>
+                  <input id="heure" width="20" name="H1" class="form-control form-control-sm"/>
                   </td>
-                  <td>Horaire de jour 2</td>
+                  <td></td>
                   <td>
-                  <input id="heure2" width="80" name="H1" readonly/>
                   </td>
                   <td></td>
                   <td></td>
@@ -145,30 +146,171 @@
             </div>
           </div> -->
         </div>
-        <!-- <table id="new_groups" class="display table table-hover">
-          <thead class="">
+        <fieldset class="edit-groupe m-2">
+          <br>
+          <legend>Modifier</legend>
+          <table class="table table-bordered border-dark">
             <tr>
-              <th><i class="fas fa-cog"></i></th>
-              <th>Groupe</th>
-              <th>Jour 1</th>
-              <th>Heur 1</th>
-              <th>Jour 2</th>
-              <th>Heur 2</th>
+              <td>Jours</td>
+              <td><select name="EditJours" id="Edit_Jours" class="form-control form-control-sm m-1">
+              </select>
+              <button class="btn btn-delete m-1" id="deleteDay"><i class="fas fa-times"></i></button>
+              <button class="btn btn-edit m-1" id="editDay"><i class="fas fa-edit"></i></button>
+            </td>
+              <td>Catégories</td>
+              <td>
+                <select name="Edit_Cat" id="Edit_Cat" class="form-control form-control-sm" style="width:80px">
+                </select>
+                <div class="btn-group m-1">
+                  <button type="button" class="btn btn-delete dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-times"></i>
+                  </button>
+                  <div class="dropdown-menu">
+                    <button class="dropdown-item" id="deleteCatFromDay">Supprimer de <span id="nameDays"></span></button>
+                    <button class="dropdown-item" id="deleteCat">Supprimer totalement</button>
+                  </div>
+                </div>
+                <button class="btn btn-edit m-1" id="editCat"><i class="fas fa-edit"></i></button>
+            </td>
+            <td>Groupe</td>
+            <td>
+              <select name="EditGroup" class="form-control form-control-sm m-1" id="Edit_groupe" size="3" style="width:60px">
+              </select>
+                <button class="btn btn-delete m-1" id="deleteGroup" disabled><i class="fas fa-times"></i></button>
+            </td>
+              <td style="width: 90px;">Horaire</td>
+              <td><input id="Edit_Heure" class="m-1" width="80" class="form-control form-control-sm"/>
+                <button class="btn btn-edit m-1" id="EditTime1">Modifier</button> <br>
+                <span class="font-weight-bold" id="msgTime"></span>
+              </td>
             </tr>
-          </thead>
-          <tbody>
+          </table>
+          <hr>
+        </fieldset>
+        <!-- Edit modal for days -->
+        <div id="myModalDays" class="modal">
 
-          </tbody>
-        </table> -->
+          <!-- The Close Button -->
+          <span id="closeDays" class="close">&times;</span>
+
+          <!-- Modal Content (The Image) -->
+          <div  class="modal-content w-75 h-75 text-center p-5">
+            <table class="table">
+              <tr>
+                <td>Jours : </td>
+                <td><input type="text" id="old_days" class="form-control form-control-sm m-1" readonly></td>
+              </tr>
+              <tr>
+                <td>jour 1 : </td>
+                <td><select id="new_day1" class="form-control form-control-sm m-1">
+                  <option value="null">Choisir le jour 1</option>
+                  <option value="Lundi">Lundi</option>
+                  <option value="Mardi">Mardi</option>
+                  <option value="Mercredi">Mercredi</option>
+                  <option value="Jeudi">Jeudi</option>
+                  <option value="Vendredi">Vendredi</option>
+                  <option value="Samedi">Samedi</option>
+                  <option value="Dimanche">Dimanche</option>
+                </select>
+              </td>
+              </tr>
+              <tr>
+                <td>jour 2 : </td>
+                <td>
+                  <select id="new_day2" class="form-control form-control-sm m-1">
+                    <option value="null">Choisir le jour 2</option>
+                    <option value="Lundi">Lundi</option>
+                    <option value="Mardi">Mardi</option>
+                    <option value="Mercredi">Mercredi</option>
+                    <option value="Jeudi">Jeudi</option>
+                    <option value="Vendredi">Vendredi</option>
+                    <option value="Samedi">Samedi</option>
+                    <option value="Dimanche">Dimanche</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td><button class="btn btn-add" id="submit_edit_day" disabled>Valider</button><br>
+                </td>
+                <td><input type="hidden" id="idDays"><span class="font-weight-bold" id="msg_edit_day"></span></td>
+              </tr>
+            </table>
+          </div>
+
+
+          <!-- Modal Caption (Image Text) -->
+          <div id="caption">Modifer Jours</div>
+        </div>
+        <!-- Edit modal for category -->
+        <div id="myModalCat" class="modal">
+
+          <!-- The Close Button -->
+          <span class="close" id="closeCat">&times;</span>
+
+          <!-- Modal Content (The Image) -->
+          <div  class="modal-content w-75 h-50 text-center p-5">
+            <table class="table">
+              <tr>
+                <td>Nom : </td>
+                <td><input type="text" id="old_Catégorie_name" class="form-control form-control-sm m-1" readonly></td>
+              </tr>
+              <tr>
+                <td>Nouveau nom : </td>
+                <td><input type="text" id="new_categorie_name" class="form-control form-control-sm m-1"></td>
+              </tr>
+              <tr>
+                <td><button class="btn btn-add" id="submit_edit_category">Valider</button></span>
+                </td>
+                <td><input type="hidden" id="idCat"><span class="font-weight-bold" id="msg_edit_cat"></td>
+              </tr>
+            </table>
+          </div>
+
+
+          <!-- Modal Caption (Image Text) -->
+          <div id="caption">Modifer Catégorie</div>
+        </div>
       </div>
       <script src="../renderer.js"></script>
       <script src="../node_modules/gijgo/js/gijgo.js"></script>
+      <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
+      <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
       <script src="../config/scripts/db_groupes.js"></script>
       <script type="text/javascript">
+      // Get the modal
+      var modalDays = document.getElementById("myModalDays");
+      var modalCat = document.getElementById("myModalCat");
+
+      // Get the image and insert it inside the modal - use its "alt" text as a caption
+      var buttonEditDay = document.getElementById("editDay");
+      var buttonEditCat = document.getElementById("editCat");
+      buttonEditDay.onclick = function(){
+        modalDays.style.display = "block";
+        $('input#old_days').val($('select#Edit_Jours option:selected').text());
+        $('select#new_day1').val('null')
+        $('select#new_day2').val('null')
+        $('input#idDays').val($('select#Edit_Jours').val());
+      }
+      buttonEditCat.onclick = function(){
+        modalCat.style.display = "block";
+        $('input#old_categorie_name').val($('select#Edit_Cat option:selected').text());
+        $('input#idCat').val($('select#Edit_Cat').val());
+      }
+
+      // Get the <span> element that closes the modal
+      var spanDays = document.getElementById("closeDays");
+      var spanCat = document.getElementById("closeCat");
+
+      // When the user clicks on <span> (x), close the modal
+      spanDays.onclick = function() {
+        modalDays.style.display = "none";
+      }
+      spanCat.onclick = function() {
+        modalCat.style.display = "none";
+      }
+
       $(document).ready(function () {
         $('img#loaderGrp').hide();
-        $('#heure1').timepicker();
-        $('#heure2').timepicker();
         $('#H2').timepicker();
         $('input:radio[name="addGroup"]').change(function () {
            if(this.checked){
@@ -177,6 +319,13 @@
            }
         });
       });
+      $('select#new_day1, select#new_day2').on('change', function(){
+         if ($('select#new_day1').val() != 'null' && $('select#new_day2').val() != 'null') {
+           $('button#submit_edit_day').removeAttr('disabled')
+         }else {
+             $('button#submit_edit_day').prop('disabled', true)
+         }
+      })
       </script>
   </body>
 </html>

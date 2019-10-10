@@ -21,8 +21,7 @@ let entreneurs  = sequelize.define('entreneurs', {
 })
 let groupes = sequelize.define('groupes', {
   NomGroupe: { type: Sequelize.STRING, allowNull: false},
-  horaire1: {type: Sequelize.TIME, allowNull: false},
-  horaire2: {type: Sequelize.TIME, allowNull: false}
+  horaire: {type: Sequelize.TIME, allowNull: false},
 })
 
 let joueurs = sequelize.define('joueurs', {
@@ -71,6 +70,7 @@ joueurs.belongsTo(groupes)
 groupes.hasMany(joueurs)
 joueurs.hasMany(paiement)
 paiement.belongsTo(joueurs)
+// sequelize.sync({force: true})
 // exports.seq = sequelize.authenticate()
 // .then(() => {
 //   console.log('Connection has been established successfully.');

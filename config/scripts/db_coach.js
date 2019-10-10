@@ -56,26 +56,26 @@ function hideElement(selector){
 function validateCoachData(fname, lname, phone, message){
   if (!lname.val()) {
     message.html('le nom est obliatoire !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
+    // message.removeClass('text-success text-danger').addClass('text-warning')
     hideElement(message);
     return false;
   }
   if (!fname.val()) {
     message.html('le prenom est obliatoire !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
+    // message.removeClass('text-success text-danger').addClass('text-warning')
     hideElement(message);
     return false;
   }
   if (!phone.val()) {
     message.html('le N° de télephone est obliatoire !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
+    // message.removeClass('text-success text-danger').addClass('text-warning')
     hideElement(message);
     return false;
   }
   let validePhone = /(\+212|0)([ \-_/]*)(\d[ \-_/]*){9}/
   if (!validePhone.test(phone.val())) {
     message.html('le N° de télephone n\'est pas valide !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
+    // message.removeClass('text-success text-danger').addClass('text-warning')
     hideElement(message);
     return false;
   }
@@ -119,7 +119,7 @@ function addCoach(){
               hideElement($('span#msg_add_coach'));
         }).catch(err=>{
           $('span#msg_add_coach').html(err.message)
-          $('span#msg_add_coach').removeClass('text-warning text-success').addClass('text-danger')
+          // $('span#msg_add_coach').removeClass('text-warning text-success').addClass('text-danger')
         })
     }
 
@@ -321,6 +321,14 @@ function updateCoach(){
     }
   })
 }
+function selectRow(){
+  $('table#coach_table tbody').on('click','tr', function(e){
+    $('table#coach_table tbody tr, table#table_player tbody tr').css('background', '');
+    $(this).css('background', '#d2a5a5');
+    $(this).find('input:radio').prop('checked', true)
+    $(this).find('input:radio').change();
+  })
+}
 $(document).ready(function(){
   // initAddForm();
   addCoach();
@@ -331,4 +339,5 @@ $(document).ready(function(){
   deleteCoache();
   editCoach();
   updateCoach();
+  selectRow();
 });

@@ -18,15 +18,15 @@
     </div>
     <div id="mainMenu">
       <button id="J" class="btn btn-danger" style="background: #b54747; color: black;"><i class="fas fa-users"></i> Joueurs</button>
-      <button id="G" class="btn btn-danger"><i class="fas fa-grip-horizontal"></i> Categorie/Groupes</button>
-      <button id="E" class="btn btn-danger"><i class="fas fa-chalkboard-teacher"></i> Entreneurs</button>
-      <button id="P" class="btn btn-danger"><i class="fas fa-file-invoice-dollar"></i> Payment</button>
+      <button id="G" class="btn btn-danger"><i class="fas fa-grip-horizontal"></i> Catégories/Groupes</button>
+      <button id="E" class="btn btn-danger"><i class="fas fa-chalkboard-teacher"></i> Entraîneurs</button>
+      <button id="P" class="btn btn-danger"><i class="fas fa-file-invoice-dollar"></i> Paiement</button>
       <button id="U" class="btn btn-danger"><i class="fas fa-user-cog"></i> Utilisateur</button>
       <button id="D" class="btn btn-danger"><i class="fas fa-power-off"></i> Deconnexion</button>
     </div>
     <div id="main">
       <div class="w-100 text-center">
-        <h2 class="m-2"><i class="fas fa-users"></i> List des joueurs</h2>
+        <h2 class="m-2"><i class="fas fa-users"></i> Liste des joueurs</h2>
       </div>
       <div class="m-3">
         <table class="table mb-2">
@@ -38,11 +38,11 @@
             <td><input type="text" size="2" id="sch_id" class="form-control form-control-sm"></td>
             <td>Nom</td>
             <td><input type="text" id="sch_lname" class="form-control form-control-sm"></td>
-            <td>Prenom</td>
+            <td>Prénom</td>
             <td><input type="text" id="sch_fname" class="form-control form-control-sm"></td>
             <td>Jours</td>
             <td><select id="sch_day" class="form-control form-control-sm">
-            <td>Categorie</td>
+            <td>Catégorie</td>
             <td><select id="sch_cat" class="form-control form-control-sm">
             </select></td>
             <td>Groupe</td>
@@ -56,11 +56,11 @@
               <th><i class="fas fa-cog"></i></th>
               <th>Num</th>
               <th>Nom</th>
-              <th>Prenom</th>
+              <th>Prénom</th>
               <th>Télephone</th>
               <th>Date de naissence</th>
               <th>Jours</th>
-              <th>Categorie/Groupe</th>
+              <th>Catégorie/Groupe</th>
             </tr>
           </thead>
           <tbody>
@@ -76,8 +76,8 @@
       <div class="float-right m-2">
         <span id="msg_export_all" class="font-weight-bold"></span> &nbsp;
         <img src="..\assets\image\spinner.gif" alt="" width="40" id="loader_export_all">
-        <button type="button" id="export_all" class="btn btn-success"><i class="fas fa-file-excel"></i> Exporter tous</button>
-        <button type="button" id="export_abs" class="btn btn-show"><i class="fas fa-file-export"></i> Exporter les listes d'abscence</button>
+        <button type="button" id="export_all" class="btn" style="background:#006400; color: white"><i class="fas fa-file-excel"></i> Exporter tous</button>
+        <button type="button" id="export_abs" class="btn btn-add"><i class="fas fa-file-export"></i> Exporter les listes d'abscence</button>
       </div>
     </div>
     <!-- check payment modal -->
@@ -93,7 +93,7 @@
             <td><select  class="form-control form-control-sm" name="" id="abs_day"></select></td>
           </tr>
           <tr>
-            <td>Categorie : </td>
+            <td>Catégorie : </td>
             <td><select  class="form-control form-control-sm" name="" id="abs_cat"></select></td>
           </tr>
           <tr>

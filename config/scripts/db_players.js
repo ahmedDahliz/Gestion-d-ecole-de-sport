@@ -17,6 +17,24 @@ var certPath = defaultCert;
 var avatarFile, certFile;
 let table
 /**
+ * get the age
+ * @param birthday @type input date tag
+ * @return Int
+*/
+function getAge(birthday) {
+    var today = new Date();
+    var birthDate = new Date(birthday.val());
+    var age = today.getFullYear() - birthDate.getFullYear();
+    var m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age = age - 1;
+    }
+    if (age%2 != 0) {
+      age = age +1
+    }
+    return age;
+}
+/**
  * count number of players in group
  * @return integer
 */
@@ -67,67 +85,65 @@ function clearInputs(){
 }
 /**
  * validate the add player form
- * @param lname @type input tag
- * @param fname @type input tag
- * @param phone1 @type input tag
- * @param phone2 @type input tag
- * @param phone3 @type input tag
- * @param price @type input tag
+ * @param lname @type input text tag
+ * @param fname @type input text tag
+ * @param phone1 @type input text tag
+ * @param phone2 @type input text tag
+ * @param phone3 @type input text tag
  * @param birthday @type input date tag
- * @param adresse @type textarea tag
  * @param message @type span tag
  *
  * @return boolean
 */
-function validatePlayerData(lname, fname, phone1, phone2, phone3 , annualPrice, birthday, message){
+function validatePlayerData(lname, fname, phone1, phone2, phone3, birthday, message){
   if (!lname.val()) {
     message.html('le nom est obliatoire !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
+    // message.removeClass('text-success text-danger').addClass('text-warning')
     hideElement(message);
     return false;
   }
   if (!fname.val()) {
-    message.html('le prenom est obliatoire !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
+    message.html('le prénom est obliatoire !')
+    // message.removeClass('text-success text-danger').addClass('text-warning')
     hideElement(message);
     return false;
   }
-  if (!phone1.val()) {
-    message.html('le telephone 1 est obliatoire !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
-    hideElement(message);
-    return false;
-  }
+  // if (!phone1.val()) {
+  //   message.html('le telephone 1 est obliatoire !')
+  //   message.removeClass('text-success text-danger').addClass('text-warning')
+  //   hideElement(message);
+  //   return false;
+  // }
   let validePhone = /(\+212|0)([ \-_/]*)(\d[ \-_/]*){9}/
-  if (!validePhone.test(phone1.val())) {
+  if (phone1.val() && !validePhone.test(phone1.val())) {
     message.html('le N° de télephone n\'est pas valide !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
+    // message.removeClass('text-success text-danger').addClass('text-warning')
     hideElement(message);
     return false;
   }
-  let validePrice= /^[0-9]{2,3}$/
-  if (!annualPrice.val()) {
-    message.html('le prix annuel est obliatoire !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
-    hideElement(message);
-    return false;
-  }
-  if (!validePrice.test(annualPrice.val())) {
-    message.html('le prix annuel n\'est pas valide !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
-    hideElement(message);
-    return false;
-  }
+  // let validePrice= /^[0-9]{2,3}$/
+  // if (!annualPrice.val()) {
+  //   message.html('le prix annuel est obliatoire !')
+  //   message.removeClass('text-success text-danger').addClass('text-warning')
+  //   hideElement(message);
+  //   return false;
+  // }
+  // if (!validePrice.test(annualPrice.val())) {
+  //   message.html('le prix annuel n\'est pas valide !')
+  //   message.removeClass('text-success text-danger').addClass('text-warning')
+  //   hideElement(message);
+  //   return false;
+  // }
   if (!birthday.val()) {
     message.html('la date de naissance est obliatoire !')
-    message.removeClass('text-success text-danger').addClass('text-warning')
+    // message.removeClass('text-success text-danger').addClass('text-warning')
     hideElement(message);
     return false;
   }
   if (phone2.val()) {
     if (!validePhone.test(phone2.val())) {
       message.html('le N° de télephone 2 n\'est pas valide !')
-      message.removeClass('text-success text-danger').addClass('text-warning')
+      // message.removeClass('text-success text-danger').addClass('text-warning')
       hideElement(message);
       return false;
     }
@@ -135,7 +151,7 @@ function validatePlayerData(lname, fname, phone1, phone2, phone3 , annualPrice, 
   if (phone3.val()) {
     if (!validePhone.test(phone3.val())) {
       message.html('le N° de télephone 3 n\'est pas valide !')
-      message.removeClass('text-success text-danger').addClass('text-warning')
+      // message.removeClass('text-success text-danger').addClass('text-warning')
       hideElement(message);
       return false;
     }
@@ -243,7 +259,7 @@ function uploadImage(file, name, type, message){
           fs.writeFile(newPath, data, function (errw) {
             if (errw) {
               message.html('une erreur dans le chargement de l\'image !'+errw);
-              message.removeClass('text-success text-warning').addClass('text-danger');
+              // message.removeClass('text-success text-warning').addClass('text-danger');
               return;
             }
           });
@@ -253,10 +269,11 @@ function uploadImage(file, name, type, message){
         }else if (type == 'certificats') certPath = newPath;
       }else {
         message.html("l'image doit être : .png, .jpeg ou .jpg");
-        message.removeClass('text-success text-danger').addClass('text-warning');
+        // message.removeClass('text-success text-danger').addClass('text-warning');
       }
     }else{message.html('une erreur dans le chargement de l\'image !'+err);
-    message.removeClass('text-success text-warning').addClass('text-danger')};
+    // message.removeClass('text-success text-warning').addClass('text-danger')
+    }
   })
 }
 /**
@@ -278,8 +295,8 @@ function addPlayer(){
           }
         })
     } else {
-      $('span#msg_add_player').html('veuillez saisir le nom et le prenom dabord !')
-      $('span#msg_add_player').removeClass('text-success text-danger').addClass('text-warning')
+      $('span#msg_add_player').html('veuillez saisir le nom et le prénom dabord !')
+      // $('span#msg_add_player').removeClass('text-success text-danger').addClass('text-warning')
     }
   })
   $('button#addCert').on('click', function(){
@@ -295,12 +312,12 @@ function addPlayer(){
           }
         })
     } else {
-      $('span#msg_add_player').html('veuillez saisir le nom et le prenom dabord !')
-      $('span#msg_add_player').removeClass('text-success text-danger').addClass('text-warning')
+      $('span#msg_add_player').html('veuillez saisir le nom et le prénom dabord !')
+      // $('span#msg_add_player').removeClass('text-success text-danger').addClass('text-warning')
     }
   })
   $('button#ajouterJoueur').on('click', function(){
-      if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#annual_price'), $('input#birthday'), $('span#msg_add_player'))){
+      if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3'), $('input#birthday'), $('span#msg_add_player'))){
         if (parseInt($('span#nbr_joueurs').html()) >= 20) {
           let msg = 'Le nombre des joueurs dans ce groupe va dépasser 20 !';
           if (parseInt($('span#nbr_joueurs').html()) > 20) {
@@ -318,6 +335,11 @@ function addPlayer(){
                 if (response) {
                   return;
                 }else{
+                  let ap = 0
+                  if ($('input#annual_price').val()) {
+                    ap = $('input#annual_price').val()
+                  }
+                  console.log(ap);
                   var joueurIns =  joueurs.build({
                     Nom: $('input#lname').val(),
                     Prenom: $('input#fname').val(),
@@ -327,7 +349,7 @@ function addPlayer(){
                     DateNaissance: $('input#birthday').val(),
                     Adresse:  $('textarea#adress').val(),
                     // Prix: $('input#price').val(),
-                    PrixAnnuel: $('input#annual_price').val(),
+                    PrixAnnuel: ap,
                     photo: avatarPath,
                     certificat: certPath
                   })
@@ -359,6 +381,10 @@ function addPlayer(){
                 }
             })
         }else {
+          let ap = 0
+          if ($('input#annual_price').val()) {
+            ap = $('input#annual_price').val()
+          }
           var joueurIns =  joueurs.build({
             Nom: $('input#lname').val(),
             Prenom: $('input#fname').val(),
@@ -368,7 +394,7 @@ function addPlayer(){
             DateNaissance: $('input#birthday').val(),
             Adresse:  $('textarea#adress').val(),
             // Prix: $('input#price').val(),
-            PrixAnnuel: $('input#annual_price').val(),
+            PrixAnnuel: ap,
             photo: avatarPath,
             certificat: certPath
           })
@@ -399,6 +425,10 @@ function addPlayer(){
           })
         }
       }
+  })
+  $('input#birthday').on('change', function(){
+    let idCatAut = $('#categorie option').filter(function () { return $(this).html() == "U"+getAge($('input#birthday')); }).val();
+    $('select#categorie').val(idCatAut)
   })
 }
 /**
@@ -482,10 +512,14 @@ function editAddedPlayer(){
 */
 function updateAddedPlayer(){
   $('button#updatePlayer').on('click', function(){
-    if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3') , $('input#annual_price'), $('input#birthday'), $('span#msg_add_player'))){
+    if(validatePlayerData($('input#lname'), $('input#fname'), $('input#phone1'), $('input#phone2'), $('input#phone3'), $('input#birthday'), $('span#msg_add_player'))){
       joueurs.findOne({
         where: {id: idPlayer}
       }).then(playerToUpdate=>{
+        let ap = 0
+        if ($('input#annual_price').val()) {
+          ap = $('input#annual_price').val()
+        }
         playerToUpdate.update({
           Nom: $('input#lname').val(),
           Prenom: $('input#fname').val(),
@@ -494,7 +528,7 @@ function updateAddedPlayer(){
           Tele3: $('input#phone3').val(),
           DateNaissance: $('input#birthday').val(),
           Adresse:  $('textarea#adress').val(),
-          PrixAnnuel: $('input#annual_price').val(),
+          PrixAnnuel: ap,
           photo: avatarPath,
           certificat: certPath,
           groupeId: $('select#group').val()
@@ -582,43 +616,10 @@ function fillTablePlayer(){
       playerData.push(['<input type="radio" name="player" value="'+player.id+'" class="table-radio align-middle">', player.id,player.Nom, player.Prenom, player.Tele1, getLocalDate(player.DateNaissance), player.groupe.jour.Jour1+'-'+player.groupe.jour.Jour2 ,player.groupe.categorie.NomCategorie+'/'+player.groupe.NomGroupe])
     })
     table = $('#table_player').DataTable({
-      // columnDefs: [
-      //   {
-      //     orderable: false,
-      //     className: "text-center",
-      //     targets: [ 0 ],
-      //     render: function (data, type, full, meta){
-      //          return '<input class="table-radio" type="radio" name="group">';
-      //      }
-      //   }
-      // ],
       data: playerData,
       sDom: 'lrtip',
-      // dom: 'Bfrtip',
-      buttons: [
-           {
-              extend: 'excel',
-              text: '<i class="fas fa-file-excel"></i> Excel',
-              exportOptions: {
-                  columns: [1, 2, 3, 4, 5, 6]
-              },
-              className: 'btn btn-success btn-xs',
-              customize: function (xlsx){
-                var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                 $('row:first c', sheet).attr( 's', '42' );
-              }
-           },
-           {
-              extend: 'pdf',
-              text: '<i class="fas fa-file-excel"></i> Pdf',
-              exportOptions: {
-                  columns: [1, 2, 3, 4, 5, 6]
-              },
-              className: 'btn btn-danger btn-xs'
-           }
-       ],
-      pageLength : 7,
-      lengthMenu: [[7, 10, 30, 50, -1], [7, 10, 30, 50, 'Tous']],
+      pageLength : 10,
+      lengthMenu: [[10, 15, 20, 30, -1], [10, 15, 20, 30, 'Tous']],
       language: {
         processing:     "Traitement en cours...",
         search:         "Rechercher&nbsp;:",
@@ -787,29 +788,6 @@ function showPlayer(){
     where: {id: _idPlayer},
     include:[{model: groupes, include: [jours, categories]}]
   }).then(player=>{
-    jours.findAll({
-        include: [{model: categories, include: groupes, require: true}],
-    }).then(res => {
-        //itirate days
-        pJours = res[0]
-        grpId = player.groupe.id
-        $.each(res, function(index, jours){
-          $('select#edit_days').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
-        })
-        pCat = pJours.categories[0]
-        $.each(pJours.categories, function(index, cat){
-          $('select#edit_categorie').append(new Option(cat.NomCategorie, cat.id));
-        })
-        $('select#edit_days').val(player.groupe.jour.id).change()
-        setTimeout(()=>{
-          $('select#edit_categorie').val(player.groupe.categorie.id).change();
-        }, 300)
-        setTimeout(()=>{
-          $('select#edit_group').val(player.groupe.id).change();
-        }, 350)
-        getNumberOfPlayers($('select#edit_group'), $('span#nbr_joueurs'))
-        $('button#update_player').prop('disabled', true);
-    });
     categories.findAll({
       include:[{model: groupes}]
     }).then(cats=>{
@@ -820,23 +798,43 @@ function showPlayer(){
       $.each(fCat.groupes, (index, groupe)=>{
         $('select#edit_group').append(new Option(groupe.NomGroupe, groupe.id))
       })
-
-
+      jours.findAll({
+          include: [{model: categories, include: groupes, require: true}],
+      }).then(res => {
+          //itirate days
+          pJours = res[0]
+          grpId = player.groupe.id
+          $.each(res, function(index, jours){
+            $('select#edit_days').append(new Option(jours.Jour1+"-"+jours.Jour2, jours.id));
+          })
+          pCat = pJours.categories[0]
+          $.each(pJours.categories, function(index, cat){
+            $('select#edit_categorie').append(new Option(cat.NomCategorie, cat.id));
+          })
+          $('select#edit_days').val(player.groupe.jour.id).change();
+          setTimeout(()=>{
+            $('select#edit_categorie').val(player.groupe.categorie.id).change();
+          }, 300)
+          setTimeout(()=>{
+            $('select#edit_group').val(player.groupe.id).change();
+          }, 350)
+          $('input#edit_lname').val(player.Nom);
+          $('input#edit_fname').val(player.Prenom);
+          $('input#edit_birthday').val(getShortDate(player.DateNaissance));
+          $('input#edit_phone1').val(player.Tele1);
+          $('input#edit_phone2').val(player.Tele2);
+          $('input#edit_phone3').val(player.Tele3);
+          $('input#edit_price').val(player.Prix);
+          $('input#edit_anuual_price').val(player.PrixAnnuel);
+          $('textarea#edit_adress').val(player.Adresse);
+          $('img#avatar').attr('src', player.photo);
+          $('img#cert').attr('src', player.certificat);
+          avatarPath = player.photo;
+          certPath = player.certificat;
+          getNumberOfPlayers($('select#edit_group'), $('span#nbr_joueurs'))
+          $('button#update_player').prop('disabled', true);
+      });
     })
-
-    $('input#edit_lname').val(player.Nom);
-    $('input#edit_fname').val(player.Prenom);
-    $('input#edit_birthday').val(getShortDate(player.DateNaissance));
-    $('input#edit_phone1').val(player.Tele1);
-    $('input#edit_phone2').val(player.Tele2);
-    $('input#edit_phone3').val(player.Tele3);
-    $('input#edit_price').val(player.Prix);
-    $('input#edit_anuual_price').val(player.PrixAnnuel);
-    $('textarea#edit_adress').val(player.Adresse);
-    $('img#avatar').attr('src', player.photo);
-    $('img#cert').attr('src', player.certificat);
-    avatarPath = player.photo;
-    certPath = player.certificat
 })
   $('select#edit_days').on('change', function() {
     jours.findOne({
@@ -867,9 +865,13 @@ function showPlayer(){
     })
 
   })
-    $('select#edit_group').on('change', ()=>{
+  $('select#edit_group').on('change', ()=>{
         getNumberOfPlayers($('select#edit_group'), $('span#nbr_joueurs'))
     })
+  $('input#edit_birthday').on('change', function(){
+    let idCatAut = $('select#edit_categorie option').filter(function () { return $(this).html() == "U"+getAge($('input#edit_birthday')); }).val();
+    $('select#edit_categorie').val(idCatAut)
+  })
 }
 /**
  * updayePlayer
@@ -892,8 +894,8 @@ function updatePlayer(){
           }
         })
     } else {
-      $('span#msg_update_player').html('veuillez saisir le nom et le prenom dabord !')
-      $('span#msg_update_player').removeClass('text-success text-danger').addClass('text-warning')
+      $('span#msg_update_player').html('veuillez saisir le nom et le prénom dabord !')
+      // $('span#msg_update_player').removeClass('text-success text-danger').addClass('text-warning')
     }
   })
   $('button#edit_cert').on('click', function(){
@@ -912,13 +914,18 @@ function updatePlayer(){
           }
         })
     } else {
-      $('span#msg_update_player').html('veuillez saisir le nom et le prenom dabord !')
-      $('span#msg_update_player').removeClass('text-success text-danger').addClass('text-warning')
+      $('span#msg_update_player').html('veuillez saisir le nom et le prénom dabord !')
+      // $('span#msg_update_player').removeClass('text-success text-danger').addClass('text-warning')
     }
   })
   $('button#update_player').on('click', function(){
+    if (!$('select#edit_group').val()) {
+      $('span#msg_update_player').html('Le groupe est obligatoire !')
+      hideElement($('span#msg_update_player'))
+      return;
+    }
     let doUpdate = false
-    if(validatePlayerData($('input#edit_lname'), $('input#edit_fname'), $('input#edit_phone1'), $('input#edit_phone2'), $('input#edit_phone3') , $('input#edit_anuual_price'), $('input#edit_birthday'), $('span#msg_update_player'))){
+    if(validatePlayerData($('input#edit_lname'), $('input#edit_fname'), $('input#edit_phone1'), $('input#edit_phone2'), $('input#edit_phone3'), $('input#edit_birthday'), $('span#msg_update_player'))){
       if (grpId != $('select#edit_group').val() && parseInt($('span#nbr_joueurs').html()) >= 20) {
           let msg = 'Le nombre des joueurs dans ce groupe va dépasser 20 !';
           if (parseInt($('span#nbr_joueurs').html()) > 20) {
@@ -939,6 +946,11 @@ function updatePlayer(){
                 joueurs.findOne({
                   where: {id: _idPlayer}
                 }).then(playerToUpdate => {
+                  let ap = 0
+                  if ($('input#edit_anuual_price').val()) {
+                    ap = $('input#edit_anuual_price').val()
+                  }
+                  console.log(ap);
                   playerToUpdate.update({
                     Nom: $('input#edit_lname').val(),
                     Prenom: $('input#edit_fname').val(),
@@ -948,7 +960,7 @@ function updatePlayer(){
                     DateNaissance: $('input#edit_birthday').val(),
                     Adresse:  $('textarea#edit_adress').val(),
                     // Prix: $('input#edit_price').val(),
-                    PrixAnnuel: $('input#edit_anuual_price').val(),
+                    PrixAnnuel: ap,
                     photo: avatarPath,
                     certificat: certPath,
                     groupeId: $('select#edit_group').val()
@@ -965,6 +977,11 @@ function updatePlayer(){
         joueurs.findOne({
           where: {id: _idPlayer}
         }).then(playerToUpdate => {
+          let ap = 0
+          if ($('input#edit_anuual_price').val()) {
+            ap = $('input#edit_anuual_price').val()
+          }
+          console.log(ap);
           playerToUpdate.update({
             Nom: $('input#edit_lname').val(),
             Prenom: $('input#edit_fname').val(),
@@ -974,7 +991,7 @@ function updatePlayer(){
             DateNaissance: $('input#edit_birthday').val(),
             Adresse:  $('textarea#edit_adress').val(),
             // Prix: $('input#edit_price').val(),
-            PrixAnnuel: $('input#edit_anuual_price').val(),
+            PrixAnnuel: ap,
             photo: avatarPath,
             certificat: certPath,
             groupeId: $('select#edit_group').val()
@@ -1085,7 +1102,14 @@ function initExportllistAbsceance(){
     }
 
   });
-
+}
+function selectRow(){
+  $('table#table_new_palyer tbody, table#table_player tbody').on('click','tr', function(e){
+    $('table#table_new_palyer tbody tr, table#table_player tbody tr').css('background', '');
+    $(this).css('background', '#d2a5a5');
+    $(this).find('input:radio').prop('checked', true)
+    $(this).find('input:radio').change();
+  })
 }
 $(document).ready(function(){
   $('button#updatePlayer').hide();
@@ -1103,7 +1127,8 @@ $(document).ready(function(){
   }
   cancelAddPlayer();
   $.when(fillTablePlayer()).done(function () {
-    shearchPlayer()
+    shearchPlayer();
   })
-  initExportllistAbsceance()
+  initExportllistAbsceance();
+  selectRow();
 })

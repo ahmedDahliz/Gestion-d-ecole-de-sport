@@ -12,7 +12,6 @@ if (currentMonth >= 0) {
  * @return promesse
 */
 var dataPlayerRows = []
-let testData = []
 function getPlayerData(){
     return joueurs.findAll({
     include:[
@@ -35,7 +34,7 @@ function getPlayerData(){
         })
        dataPlayerRows.push({id: player.id, name: player.Prenom+' '+player.Nom,
        birthday: getLocalDate(player.DateNaissance), cat: player.groupe.categorie.NomCategorie,
-       sea:   player.groupe.jour.Jour1+'/'+player.groupe.jour.Jour2 +'\n'+player.groupe.horaire1+' / '+player.groupe.horaire2,
+       sea:   player.groupe.jour.Jour1+'/'+player.groupe.jour.Jour2 +'\n'+player.groupe.horaire,
        aPrice: player.PrixAnnuel,  m9: paymentByMonth[9], m10: paymentByMonth[10], m11: paymentByMonth[11],
        m12: paymentByMonth[12], m1: paymentByMonth[1], m2: paymentByMonth[2], m3: paymentByMonth[3],
        m4: paymentByMonth[4], m5: paymentByMonth[5], m6: paymentByMonth[6], Somme: somme})
@@ -47,7 +46,7 @@ function getPlayerData(){
        totalSum += somme
        somme = 0
       })
-        return dataPlayerRows
+        // return dataPlayerRows
     })
 }
 /**
@@ -56,8 +55,8 @@ function getPlayerData(){
 */
 function exportAbscence(){
   $('button#export_list_abs').on('click', function(){
-    const Excel = require('exceljs');
     $('img#loader_export_abs').show();
+    const Excel = require('exceljs');
     $('span#msg_export_abs').html('')
     var workbook = new Excel.Workbook();
     workbook.creator = 'EcoleSportifeAbscence'
@@ -77,7 +76,7 @@ function exportAbscence(){
         sheet.mergeCells('E2:G2');
         sheet.getCell('E2').value = $('select#abs_day option:selected').text()
         sheet.mergeCells('E4:G4');
-        sheet.getCell('E4').value = dataPlayers[0].groupe.horaire1+'/'+dataPlayers[0].groupe.horaire2
+        sheet.getCell('E4').value = dataPlayers[0].groupe.horaire
         sheet.getRow(4).height = 20
         sheet.mergeCells('E6:G6');
         sheet.getCell('E6').value = $('select#abs_cat option:selected').text()
@@ -119,10 +118,22 @@ function exportAbscence(){
                   cell.alignment = {
                      vertical: 'middle', horizontal: 'center'
                    };
-                   if (rowNumber <= 10) {
+                   if (rowNumber <= 9) {
                      row.height = 20
                      cell.font = {
                        bold: true,
+                       name: 'Arial',
+                       family: 2,
+                       size: 15,
+                     };
+                   }
+                   if (rowNumber === 10) {
+                     row.height = 20
+                     cell.font = {
+                       bold: true,
+                       name: 'Arial',
+                       family: 2,
+                       size: 11,
                      };
                    }
                    if (rowNumber >= 10) {
@@ -157,8 +168,8 @@ function exportAbscence(){
                    }
              });
         });
-        fs.mkdir(app.getPath("desktop")+'/liste/Absences/'+$('select#abs_months option:selected').text()+'/'+$('select#abs_cat option:selected').text()+'/', { recursive: true }, (err) => {
-          workbook.xlsx.writeFile(app.getPath('desktop')+"/liste/Absences/"+$('select#abs_months option:selected').text()+'/'+$('select#abs_cat option:selected').text()+'/'+currentMonth+currentYear+"_"+nameList+".xlsx").then(()=>{
+        fs.mkdir(app.getPath("desktop")+'/listes/Absences/'+$('select#abs_months option:selected').text()+'/'+$('select#abs_day option:selected').text()+'/', { recursive: true }, (err) => {
+          workbook.xlsx.writeFile(app.getPath('desktop')+"/listes/Absences/"+$('select#abs_months option:selected').text()+'/'+$('select#abs_day option:selected').text()+'/'+currentMonth+currentYear+"_"+nameList+".xlsx").then(()=>{
             $('img#loader_export_abs').hide('fast');
             $('span#msg_export_abs').html("<i class='fas fa-check-circle'></i> La liste d'absence est exporté !")
             $('span#msg_export_abs').removeClass('text-danger').addClass('text-success')
@@ -184,17 +195,18 @@ function exportAbscence(){
 */
 function exportAll(){
   $('button#export_all').on('click', function(){
+    let nameList = 'ListeJoueurs_'+academicYear
     $('img#loader_export_all').show();
-    $('span#msg_export_all').html('')
+    $('span#msg_export_all').html('');
     $.when(getPlayerData()).done(function(){
+      console.log(dataPlayerRows);
       const Excel = require('exceljs');
       var workbook = new Excel.Workbook();
-      workbook.creator = 'EcoleSportifeAbscence'
-      let nameList = 'ListeJoueurs_'+academicYear
+      workbook.creator = 'EcoleSportive'
       var sheet = workbook.addWorksheet(nameList)
       sheet.mergeCells('D2:H2');
       sheet.getCell('D2').value = "Liste des joueurs pour l'année "+academicYear.replace('_', '/')
-      sheet.getRow(4).values = ['Num', 'Nom et prenom','Date de naissance', 'Categorie', 'Séance', 'Prix annuel', '9','10', '11','12', '1', '2', '3','4','5','6', 'Somme'];
+      sheet.getRow(4).values = ['Num', 'Nom et prenom','Date de naissance', 'Categorie', 'Séances', 'Prix annuel', '9','10', '11','12', '1', '2', '3','4','5','6', 'Somme'];
       sheet.columns = [
         {key: 'id'},
         {key: 'name', width: 25},
@@ -248,7 +260,13 @@ function exportAll(){
                       row.getCell(i).fill = {
                          type: 'pattern',
                          pattern:'solid',
-                         fgColor:{argb:'A54646'}
+                         fgColor:{argb:'62909F'}
+                      };
+                      row.getCell(i).font = {
+                        name: 'Arial',
+                        family: 2,
+                        bold: true,
+                        size: 10,
                       };
                     }
                     row.getCell(i).border = {
@@ -267,7 +285,7 @@ function exportAll(){
                          row.getCell(i).fill = {
                             type: 'pattern',
                             pattern:'solid',
-                            fgColor:{argb:'E4CCCC'}
+                            fgColor:{argb:'EBF4F4'}
                          };
                      }
                    }
@@ -281,30 +299,28 @@ function exportAll(){
       totalCell.alignment = {
            vertical: 'middle', horizontal: 'center'
          };
-       totalCell.font = {
+      totalCell.font = {
          name: 'Arial',
          family: 2,
          bold: true,
          size: 11,
        };
-
-      fs.mkdir(app.getPath("desktop")+'/liste', { recursive: true }, (err) => {
-        workbook.xlsx.writeFile(app.getPath('desktop')+"/liste/"+nameList+".xlsx").then(()=>{
+      fs.mkdir(app.getPath("desktop")+'/listes', { recursive: true }, (err) => {
+        workbook.xlsx.writeFile(app.getPath('desktop')+"/listes/"+nameList+".xlsx").then(()=>{
           $('img#loader_export_all').hide('long');
+          dataPlayerRows = []
           $('span#msg_export_all').html("<i class='fas fa-check-circle'></i> La liste est exporté ! ")
           $('span#msg_export_all').removeClass('text-danger').addClass('text-success')
         }).catch(err=>{
           $('img#loader_export_all').hide('long');
           if (err.message.includes('EBUSY: resource busy or locked')) {
-            $('span#msg_export_all').html("<i class='fas fa-times-circle'></i> Ce fichier est ouvert, veuillez la fermer avant de l'exporter")
+            $('span#msg_export_all').html("<i class='fas fa-times-circle'></i> Ce fichier est ouvert, veuillez le fermer avant de l'exporter")
             $('span#msg_export_all').removeClass('text-success').addClass('text-danger')
           }
         })
        });
     })
-
-
-    })
+  })
 }
 
 $(document).ready(function(){
